@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: AcmE
+Bundle-SymbolicName: org.e792a8.acme;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.e792a8.acme.activator.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.ide,
+ org.eclipse.jdt.ui,
+ org.eclipse.ui.console,
+ org.eclipse.ui.forms,
+ org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-16
+Automatic-Module-Name: acme.singleton.true
+Bundle-ActivationPolicy: lazy
+Bundle-Vendor: zhou u74a8
+Bundle-ClassPath: .

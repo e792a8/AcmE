@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.e792a8.acme.perspectives.AcmePerspectiveFactory"
+            icon="icons/codeforces-favicon-16x16.png"
+            id="org.e792a8.acme.perspectives.AcmePerspective"
+            name="AcmE">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="org.e792a8.acme.AcmeCategory"
+            name="AcmE">
+      </category>
+      <view
+            category="org.e792a8.acme.AcmeCategory"
+            class="org.e792a8.acme.views.TestPointsView"
+            icon="icons/codeforces-favicon-16x16.png"
+            id="org.e792a8.acme.views.TestPointsView"
+            inject="true"
+            name="Test Points">
+      </view>
+      <view
+            category="org.e792a8.acme.AcmeCategory"
+            class="org.e792a8.acme.views.DashboardView"
+            icon="icons/codeforces-favicon-16x16.png"
+            id="org.e792a8.acme.views.DashboardView"
+            inject="true"
+            name="Dashboard">
+      </view>
+   </extension>
+
+</plugin>
