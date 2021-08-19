@@ -1,5 +1,6 @@
 package org.e792a8.acme.views;
 
+import org.e792a8.acme.control.MessageBox;
 import org.e792a8.acme.widgets.TestPointComposite;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -44,17 +45,15 @@ public class TestPointsView extends ViewPart {
 		refresh();
 	}
 
+	public void runAllTests() {
+		MessageBox.printMsg("GREEN", "Run all tests");
+	}
+
 	private void updateSize() {
 		ScrollBar bar = scrolledComposite.getVerticalBar();
 		testsArea.setSize(testsArea.computeSize(
 			scrolledComposite.getSize().x - (bar != null && bar.isVisible() ? bar.getSize().x : 0),
 			SWT.DEFAULT));
-	}
-
-	/**
-	 * Create contents of the view part.
-	 */
-	public void createControls(Composite parent) {
 	}
 
 	@Override
@@ -108,6 +107,9 @@ public class TestPointsView extends ViewPart {
 
 		Button btnRunAll = new Button(buttonsArea, SWT.NONE);
 		btnRunAll.setText("Run All");
+		btnRunAll.addListener(SWT.MouseDown, event -> {
+			runAllTests();
+		});
 
 		Composite body = new Composite(viewArea, SWT.NONE);
 		body.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -122,10 +124,10 @@ public class TestPointsView extends ViewPart {
 
 		testsArea = new Composite(scrolledComposite, SWT.NONE);
 		scrolledComposite.setContent(testsArea);
-
 		scrolledComposite.addListener(SWT.Resize, event -> {
 			updateSize();
 		});
+
 		ColumnLayout cl_testsArea = new ColumnLayout();
 		cl_testsArea.maxNumColumns = 4;
 		testsArea.setLayout(cl_testsArea);

@@ -1,19 +1,24 @@
 package org.e792a8.acme.views;
 
+import org.e792a8.acme.control.MessageBox;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.console.MessageConsole;
+import org.eclipse.ui.console.TextConsoleViewer;
 import org.eclipse.ui.part.ViewPart;
-import org.eclipse.wb.swt.SWTResourceManager;
 
 public class DashboardView extends ViewPart {
 
 	public static final String ID = "org.e792a8.acme.views.DashboardView";
+	private CLabel lblContestName;
+	private CLabel lblProblemTitle;
 
 	public DashboardView() {
 	}
@@ -50,24 +55,48 @@ public class DashboardView extends ViewPart {
 		fd_labels.bottom = new FormAttachment(100);
 		labels.setLayoutData(fd_labels);
 
-		CLabel lblContestName = new CLabel(labels, SWT.NONE);
+		lblContestName = new CLabel(labels, SWT.NONE);
 		lblContestName.setText("Contest Name");
 
-		CLabel lblProblemTitle = new CLabel(labels, SWT.NONE);
+		lblProblemTitle = new CLabel(labels, SWT.NONE);
 		lblProblemTitle.setText("Problem Title");
 
 		Composite actions = new Composite(panel, SWT.NONE);
+		actions.setLayout(new FillLayout(SWT.VERTICAL));
 		FormData fd_actions = new FormData();
 		fd_actions.right = new FormAttachment(100);
 		fd_actions.top = new FormAttachment(0);
 		fd_actions.bottom = new FormAttachment(100);
 		actions.setLayoutData(fd_actions);
 
-		StyledText messageBox = new StyledText(messages, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
-		messageBox.setFont(SWTResourceManager.getFont("Consolas", 10, SWT.NORMAL));
-		messageBox.setAlwaysShowScrollBars(true);
-		messageBox.setWordWrap(true);
-		// TODO Auto-generated method stub
+		Composite actions_r1 = new Composite(actions, SWT.NONE);
+		RowLayout rl_actions_r1 = new RowLayout(SWT.HORIZONTAL);
+		rl_actions_r1.justify = true;
+		rl_actions_r1.fill = true;
+		rl_actions_r1.pack = false;
+		actions_r1.setLayout(rl_actions_r1);
+
+		Button btnRunTests = new Button(actions_r1, SWT.NONE);
+		btnRunTests.setText("Run Tests");
+
+		Composite actions_r2 = new Composite(actions, SWT.NONE);
+		RowLayout rl_actions_r2 = new RowLayout(SWT.HORIZONTAL);
+		rl_actions_r2.justify = true;
+		rl_actions_r2.fill = true;
+		rl_actions_r2.pack = false;
+		actions_r2.setLayout(rl_actions_r2);
+
+		Button btnClear = new Button(actions_r2, SWT.NONE);
+		btnClear.setText("Clear");
+
+		MessageConsole console = new MessageConsole("Messages", null);
+		TextConsoleViewer consoleViewer = new TextConsoleViewer(messages, console);
+
+		MessageBox.setBox(console);
+
+		btnClear.addListener(SWT.MouseDown, event -> {
+			MessageBox.clear();
+		});
 
 	}
 
