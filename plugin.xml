@@ -32,6 +32,13 @@
             inject="true"
             name="Dashboard">
       </view>
+      <view
+            category="org.e792a8.acme.AcmeCategory"
+            class="org.e792a8.acme.views.ContestsView"
+            id="org.e792a8.acme.views.ContestsView"
+            name="Contests"
+            restorable="true">
+      </view>
    </extension>
 
 </plugin>

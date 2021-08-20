@@ -76,27 +76,33 @@ public class DashboardView extends ViewPart {
 		rl_actions_r1.pack = false;
 		actions_r1.setLayout(rl_actions_r1);
 
-		Button btnRunTests = new Button(actions_r1, SWT.NONE);
-		btnRunTests.setText("Run Tests");
+		Button btnNewContest = new Button(actions_r1, SWT.NONE);
+		btnNewContest.setText("New Contest");
+
+		Button btnNewProblem = new Button(actions_r1, SWT.NONE);
+		btnNewProblem.setText("New Problem");
 
 		Composite actions_r2 = new Composite(actions, SWT.NONE);
 		RowLayout rl_actions_r2 = new RowLayout(SWT.HORIZONTAL);
+		rl_actions_r2.pack = false;
 		rl_actions_r2.justify = true;
 		rl_actions_r2.fill = true;
-		rl_actions_r2.pack = false;
 		actions_r2.setLayout(rl_actions_r2);
+
+		Button btnRunTests = new Button(actions_r2, SWT.NONE);
+		btnRunTests.setText("Run Tests");
 
 		Button btnClear = new Button(actions_r2, SWT.NONE);
 		btnClear.setText("Clear");
+
+		btnClear.addListener(SWT.MouseDown, event -> {
+			MessageBox.clear();
+		});
 
 		MessageConsole console = new MessageConsole("Messages", null);
 		TextConsoleViewer consoleViewer = new TextConsoleViewer(messages, console);
 
 		MessageBox.setBox(console);
-
-		btnClear.addListener(SWT.MouseDown, event -> {
-			MessageBox.clear();
-		});
 
 	}
 
