@@ -1,5 +1,6 @@
 package org.e792a8.acme.perspectives;
 
+import org.e792a8.acme.views.ContestsView;
 import org.e792a8.acme.views.DashboardView;
 import org.e792a8.acme.views.TestPointsView;
 import org.eclipse.jdt.ui.JavaUI;
@@ -9,6 +10,7 @@ import org.eclipse.ui.IPerspectiveFactory;
 
 public class AcmePerspectiveFactory implements IPerspectiveFactory {
 
+	public static final String ID = "org.e792a8.acme.perspectives.AcmePerspective";
 	private IPageLayout factory;
 
 	public AcmePerspectiveFactory() {
@@ -27,7 +29,7 @@ public class AcmePerspectiveFactory implements IPerspectiveFactory {
 
 	private void addViews() {
 		final String[] viewsTopLeft = {
-			IPageLayout.ID_PROJECT_EXPLORER,
+			ContestsView.ID,
 		};
 		final String[] viewsBottomLeft = {
 			DashboardView.ID,
@@ -67,7 +69,6 @@ public class AcmePerspectiveFactory implements IPerspectiveFactory {
 	private void addPerspectiveShortcuts() {
 		final String[] perspectiveShortcuts = {
 			"org.e792a8.acme.perspectives.AcmePerspective",
-			"org.eclipse.ui.resourcePerspective",
 		};
 		for (String s : perspectiveShortcuts) {
 			factory.addPerspectiveShortcut(s);
@@ -86,6 +87,7 @@ public class AcmePerspectiveFactory implements IPerspectiveFactory {
 
 	private void addViewShortcuts() {
 		final String[] viewShortcuts = {
+			ContestsView.ID,
 			DashboardView.ID,
 			TestPointsView.ID,
 		};

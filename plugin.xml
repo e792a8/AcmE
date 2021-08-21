@@ -35,6 +35,7 @@
       <view
             category="org.e792a8.acme.AcmeCategory"
             class="org.e792a8.acme.views.ContestsView"
+            icon="icons/codeforces-favicon-16x16.png"
             id="org.e792a8.acme.views.ContestsView"
             name="Contests"
             restorable="true">
