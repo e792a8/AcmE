@@ -34,6 +34,7 @@ public class ContestsView extends ViewPart {
 	private Action addProblemAction;
 	private Action addGroupAction;
 	private Action doubleClickAction;
+	private ViewContentProvider contentProvider;
 
 	class ViewContentProvider implements ITreeContentProvider {
 		private ProblemGroup invisibleRoot;
@@ -72,7 +73,7 @@ public class ContestsView extends ViewPart {
 		}
 
 		private void initialize() {
-			invisibleRoot = ContestManager.getContestProblems();
+			invisibleRoot = ContestManager.getRoot();
 		}
 	}
 
@@ -94,11 +95,11 @@ public class ContestsView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		ContestManager.addGroup(ContestManager.getContestProblems());
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		drillDownAdapter = new DrillDownAdapter(viewer);
 
-		viewer.setContentProvider(new ViewContentProvider());
+		contentProvider = new ViewContentProvider();
+		viewer.setContentProvider(contentProvider);
 		viewer.setInput(getViewSite());
 		viewer.setLabelProvider(new ViewLabelProvider());
 
@@ -157,10 +158,12 @@ public class ContestsView extends ViewPart {
 			public void run() {
 				IStructuredSelection selection = viewer.getStructuredSelection();
 				Object obj = selection.getFirstElement();
+				if (obj == null)
+					obj = ContestManager.getRoot();
 				if (!(obj instanceof ProblemGroup))
 					return;
 				ContestManager.addProblem((ProblemGroup) obj);
-				viewer.setContentProvider(new ViewContentProvider());
+				viewer.setContentProvider(contentProvider);
 			}
 		};
 		addProblemAction.setText("Add Problem");
@@ -173,10 +176,12 @@ public class ContestsView extends ViewPart {
 			public void run() {
 				IStructuredSelection selection = viewer.getStructuredSelection();
 				Object obj = selection.getFirstElement();
+				if (obj == null)
+					obj = ContestManager.getRoot();
 				if (!(obj instanceof ProblemGroup))
 					return;
 				ContestManager.addGroup((ProblemGroup) obj);
-				viewer.setContentProvider(new ViewContentProvider());
+				viewer.setContentProvider(contentProvider);
 			}
 		};
 		addGroupAction.setText("Add Group/Contest");

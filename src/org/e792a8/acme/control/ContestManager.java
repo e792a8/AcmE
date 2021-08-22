@@ -5,9 +5,18 @@ import org.e792a8.acme.control.problems.ProblemObject;
 
 public class ContestManager {
 
-	private static ProblemGroup rootProblemGroup = new ProblemGroup("ROOT");
+	private static ProblemGroup rootProblemGroup = ContestParser.parseRoot();
+	private static ProblemObject currentProblem;
 
-	public static ProblemGroup getContestProblems() {
+	public static void openProblem(ProblemObject problemObj) {
+		currentProblem = problemObj;
+	}
+
+	public static ProblemObject getCurrentProblem() {
+		return currentProblem;
+	}
+
+	public static ProblemGroup getRoot() {
 		return rootProblemGroup;
 	}
 
