@@ -5,7 +5,7 @@ import org.e792a8.acme.control.problems.ProblemObject;
 
 public class ContestManager {
 
-	private static ProblemGroup rootProblemGroup = ContestParser.readRoot();
+	private static ProblemGroup rootProblemGroup = WorkspaceParser.readRoot();
 	private static ProblemObject currentProblem;
 
 	public static void openProblem(ProblemObject problemObj) {
@@ -27,7 +27,7 @@ public class ContestManager {
 		ProblemGroup group = new ProblemGroup(name);
 		group.setPath(name + "/");
 		parent.addChild(group);
-		ContestParser.writeRoot();
+		WorkspaceParser.writeRoot();
 		return group;
 	}
 
@@ -39,7 +39,7 @@ public class ContestManager {
 		ProblemObject obj = new ProblemObject(name);
 		obj.setPath(name + "/");
 		parent.addChild(obj);
-		ContestParser.writeRoot();
+		WorkspaceParser.writeRoot();
 		return obj;
 	}
 
