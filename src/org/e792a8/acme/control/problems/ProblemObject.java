@@ -3,6 +3,7 @@ package org.e792a8.acme.control.problems;
 public class ProblemObject {
 	private String name;
 	private ProblemGroup parent;
+	private String path;
 
 	public ProblemObject(String name) {
 		this.name = name;
@@ -10,6 +11,14 @@ public class ProblemObject {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 
 	public void setParent(ProblemGroup parent) {
