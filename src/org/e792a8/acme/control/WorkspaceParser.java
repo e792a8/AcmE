@@ -53,12 +53,14 @@ public class WorkspaceParser {
 
 	public static ProblemGroup readRoot() {
 		IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-		ProblemGroup rootGroup = (ProblemGroup) readDir(workspaceRoot.getLocation(),
+		IPath rootPath = workspaceRoot.getLocation();
+		ProblemGroup rootGroup = (ProblemGroup) readDir(rootPath,
 			workspaceRoot.getFullPath().toString());
 		if (rootGroup == null) {
 			rootGroup = new ProblemGroup("ROOT");
-			rootGroup.setPath("./");
-			writeDir(rootGroup, workspaceRoot.getLocation());
+			rootGroup.setRelPath("./");
+			rootGroup.setAbsPath(rootPath);
+			writeDir(rootGroup, rootPath);
 		}
 		return rootGroup;
 	}
@@ -104,7 +106,7 @@ public class WorkspaceParser {
 		if (problem instanceof ProblemGroup) {
 			writeGroup(doc, root, (ProblemGroup) problem);
 			for (ProblemObject child : ((ProblemGroup) problem).getChildren()) {
-				writeDir(child, absPath.append(child.getPath()));
+				writeDir(child, absPath.append(child.getRelPath()));
 			}
 		} else {
 			writeProblem(doc, root, problem);
@@ -122,7 +124,7 @@ public class WorkspaceParser {
 		root.setAttribute("name", group.getName());
 		for (ProblemObject i : group.getChildren()) {
 			Element child = doc.createElement("child");
-			child.setAttribute("path", i.getPath());
+			child.setAttribute("path", i.getRelPath());
 			root.appendChild(child);
 		}
 	}
@@ -142,13 +144,15 @@ public class WorkspaceParser {
 				group.addChild(readDir(absPath.append(subpath), subpath));
 			}
 		}
-		group.setPath(relPath);
+		group.setRelPath(relPath);
+		group.setAbsPath(absPath);
 		return group;
 	}
 
 	private static ProblemObject readProblem(Node node, IPath absPath, String relPath) {
 		ProblemObject problem = new ProblemObject(node.getAttributes().getNamedItem("name").getTextContent());
-		problem.setPath(relPath);
+		problem.setRelPath(relPath);
+		problem.setAbsPath(absPath);
 		return problem;
 	}
 

@@ -1,9 +1,12 @@
 package org.e792a8.acme.control.problems;
 
+import org.eclipse.core.runtime.IPath;
+
 public class ProblemObject {
 	private String name;
 	private ProblemGroup parent;
-	private String path;
+	private String relPath;
+	private IPath absPath;
 
 	public ProblemObject(String name) {
 		this.name = name;
@@ -13,12 +16,20 @@ public class ProblemObject {
 		return name;
 	}
 
-	public String getPath() {
-		return path;
+	public IPath getAbsPath() {
+		return absPath;
 	}
 
-	public void setPath(String path) {
-		this.path = path;
+	public void setAbsPath(IPath path) {
+		this.absPath = path;
+	}
+
+	public String getRelPath() {
+		return relPath;
+	}
+
+	public void setRelPath(String path) {
+		this.relPath = path;
 	}
 
 	public void setParent(ProblemGroup parent) {

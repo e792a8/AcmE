@@ -17,15 +17,16 @@ public class ContestManager {
 	}
 
 	public static ProblemGroup getRoot() {
-		if (rootProblemGroup.getPath() == null) {
-			rootProblemGroup.setPath("./");
+		if (rootProblemGroup.getRelPath() == null) {
+			rootProblemGroup.setRelPath("./");
 		}
 		return rootProblemGroup;
 	}
 
 	public static ProblemGroup addGroup(ProblemGroup parent, String name) {
 		ProblemGroup group = new ProblemGroup(name);
-		group.setPath(name + "/");
+		group.setRelPath(name + "/");
+		group.setAbsPath(parent.getAbsPath().append(group.getRelPath()));
 		parent.addChild(group);
 		WorkspaceParser.writeRoot();
 		return group;
@@ -37,7 +38,8 @@ public class ContestManager {
 
 	public static ProblemObject addProblem(ProblemGroup parent, String name) {
 		ProblemObject obj = new ProblemObject(name);
-		obj.setPath(name + "/");
+		obj.setRelPath(name + "/");
+		obj.setAbsPath(parent.getAbsPath().append(obj.getRelPath()));
 		parent.addChild(obj);
 		WorkspaceParser.writeRoot();
 		return obj;
