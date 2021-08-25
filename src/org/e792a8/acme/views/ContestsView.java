@@ -1,8 +1,8 @@
 package org.e792a8.acme.views;
 
-import org.e792a8.acme.control.ContestManager;
-import org.e792a8.acme.control.problems.ProblemGroup;
-import org.e792a8.acme.control.problems.ProblemObject;
+import org.e792a8.acme.control.WorkspaceParser;
+import org.e792a8.acme.wizards.NewWizard;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -37,43 +38,37 @@ public class ContestsView extends ViewPart {
 	private ViewContentProvider contentProvider;
 
 	class ViewContentProvider implements ITreeContentProvider {
-		private ProblemGroup invisibleRoot;
+		private IPath invisibleRoot;
 
 		@Override
 		public Object[] getElements(Object parent) {
 			if (parent.equals(getViewSite())) {
 				if (invisibleRoot == null)
 					initialize();
-				return getChildren(invisibleRoot);
+				return WorkspaceParser.getGroupChildren(invisibleRoot);
 			}
-			return getChildren(parent);
+			return WorkspaceParser.getGroupChildren((IPath) parent);
 		}
 
 		@Override
 		public Object getParent(Object child) {
-			if (child instanceof ProblemObject) {
-				return ((ProblemObject) child).getParent();
-			}
-			return null;
+			return WorkspaceParser.getParent((IPath) child);
 		}
 
 		@Override
 		public Object[] getChildren(Object parent) {
-			if (parent instanceof ProblemGroup) {
-				return ((ProblemGroup) parent).getChildren();
-			}
-			return new Object[0];
+			return WorkspaceParser.getGroupChildren((IPath) parent);
 		}
 
 		@Override
 		public boolean hasChildren(Object parent) {
-			if (parent instanceof ProblemGroup)
-				return ((ProblemGroup) parent).hasChildren();
+			if ("group".equals(WorkspaceParser.getAttribute((IPath) parent, "type")))
+				return WorkspaceParser.getGroupChildren((IPath) parent).length > 0;
 			return false;
 		}
 
 		private void initialize() {
-			invisibleRoot = ContestManager.getRoot();
+			invisibleRoot = WorkspaceParser.getRoot();
 		}
 	}
 
@@ -81,13 +76,13 @@ public class ContestsView extends ViewPart {
 
 		@Override
 		public String getText(Object obj) {
-			return obj.toString();
+			return WorkspaceParser.getAttribute((IPath) obj, "name");
 		}
 
 		@Override
 		public Image getImage(Object obj) {
 			String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
-			if (obj instanceof ProblemGroup)
+			if ("group".equals(WorkspaceParser.getAttribute((IPath) obj, "type")))
 				imageKey = ISharedImages.IMG_OBJ_FOLDER;
 			return PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
 		}
@@ -156,14 +151,9 @@ public class ContestsView extends ViewPart {
 		addProblemAction = new Action() {
 			@Override
 			public void run() {
-				IStructuredSelection selection = viewer.getStructuredSelection();
-				Object obj = selection.getFirstElement();
-				if (obj == null)
-					obj = ContestManager.getRoot();
-				if (!(obj instanceof ProblemGroup))
-					return;
-				ContestManager.addProblem((ProblemGroup) obj);
-				viewer.setContentProvider(contentProvider);
+				WizardDialog dialog = new WizardDialog(null, new NewWizard());
+				dialog.open();
+				viewer.setContentProvider(viewer.getContentProvider());
 			}
 		};
 		addProblemAction.setText("Add Problem");
@@ -174,14 +164,9 @@ public class ContestsView extends ViewPart {
 		addGroupAction = new Action() {
 			@Override
 			public void run() {
-				IStructuredSelection selection = viewer.getStructuredSelection();
-				Object obj = selection.getFirstElement();
-				if (obj == null)
-					obj = ContestManager.getRoot();
-				if (!(obj instanceof ProblemGroup))
-					return;
-				ContestManager.addGroup((ProblemGroup) obj);
-				viewer.setContentProvider(contentProvider);
+				WizardDialog dialog = new WizardDialog(null, new NewWizard());
+				dialog.open();
+				viewer.setContentProvider(viewer.getContentProvider());
 			}
 		};
 		addGroupAction.setText("Add Group/Contest");

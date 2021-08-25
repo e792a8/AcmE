@@ -41,5 +41,19 @@
             restorable="true">
       </view>
    </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <wizard
+            category="org.e792a8.acme.wizards"
+            class="org.e792a8.acme.wizards.NewWizard"
+            icon="icons/codeforces-favicon-16x16.png"
+            id="org.e792a8.acme.wizards.NewWizard"
+            name="New">
+      </wizard>
+      <category
+            id="org.e792a8.acme.wizards"
+            name="AcmE">
+      </category>
+   </extension>
 
 </plugin>
