@@ -1,7 +1,11 @@
 package org.e792a8.acme.views;
 
-import org.e792a8.acme.control.WorkspaceParser;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.e792a8.acme.wizards.NewWizard;
+import org.e792a8.acme.workspace.DirectoryHandle;
+import org.e792a8.acme.workspace.WorkspaceParser;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -45,9 +49,9 @@ public class ContestsView extends ViewPart {
 			if (parent.equals(getViewSite())) {
 				if (invisibleRoot == null)
 					initialize();
-				return WorkspaceParser.getGroupChildren(invisibleRoot);
+				return getChildren(invisibleRoot);
 			}
-			return WorkspaceParser.getGroupChildren((IPath) parent);
+			return getChildren(parent);
 		}
 
 		@Override
@@ -57,13 +61,20 @@ public class ContestsView extends ViewPart {
 
 		@Override
 		public Object[] getChildren(Object parent) {
-			return WorkspaceParser.getGroupChildren((IPath) parent);
+			DirectoryHandle handle = WorkspaceParser.readDir((IPath) parent);
+			ArrayList<IPath> children = new ArrayList<>();
+			Iterator<String> itr = handle.children.iterator();
+			while (itr.hasNext()) {
+				children.add(handle.absPath.append(itr.next()));
+			}
+			return children.toArray();
 		}
 
 		@Override
 		public boolean hasChildren(Object parent) {
-			if ("group".equals(WorkspaceParser.getAttribute((IPath) parent, "type")))
-				return WorkspaceParser.getGroupChildren((IPath) parent).length > 0;
+			DirectoryHandle handle = WorkspaceParser.readDir((IPath) parent);
+			if ("group".equals(handle.type) && handle.children != null && handle.children.size() > 0)
+				return true;
 			return false;
 		}
 
@@ -76,13 +87,13 @@ public class ContestsView extends ViewPart {
 
 		@Override
 		public String getText(Object obj) {
-			return WorkspaceParser.getAttribute((IPath) obj, "name");
+			return WorkspaceParser.readDir((IPath) obj).name;
 		}
 
 		@Override
 		public Image getImage(Object obj) {
 			String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
-			if ("group".equals(WorkspaceParser.getAttribute((IPath) obj, "type")))
+			if ("group".equals(WorkspaceParser.readDir((IPath) obj).type))
 				imageKey = ISharedImages.IMG_OBJ_FOLDER;
 			return PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
 		}

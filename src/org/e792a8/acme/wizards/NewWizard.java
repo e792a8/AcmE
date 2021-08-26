@@ -1,6 +1,6 @@
 package org.e792a8.acme.wizards;
 
-import org.e792a8.acme.control.WorkspaceParser;
+import org.e792a8.acme.workspace.WorkspaceParser;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
@@ -47,15 +47,6 @@ public class NewWizard extends Wizard implements INewWizard {
 			}
 			name += " (" + i + ")";
 		}
-		WorkspaceParser.addGroupChild(parentPath, path);
-		WorkspaceParser.initPath(newPath);
-		if (selectGroup) {
-			WorkspaceParser.setAttribute(newPath, "type", "group");
-		} else {
-			WorkspaceParser.setAttribute(newPath, "type", "problem");
-		}
-		WorkspaceParser.setAttribute(newPath, "name", name);
-		WorkspaceParser.setAttribute(newPath, "url", url);
 	}
 
 	@Override
