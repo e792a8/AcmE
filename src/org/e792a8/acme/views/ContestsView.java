@@ -3,6 +3,7 @@ package org.e792a8.acme.views;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.e792a8.acme.control.ContestManager;
 import org.e792a8.acme.wizards.NewWizard;
 import org.e792a8.acme.workspace.DirectoryHandle;
 import org.e792a8.acme.workspace.WorkspaceParser;
@@ -39,7 +40,6 @@ public class ContestsView extends ViewPart {
 	private Action addProblemAction;
 	private Action addGroupAction;
 	private Action doubleClickAction;
-	private ViewContentProvider contentProvider;
 
 	class ViewContentProvider implements ITreeContentProvider {
 		private IPath invisibleRoot;
@@ -61,7 +61,7 @@ public class ContestsView extends ViewPart {
 
 		@Override
 		public Object[] getChildren(Object parent) {
-			DirectoryHandle handle = WorkspaceParser.readDir((IPath) parent);
+			DirectoryHandle handle = ContestManager.readDirectory((IPath) parent);
 			ArrayList<IPath> children = new ArrayList<>();
 			Iterator<String> itr = handle.children.iterator();
 			while (itr.hasNext()) {
@@ -72,14 +72,14 @@ public class ContestsView extends ViewPart {
 
 		@Override
 		public boolean hasChildren(Object parent) {
-			DirectoryHandle handle = WorkspaceParser.readDir((IPath) parent);
+			DirectoryHandle handle = ContestManager.readDirectory((IPath) parent);
 			if ("group".equals(handle.type) && handle.children != null && handle.children.size() > 0)
 				return true;
 			return false;
 		}
 
 		private void initialize() {
-			invisibleRoot = WorkspaceParser.getRoot();
+			invisibleRoot = ContestManager.getRootPath();
 		}
 	}
 
@@ -87,13 +87,13 @@ public class ContestsView extends ViewPart {
 
 		@Override
 		public String getText(Object obj) {
-			return WorkspaceParser.readDir((IPath) obj).name;
+			return WorkspaceParser.readDirHandle((IPath) obj).name;
 		}
 
 		@Override
 		public Image getImage(Object obj) {
 			String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
-			if ("group".equals(WorkspaceParser.readDir((IPath) obj).type))
+			if ("group".equals(WorkspaceParser.readDirHandle((IPath) obj).type))
 				imageKey = ISharedImages.IMG_OBJ_FOLDER;
 			return PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
 		}
@@ -104,8 +104,7 @@ public class ContestsView extends ViewPart {
 		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		drillDownAdapter = new DrillDownAdapter(viewer);
 
-		contentProvider = new ViewContentProvider();
-		viewer.setContentProvider(contentProvider);
+		viewer.setContentProvider(new ViewContentProvider());
 		viewer.setInput(getViewSite());
 		viewer.setLabelProvider(new ViewLabelProvider());
 
@@ -114,6 +113,10 @@ public class ContestsView extends ViewPart {
 		hookContextMenu();
 		hookDoubleClickAction();
 		contributeToActionBars();
+	}
+
+	public void refreshView() {
+		viewer.setContentProvider(viewer.getContentProvider());
 	}
 
 	private void hookContextMenu() {
@@ -139,12 +142,10 @@ public class ContestsView extends ViewPart {
 	private void fillLocalPullDown(IMenuManager manager) {
 		manager.add(addProblemAction);
 		manager.add(new Separator());
-		manager.add(addGroupAction);
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
 		manager.add(addProblemAction);
-		manager.add(addGroupAction);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
@@ -153,7 +154,6 @@ public class ContestsView extends ViewPart {
 
 	private void fillLocalToolBar(IToolBarManager manager) {
 		manager.add(addProblemAction);
-		manager.add(addGroupAction);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 	}
@@ -162,28 +162,17 @@ public class ContestsView extends ViewPart {
 		addProblemAction = new Action() {
 			@Override
 			public void run() {
-				WizardDialog dialog = new WizardDialog(null, new NewWizard());
+				IStructuredSelection selection = viewer.getStructuredSelection();
+				WizardDialog dialog = new WizardDialog(null, new NewWizard(selection));
 				dialog.open();
-				viewer.setContentProvider(viewer.getContentProvider());
+				refreshView();
 			}
 		};
-		addProblemAction.setText("Add Problem");
-		addProblemAction.setToolTipText("Add a problem");
+		addProblemAction.setText("Add");
+		addProblemAction.setToolTipText("Add a problem / group");
 		addProblemAction.setImageDescriptor(
 			PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 
-		addGroupAction = new Action() {
-			@Override
-			public void run() {
-				WizardDialog dialog = new WizardDialog(null, new NewWizard());
-				dialog.open();
-				viewer.setContentProvider(viewer.getContentProvider());
-			}
-		};
-		addGroupAction.setText("Add Group/Contest");
-		addGroupAction.setToolTipText("Add a problem group or contest");
-		addGroupAction.setImageDescriptor(
-			PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 		doubleClickAction = new Action() {
 			@Override
 			public void run() {

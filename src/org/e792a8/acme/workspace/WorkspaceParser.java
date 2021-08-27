@@ -17,7 +17,6 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.w3c.dom.Document;
@@ -29,7 +28,6 @@ public class WorkspaceParser {
 
 	private static DocumentBuilder docBuilder;
 	private static Transformer transformer;
-	private static IWorkspaceRoot workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 
 	public static DocumentBuilder getDocumentBuilder() {
 		if (docBuilder == null) {
@@ -57,10 +55,19 @@ public class WorkspaceParser {
 	}
 
 	public static IPath getRoot() {
-		return ResourcesPlugin.getWorkspace().getRoot().getLocation();
+		IPath rootPath = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+		if (readDirHandle(rootPath) == null) {
+			DirectoryHandle handle = new DirectoryHandle();
+			handle.absPath = rootPath;
+			handle.name = "ROOT";
+			handle.type = "group";
+			handle.children = new LinkedList<>();
+			writeDirHandle(handle);
+		}
+		return rootPath;
 	}
 
-	public static boolean writeDir(DirectoryHandle handle) {
+	public static boolean writeDirHandle(DirectoryHandle handle) {
 		Document doc = getDocumentBuilder().newDocument();
 		Element elem = doc.createElement("directory");
 		doc.appendChild(elem);
@@ -97,10 +104,13 @@ public class WorkspaceParser {
 		return writeDoc(doc, handle.absPath);
 	}
 
-	public static DirectoryHandle readDir(IPath absPath) {
+	public static DirectoryHandle readDirHandle(IPath absPath) {
 		DirectoryHandle handle = new DirectoryHandle();
 		handle.absPath = absPath;
 		Document doc = readDoc(absPath);
+		if (doc == null) {
+			return null;
+		}
 		Element elem = doc.getDocumentElement();
 		if (!"directory".equals(elem.getTagName())) {
 			return null;
