@@ -22,6 +22,11 @@ public class NewWizard extends Wizard implements INewWizard {
 		setNeedsProgressMonitor(true);
 	}
 
+	public NewWizard(IPath parent) {
+		super();
+		setNeedsProgressMonitor(true);
+	}
+
 	public NewWizard(IStructuredSelection selection) {
 		super();
 		setNeedsProgressMonitor(true);
@@ -48,21 +53,20 @@ public class NewWizard extends Wizard implements INewWizard {
 	}
 
 	private void doFinish(boolean selectGroup, String name, String path, String url) {
-		IPath newPath = parentPath.append(path);
 		if (parentPath.append(path).toFile().exists()) {
 			path += '_';
 			int i = 2;
 			while (parentPath.append(path + i).toFile().exists()) {
 				++i;
 			}
-			newPath = parentPath.append(path + i);
+			path += i;
 			name += " (" + i + ")";
 		}
 		DirectoryHandle parentHandle = ContestManager.readDirectory(parentPath);
 		parentHandle.children.add(path);
 		ContestManager.writeDirectory(parentHandle);
 		DirectoryHandle handle = new DirectoryHandle();
-		handle.absPath = newPath;
+		handle.absPath = parentPath.append(path);
 		handle.name = name;
 		handle.url = url;
 		handle.type = (selectGroup ? "group" : "problem");

@@ -14,7 +14,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -37,8 +36,7 @@ public class ContestsView extends ViewPart {
 
 	private TreeViewer viewer;
 	private DrillDownAdapter drillDownAdapter;
-	private Action addProblemAction;
-	private Action addGroupAction;
+	private Action addItemAction;
 	private Action doubleClickAction;
 
 	class ViewContentProvider implements ITreeContentProvider {
@@ -140,12 +138,10 @@ public class ContestsView extends ViewPart {
 	}
 
 	private void fillLocalPullDown(IMenuManager manager) {
-		manager.add(addProblemAction);
-		manager.add(new Separator());
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
-		manager.add(addProblemAction);
+		manager.add(addItemAction);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
@@ -153,24 +149,34 @@ public class ContestsView extends ViewPart {
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager) {
-		manager.add(addProblemAction);
+		Action addRootItemAction = new Action() {
+			@Override
+			public void run() {
+				new WizardDialog(null, new NewWizard(ContestManager.getRootPath())).open();
+				refreshView();
+			}
+		};
+		addRootItemAction.setText("Add");
+		addRootItemAction.setToolTipText("Add a problem / group under root");
+		addRootItemAction.setImageDescriptor(
+			PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		manager.add(addRootItemAction);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 	}
 
 	private void makeActions() {
-		addProblemAction = new Action() {
+		addItemAction = new Action() {
 			@Override
 			public void run() {
 				IStructuredSelection selection = viewer.getStructuredSelection();
-				WizardDialog dialog = new WizardDialog(null, new NewWizard(selection));
-				dialog.open();
+				new WizardDialog(null, new NewWizard(selection)).open();
 				refreshView();
 			}
 		};
-		addProblemAction.setText("Add");
-		addProblemAction.setToolTipText("Add a problem / group");
-		addProblemAction.setImageDescriptor(
+		addItemAction.setText("Add");
+		addItemAction.setToolTipText("Add a problem / group");
+		addItemAction.setImageDescriptor(
 			PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 
 		doubleClickAction = new Action() {
@@ -178,7 +184,10 @@ public class ContestsView extends ViewPart {
 			public void run() {
 				IStructuredSelection selection = viewer.getStructuredSelection();
 				Object obj = selection.getFirstElement();
-				showMessage("Double-click detected on " + obj.toString());
+				if (obj == null || !(obj instanceof IPath)) {
+					obj = ContestManager.getRootPath();
+				}
+				ContestManager.openDirectory((IPath) obj);
 			}
 		};
 	}
@@ -187,13 +196,6 @@ public class ContestsView extends ViewPart {
 		viewer.addDoubleClickListener(event -> {
 			doubleClickAction.run();
 		});
-	}
-
-	private void showMessage(String message) {
-		MessageDialog.openInformation(
-			viewer.getControl().getShell(),
-			"Sample View",
-			message);
 	}
 
 	@Override
