@@ -14,7 +14,7 @@ import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 
 public class NewWizard extends Wizard implements INewWizard {
-	private NewWizardPage page;
+	private DirectoryWizardPage page;
 	private IPath parentPath;
 
 	public NewWizard() {
@@ -38,7 +38,7 @@ public class NewWizard extends Wizard implements INewWizard {
 
 	@Override
 	public void addPages() {
-		page = new NewWizardPage(parentPath);
+		page = new DirectoryWizardPage(parentPath);
 		addPage(page);
 	}
 
