@@ -1,4 +1,4 @@
-package org.e792a8.acme.views;
+package org.e792a8.acme.ui.dashboard;
 
 import org.e792a8.acme.control.MessageBox;
 import org.eclipse.swt.SWT;
@@ -16,7 +16,7 @@ import org.eclipse.ui.part.ViewPart;
 
 public class DashboardView extends ViewPart {
 
-	public static final String ID = "org.e792a8.acme.views.DashboardView";
+	public static final String ID = "org.e792a8.acme.ui.dashboard.DashboardView";
 	private CLabel lblContestName;
 	private CLabel lblProblemTitle;
 

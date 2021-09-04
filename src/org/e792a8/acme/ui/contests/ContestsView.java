@@ -1,10 +1,9 @@
-package org.e792a8.acme.views;
+package org.e792a8.acme.ui.contests;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.e792a8.acme.control.ContestManager;
-import org.e792a8.acme.wizards.NewWizard;
 import org.e792a8.acme.workspace.DirectoryHandle;
 import org.e792a8.acme.workspace.WorkspaceParser;
 import org.eclipse.core.runtime.IPath;
@@ -32,7 +31,7 @@ import org.eclipse.ui.part.ViewPart;
 
 public class ContestsView extends ViewPart {
 
-	public static final String ID = "org.e792a8.acme.views.ContestsView";
+	public static final String ID = "org.e792a8.acme.ui.contests.ContestsView";
 
 	private TreeViewer viewer;
 	private DrillDownAdapter drillDownAdapter;

@@ -1,4 +1,4 @@
-package org.e792a8.acme.widgets;
+package org.e792a8.acme.ui.testpoints;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;

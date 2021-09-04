@@ -4,9 +4,9 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            class="org.e792a8.acme.perspectives.AcmePerspectiveFactory"
+            class="org.e792a8.acme.ui.perspectives.AcmePerspectiveFactory"
             icon="icons/codeforces-favicon-16x16.png"
-            id="org.e792a8.acme.perspectives.AcmePerspective"
+            id="org.e792a8.acme.ui.perspectives.AcmePerspective"
             name="AcmE">
       </perspective>
    </extension>
@@ -18,25 +18,25 @@
       </category>
       <view
             category="org.e792a8.acme.AcmeCategory"
-            class="org.e792a8.acme.views.TestPointsView"
+            class="org.e792a8.acme.ui.testpoints.TestPointsView"
             icon="icons/codeforces-favicon-16x16.png"
-            id="org.e792a8.acme.views.TestPointsView"
+            id="org.e792a8.acme.ui.testpoints.TestPointsView"
             inject="true"
             name="Test Points">
       </view>
       <view
             category="org.e792a8.acme.AcmeCategory"
-            class="org.e792a8.acme.views.DashboardView"
+            class="org.e792a8.acme.ui.dashboard.DashboardView"
             icon="icons/codeforces-favicon-16x16.png"
-            id="org.e792a8.acme.views.DashboardView"
+            id="org.e792a8.acme.ui.dashboard.DashboardView"
             inject="true"
             name="Dashboard">
       </view>
       <view
             category="org.e792a8.acme.AcmeCategory"
-            class="org.e792a8.acme.views.ContestsView"
+            class="org.e792a8.acme.ui.contests.ContestsView"
             icon="icons/codeforces-favicon-16x16.png"
-            id="org.e792a8.acme.views.ContestsView"
+            id="org.e792a8.acme.ui.contests.ContestsView"
             name="Contests"
             restorable="true">
       </view>
@@ -45,9 +45,9 @@
          point="org.eclipse.ui.newWizards">
       <wizard
             category="org.e792a8.acme.wizards"
-            class="org.e792a8.acme.wizards.NewWizard"
+            class="org.e792a8.acme.ui.contests.NewWizard"
             icon="icons/codeforces-favicon-16x16.png"
-            id="org.e792a8.acme.wizards.NewWizard"
+            id="org.e792a8.acme.ui.contests.NewWizard"
             name="New">
       </wizard>
       <category

@@ -1,4 +1,4 @@
-package org.e792a8.acme.wizards;
+package org.e792a8.acme.ui.contests;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.wizard.WizardPage;

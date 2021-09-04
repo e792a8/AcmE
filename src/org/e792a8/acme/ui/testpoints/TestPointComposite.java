@@ -1,6 +1,5 @@
-package org.e792a8.acme.widgets;
+package org.e792a8.acme.ui.testpoints;
 
-import org.e792a8.acme.views.TestPointsView;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.layout.FillLayout;

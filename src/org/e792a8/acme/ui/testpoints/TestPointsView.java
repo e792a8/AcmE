@@ -1,7 +1,6 @@
-package org.e792a8.acme.views;
+package org.e792a8.acme.ui.testpoints;
 
 import org.e792a8.acme.control.MessageBox;
-import org.e792a8.acme.widgets.TestPointComposite;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -19,7 +18,7 @@ import org.eclipse.ui.part.ViewPart;
 
 public class TestPointsView extends ViewPart {
 
-	public static final String ID = "org.e792a8.acme.views.TestPointsView";
+	public static final String ID = "org.e792a8.acme.ui.testpoints.TestPointsView";
 	private Composite testsArea;
 	private ScrolledComposite scrolledComposite;
 

@@ -1,8 +1,8 @@
-package org.e792a8.acme.perspectives;
+package org.e792a8.acme.ui.perspectives;
 
-import org.e792a8.acme.views.ContestsView;
-import org.e792a8.acme.views.DashboardView;
-import org.e792a8.acme.views.TestPointsView;
+import org.e792a8.acme.ui.contests.ContestsView;
+import org.e792a8.acme.ui.dashboard.DashboardView;
+import org.e792a8.acme.ui.testpoints.TestPointsView;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;

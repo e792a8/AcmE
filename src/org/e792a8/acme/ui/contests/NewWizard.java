@@ -1,4 +1,4 @@
-package org.e792a8.acme.wizards;
+package org.e792a8.acme.ui.contests;
 
 import java.util.LinkedList;
 
