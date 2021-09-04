@@ -85,7 +85,6 @@ public class DirectoryWizardPage extends WizardPage {
 		nameText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		nameText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		nameText.addModifyListener(e -> dialogChanged(e));
-		nameText.setData("ID", "NAME");
 
 		Label lblPath = new Label(container, SWT.NULL);
 		lblPath.setText("Path");
@@ -93,7 +92,6 @@ public class DirectoryWizardPage extends WizardPage {
 		pathText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		pathText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		pathText.addModifyListener(e -> dialogChanged(e));
-		pathText.setData("ID", "PATH");
 
 		Label lblUrl = new Label(container, SWT.NULL);
 		lblUrl.setText("URL");
