@@ -23,6 +23,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
@@ -37,6 +38,23 @@ public class ContestsView extends ViewPart {
 	private DrillDownAdapter drillDownAdapter;
 	private Action addItemAction;
 	private Action doubleClickAction;
+	private IPath lastSelectedDirectory;
+	private final ISelectionListener selectionChangedListener = (part, selection) -> {
+		if (part == ContestsView.this) {
+			if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
+				DirectoryHandle handle = ContestManager
+					.readDirectory((IPath) ((IStructuredSelection) selection).getFirstElement());
+				if (handle != null) {
+					lastSelectedDirectory = handle.absPath;
+				} else {
+					lastSelectedDirectory = null;
+				}
+			} else {
+				lastSelectedDirectory = ContestManager.getRootPath();
+			}
+			return;
+		}
+	};
 
 	class ViewContentProvider implements ITreeContentProvider {
 		private IPath invisibleRoot;
@@ -132,11 +150,7 @@ public class ContestsView extends ViewPart {
 
 	private void contributeToActionBars() {
 		IActionBars bars = getViewSite().getActionBars();
-		fillLocalPullDown(bars.getMenuManager());
 		fillLocalToolBar(bars.getToolBarManager());
-	}
-
-	private void fillLocalPullDown(IMenuManager manager) {
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
@@ -181,12 +195,7 @@ public class ContestsView extends ViewPart {
 		doubleClickAction = new Action() {
 			@Override
 			public void run() {
-				IStructuredSelection selection = viewer.getStructuredSelection();
-				Object obj = selection.getFirstElement();
-				if (obj == null || !(obj instanceof IPath)) {
-					obj = ContestManager.getRootPath();
-				}
-				ContestManager.openDirectory((IPath) obj);
+				ContestManager.openDirectory(lastSelectedDirectory);
 			}
 		};
 	}
