@@ -1,6 +1,5 @@
 package org.e792a8.acme.ui.dashboard;
 
-import org.e792a8.acme.control.MessageBox;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.layout.FillLayout;
@@ -96,13 +95,10 @@ public class DashboardView extends ViewPart {
 		btnClear.setText("Clear");
 
 		btnClear.addListener(SWT.MouseDown, event -> {
-			MessageBox.clear();
 		});
 
 		MessageConsole console = new MessageConsole("Messages", null);
 		TextConsoleViewer consoleViewer = new TextConsoleViewer(messages, console);
-
-		MessageBox.setBox(console);
 
 	}
 

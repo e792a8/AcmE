@@ -3,41 +3,41 @@ package org.e792a8.acme.control;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
+import org.e792a8.acme.ui.editors.CodeEditor;
+import org.e792a8.acme.ui.testpoints.TestPointsView;
 import org.e792a8.acme.workspace.DirectoryHandle;
 import org.e792a8.acme.workspace.SolutionHandle;
 import org.e792a8.acme.workspace.TestPointHandle;
 import org.e792a8.acme.workspace.WorkspaceParser;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jface.action.Action;
 
 public class ContestManager {
 
 	private static DirectoryHandle currentDirectory;
-	public static List<Action> directoryOpenActions = new LinkedList<>();
-	public static List<Action> directoryCloseActions = new LinkedList<>();
 
 	public static IPath getRootPath() {
 		return WorkspaceParser.getRoot();
 	}
 
 	public static DirectoryHandle openDirectory(IPath path) {
-		currentDirectory = readDirectory(path);
-		Iterator<Action> it = directoryOpenActions.iterator();
-		while (it.hasNext()) {
-			it.next().run();
+		if (currentDirectory != null) {
+			closeDirectory();
 		}
+		DirectoryHandle handle = readDirectory(path);
+		if (!"problem".equals(handle.type)) {
+			return currentDirectory;
+		}
+		currentDirectory = handle;
+		TestPointsView.loadTestPoints();
+		CodeEditor.openEditor();
 		return currentDirectory;
 	}
 
 	public static void closeDirectory() {
 		writeDirectory(currentDirectory);
-		Iterator<Action> it = directoryCloseActions.iterator();
-		while (it.hasNext()) {
-			it.next().run();
-		}
+		TestPointsView.unloadTestPoints();
+		CodeEditor.closeEditor();
 		currentDirectory = null;
 	}
 
