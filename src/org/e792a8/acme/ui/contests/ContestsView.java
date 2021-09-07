@@ -3,9 +3,9 @@ package org.e792a8.acme.ui.contests;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.e792a8.acme.control.ContestManager;
-import org.e792a8.acme.workspace.DirectoryHandle;
-import org.e792a8.acme.workspace.WorkspaceParser;
+import org.e792a8.acme.core.workspace.ConfigParser;
+import org.e792a8.acme.core.workspace.DirectoryConfig;
+import org.e792a8.acme.core.workspace.WorkspaceManager;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -42,7 +42,7 @@ public class ContestsView extends ViewPart {
 	private final ISelectionListener selectionChangedListener = (part, selection) -> {
 		if (part == ContestsView.this) {
 			if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
-				DirectoryHandle handle = ContestManager
+				DirectoryConfig handle = WorkspaceManager
 					.readDirectory((IPath) ((IStructuredSelection) selection).getFirstElement());
 				if (handle != null) {
 					lastSelectedDirectory = handle.absPath;
@@ -50,7 +50,7 @@ public class ContestsView extends ViewPart {
 					lastSelectedDirectory = null;
 				}
 			} else {
-				lastSelectedDirectory = ContestManager.getRootPath();
+				lastSelectedDirectory = WorkspaceManager.getRootPath();
 			}
 			return;
 		}
@@ -71,12 +71,12 @@ public class ContestsView extends ViewPart {
 
 		@Override
 		public Object getParent(Object child) {
-			return WorkspaceParser.getParent((IPath) child);
+			return WorkspaceManager.getParent((IPath) child);
 		}
 
 		@Override
 		public Object[] getChildren(Object parent) {
-			DirectoryHandle handle = ContestManager.readDirectory((IPath) parent);
+			DirectoryConfig handle = WorkspaceManager.readDirectory((IPath) parent);
 			ArrayList<IPath> children = new ArrayList<>();
 			Iterator<String> itr = handle.children.iterator();
 			while (itr.hasNext()) {
@@ -87,14 +87,14 @@ public class ContestsView extends ViewPart {
 
 		@Override
 		public boolean hasChildren(Object parent) {
-			DirectoryHandle handle = ContestManager.readDirectory((IPath) parent);
+			DirectoryConfig handle = WorkspaceManager.readDirectory((IPath) parent);
 			if ("group".equals(handle.type) && handle.children != null && handle.children.size() > 0)
 				return true;
 			return false;
 		}
 
 		private void initialize() {
-			invisibleRoot = ContestManager.getRootPath();
+			invisibleRoot = WorkspaceManager.getRootPath();
 		}
 	}
 
@@ -102,13 +102,13 @@ public class ContestsView extends ViewPart {
 
 		@Override
 		public String getText(Object obj) {
-			return WorkspaceParser.readDirHandle((IPath) obj).name;
+			return ConfigParser.readDirConfig((IPath) obj).name;
 		}
 
 		@Override
 		public Image getImage(Object obj) {
 			String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
-			if ("group".equals(WorkspaceParser.readDirHandle((IPath) obj).type))
+			if ("group".equals(ConfigParser.readDirConfig((IPath) obj).type))
 				imageKey = ISharedImages.IMG_OBJ_FOLDER;
 			return PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
 		}
@@ -165,7 +165,7 @@ public class ContestsView extends ViewPart {
 		Action addRootItemAction = new Action() {
 			@Override
 			public void run() {
-				new WizardDialog(null, new NewWizard(ContestManager.getRootPath())).open();
+				new WizardDialog(null, new NewWizard(WorkspaceManager.getRootPath())).open();
 				refreshView();
 			}
 		};
@@ -195,7 +195,7 @@ public class ContestsView extends ViewPart {
 		doubleClickAction = new Action() {
 			@Override
 			public void run() {
-				ContestManager.openDirectory(lastSelectedDirectory);
+				// TODO
 			}
 		};
 	}

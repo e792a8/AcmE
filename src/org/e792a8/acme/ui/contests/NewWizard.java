@@ -2,11 +2,10 @@ package org.e792a8.acme.ui.contests;
 
 import java.util.LinkedList;
 
-import org.e792a8.acme.control.ContestManager;
-import org.e792a8.acme.workspace.DirectoryHandle;
-import org.e792a8.acme.workspace.SolutionHandle;
-import org.e792a8.acme.workspace.TestPointHandle;
-import org.e792a8.acme.workspace.WorkspaceParser;
+import org.e792a8.acme.core.workspace.DirectoryConfig;
+import org.e792a8.acme.core.workspace.SolutionConfig;
+import org.e792a8.acme.core.workspace.TestPointConfig;
+import org.e792a8.acme.core.workspace.WorkspaceManager;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
@@ -32,7 +31,7 @@ public class NewWizard extends Wizard implements INewWizard {
 		setNeedsProgressMonitor(true);
 		parentPath = (IPath) selection.getFirstElement();
 		if (parentPath == null) {
-			parentPath = WorkspaceParser.getRoot();
+			parentPath = WorkspaceManager.getRootPath();
 		}
 	}
 
@@ -62,10 +61,10 @@ public class NewWizard extends Wizard implements INewWizard {
 			path += i;
 			name += " (" + i + ")";
 		}
-		DirectoryHandle parentHandle = ContestManager.readDirectory(parentPath);
+		DirectoryConfig parentHandle = WorkspaceManager.readDirectory(parentPath);
 		parentHandle.children.add(path);
-		ContestManager.writeDirectory(parentHandle);
-		DirectoryHandle handle = new DirectoryHandle();
+		WorkspaceManager.writeDirectory(parentHandle);
+		DirectoryConfig handle = new DirectoryConfig();
 		handle.absPath = parentPath.append(path);
 		handle.name = name;
 		handle.url = url;
@@ -74,24 +73,24 @@ public class NewWizard extends Wizard implements INewWizard {
 			handle.children = new LinkedList<>();
 		} else {
 			handle.solutions = new LinkedList<>();
-			SolutionHandle sol = new SolutionHandle();
+			SolutionConfig sol = new SolutionConfig();
 			sol.lang = "cpp";
 			sol.path = "sol.cpp";
 			handle.solutions.add(sol);
 			handle.testPoints = new LinkedList<>();
-			TestPointHandle test = new TestPointHandle();
+			TestPointConfig test = new TestPointConfig();
 			test.in = "in1.txt";
 			test.ans = "ans1.txt";
 			handle.testPoints.add(test);
 		}
-		ContestManager.writeDirectory(handle);
+		WorkspaceManager.writeDirectory(handle);
 	}
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		parentPath = (IPath) selection.getFirstElement();
 		if (parentPath == null) {
-			parentPath = WorkspaceParser.getRoot();
+			parentPath = WorkspaceManager.getRootPath();
 		}
 	}
 }

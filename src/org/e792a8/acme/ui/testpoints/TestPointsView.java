@@ -1,14 +1,5 @@
 package org.e792a8.acme.ui.testpoints;
 
-import java.io.File;
-import java.util.Iterator;
-import java.util.List;
-
-import org.e792a8.acme.control.ContestManager;
-import org.e792a8.acme.utils.TextFile;
-import org.e792a8.acme.workspace.DirectoryHandle;
-import org.e792a8.acme.workspace.TestPointHandle;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -36,49 +27,11 @@ public class TestPointsView extends ViewPart {
 	}
 
 	private void readTestPointFiles() {
-		DirectoryHandle handle = ContestManager.getCurrentDirectory();
-		IPath path = handle.absPath;
-		if ("problem".equals(handle.type)) {
-			List<TestPointHandle> list = handle.testPoints;
-			TestPointComposite[] comps = (TestPointComposite[]) testsArea.getChildren();
-			int len = comps.length;
-			while (len < list.size()) {
-				++len;
-				addTestPoint();
-			}
-			while (len > list.size()) {
-				--len;
-				removeTestPoint(0);
-			}
-			comps = (TestPointComposite[]) testsArea.getChildren();
-			Iterator<TestPointHandle> it = list.iterator();
-			len = 0;
-			while (it.hasNext()) {
-				TestPointHandle h = it.next();
-				File f = path.append(h.in).toFile();
-				comps[len].setInput(TextFile.read(f, 4096));
-				f = path.append(h.ans).toFile();
-				comps[len].setAnswer(TextFile.read(f, 4096));
-				++len;
-			}
-		}
+		// TODO
 	}
 
 	private void writeTestPointFiles() {
-		DirectoryHandle handle = ContestManager.getCurrentDirectory();
-		IPath path = handle.absPath;
-		if ("problem".equals(handle.type)) {
-			List<TestPointHandle> testHandles = handle.testPoints;
-			TestPointComposite[] comps = (TestPointComposite[]) testsArea.getChildren();
-			int len = 0;
-			Iterator<TestPointHandle> it = testHandles.iterator();
-			while (it.hasNext()) {
-				TestPointHandle h = it.next();
-				TextFile.write(path.append(h.in).toFile(), comps[len].getInput());
-				TextFile.write(path.append(h.ans).toFile(), comps[len].getAnswer());
-				++len;
-			}
-		}
+		// TODO
 	}
 
 	public static void loadTestPoints() {
