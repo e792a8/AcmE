@@ -6,8 +6,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class TextFile {
+public class FileSystem {
 	private static final int BUFSIZE = 4096;
+	private static final int TEMP_DIR_ATTEMPTS = 4096;
 
 	public static String read(File file, int length) {
 		FileReader freader = null;
@@ -76,5 +77,17 @@ public class TextFile {
 			return false;
 		}
 		return true;
+	}
+
+	public static File createTempDir() {
+		File baseDir = new File(System.getProperty("java.io.tmpdir"));
+		String baseName = System.currentTimeMillis() + "-";
+		for (int counter = 0; counter < TEMP_DIR_ATTEMPTS; counter++) {
+			File tempDir = new File(baseDir, baseName + counter);
+			if (tempDir.mkdir()) {
+				return tempDir;
+			}
+		}
+		return null;
 	}
 }

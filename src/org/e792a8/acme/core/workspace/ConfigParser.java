@@ -23,7 +23,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class ConfigParser {
+class ConfigParser {
 
 	private static DocumentBuilder docBuilder;
 	private static Transformer transformer;
@@ -119,6 +119,7 @@ public class ConfigParser {
 			handle.solutions = new LinkedList<>();
 			for (int i = 0; i < solutions.getLength(); ++i) {
 				SolutionConfig sol = new SolutionConfig();
+				sol.dirPath = absPath;
 				sol.lang = ((Element) solutions.item(i)).getAttribute("lang");
 				sol.path = ((Element) solutions.item(i)).getAttribute("path");
 				handle.solutions.add(sol);
@@ -127,6 +128,7 @@ public class ConfigParser {
 			handle.testPoints = new LinkedList<>();
 			for (int i = 0; i < tests.getLength(); ++i) {
 				TestPointConfig test = new TestPointConfig();
+				test.dirPath = absPath;
 				test.in = ((Element) tests.item(i)).getAttribute("in");
 				test.ans = ((Element) tests.item(i)).getAttribute("ans");
 				handle.testPoints.add(test);

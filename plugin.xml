@@ -4,9 +4,9 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            class="org.e792a8.acme.ui.perspectives.AcmePerspectiveFactory"
+            class="org.e792a8.acme.ui.perspective.AcmePerspectiveFactory"
             icon="icons/codeforces-favicon-16x16.png"
-            id="org.e792a8.acme.ui.perspectives.AcmePerspective"
+            id="org.e792a8.acme.ui.perspective.AcmePerspective"
             name="AcmE">
       </perspective>
    </extension>

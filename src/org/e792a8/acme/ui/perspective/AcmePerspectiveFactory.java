@@ -1,4 +1,4 @@
-package org.e792a8.acme.ui.perspectives;
+package org.e792a8.acme.ui.perspective;
 
 import org.e792a8.acme.ui.contests.ContestsView;
 import org.e792a8.acme.ui.dashboard.DashboardView;
@@ -10,7 +10,7 @@ import org.eclipse.ui.IPerspectiveFactory;
 
 public class AcmePerspectiveFactory implements IPerspectiveFactory {
 
-	public static final String ID = "org.e792a8.acme.perspectives.AcmePerspective";
+	public static final String ID = "org.e792a8.acme.perspective.AcmePerspective";
 	private IPageLayout factory;
 
 	public AcmePerspectiveFactory() {
@@ -68,7 +68,7 @@ public class AcmePerspectiveFactory implements IPerspectiveFactory {
 
 	private void addPerspectiveShortcuts() {
 		final String[] perspectiveShortcuts = {
-			"org.e792a8.acme.perspectives.AcmePerspective",
+			ID,
 		};
 		for (String s : perspectiveShortcuts) {
 			factory.addPerspectiveShortcut(s);

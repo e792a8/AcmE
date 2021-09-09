@@ -8,6 +8,12 @@ import java.util.List;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 
+/**
+ * Handles workspace directories and files.
+ * 
+ * Responsible for ensuring configs and files are consistent and legal.
+ * 
+ */
 public class WorkspaceManager {
 	public static boolean checkConfigConsistence(DirectoryConfig handle) {
 		if (handle == null) {
