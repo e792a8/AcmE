@@ -90,4 +90,15 @@ public class FileSystem {
 		}
 		return null;
 	}
+
+	public static void rmDir(File file) {
+		if (file.exists()) {
+			if (file.isDirectory()) {
+				for (File f : file.listFiles()) {
+					rmDir(f);
+				}
+			}
+			file.delete();
+		}
+	}
 }

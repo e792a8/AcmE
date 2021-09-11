@@ -31,7 +31,7 @@ public class NewWizard extends Wizard implements INewWizard {
 		setNeedsProgressMonitor(true);
 		parentPath = (IPath) selection.getFirstElement();
 		if (parentPath == null) {
-			parentPath = WorkspaceManager.getRootPath();
+			parentPath = WorkspaceManager.readRoot().absPath;
 		}
 	}
 
@@ -90,7 +90,7 @@ public class NewWizard extends Wizard implements INewWizard {
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
 		parentPath = (IPath) selection.getFirstElement();
 		if (parentPath == null) {
-			parentPath = WorkspaceManager.getRootPath();
+			parentPath = WorkspaceManager.readRoot().absPath;
 		}
 	}
 }

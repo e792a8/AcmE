@@ -53,6 +53,6 @@ class ContestsViewContentProvider implements ITreeContentProvider {
 	}
 
 	private void initialize() {
-		invisibleRoot = WorkspaceManager.getRootPath();
+		invisibleRoot = WorkspaceManager.readRoot().absPath;
 	}
 }

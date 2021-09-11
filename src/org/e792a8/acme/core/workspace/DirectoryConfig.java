@@ -9,6 +9,7 @@ public class DirectoryConfig {
 	public String type;
 	public String name;
 	public String url;
+	public JudgeConfig judge;
 	public List<String> children;
 	public List<SolutionConfig> solutions;
 	public List<TestPointConfig> testPoints;

@@ -115,6 +115,10 @@ class ConfigParser {
 				handle.children.add(((Element) children.item(i)).getAttribute("path"));
 			}
 		} else if ("problem".equals(handle.type)) {
+			Element judgeElem = (Element) elem.getElementsByTagName("judge").item(0);
+			handle.judge = new JudgeConfig();
+			handle.judge.type = judgeElem.getAttribute("type");
+			// TODO JudgeConfig attributes for other types
 			NodeList solutions = elem.getElementsByTagName("solution");
 			handle.solutions = new LinkedList<>();
 			for (int i = 0; i < solutions.getLength(); ++i) {
@@ -159,6 +163,10 @@ class ConfigParser {
 				elem.appendChild(child);
 			}
 		} else if ("problem".equals(handle.type)) {
+			Element j = doc.createElement("judge");
+			j.setAttribute("type", handle.judge.type);
+			// TODO handle attributes for other types of judge
+			elem.appendChild(j);
 			Iterator<SolutionConfig> itrS = handle.solutions.iterator();
 			while (itrS.hasNext()) {
 				SolutionConfig sol = itrS.next();

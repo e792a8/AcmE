@@ -43,7 +43,7 @@ public class ContestsView extends ViewPart {
 					lastSelectedDirectory = null;
 				}
 			} else {
-				lastSelectedDirectory = WorkspaceManager.getRootPath();
+				lastSelectedDirectory = WorkspaceManager.readRoot().absPath;
 			}
 			return;
 		}
@@ -100,7 +100,7 @@ public class ContestsView extends ViewPart {
 		Action addRootItemAction = new Action() {
 			@Override
 			public void run() {
-				new WizardDialog(null, new NewWizard(WorkspaceManager.getRootPath())).open();
+				new WizardDialog(null, new NewWizard(WorkspaceManager.readRoot().absPath)).open();
 				refreshView();
 			}
 		};
