@@ -14,8 +14,8 @@ abstract class ATestRunner implements Runnable {
 	public ATestRunner(TestPointConfig testConf) {
 		testPointConfig = testConf;
 		finished = false;
-		inputFile = testConf.dirPath.append(testConf.in).toFile();
-		answerFile = testConf.dirPath.append(testConf.ans).toFile();
+		inputFile = testConf.directory.absPath.append(testConf.in).toFile();
+		answerFile = testConf.directory.absPath.append(testConf.ans).toFile();
 	}
 
 	/**

@@ -7,7 +7,6 @@ import org.e792a8.acme.core.runner.judge.AJudge;
 import org.e792a8.acme.core.runner.judge.StrictJudge;
 import org.e792a8.acme.core.runner.pipeline.ARunner;
 import org.e792a8.acme.core.runner.pipeline.CppRunner;
-import org.e792a8.acme.core.workspace.DirectoryConfig;
 import org.e792a8.acme.core.workspace.JudgeConfig;
 import org.e792a8.acme.core.workspace.SolutionConfig;
 import org.e792a8.acme.core.workspace.TestPointConfig;
@@ -20,15 +19,14 @@ import org.e792a8.acme.core.workspace.TestPointConfig;
  *
  */
 public class RunnerFactory {
-	public static final ARunner createRunner(DirectoryConfig dirConf, SolutionConfig solConf, TestPointConfig tpConf) {
+	public static final ARunner createRunner(SolutionConfig solConf, TestPointConfig tpConf) {
 		List<TestPointConfig> confs = new LinkedList<>();
 		confs.add(tpConf);
-		return createRunner(dirConf, solConf, confs);
+		return createRunner(solConf, confs);
 	}
 
-	public static final ARunner createRunner(DirectoryConfig dirConf, SolutionConfig solConf,
-		List<TestPointConfig> tpConfs) {
-		AJudge judge = createJudge(dirConf.judge);
+	public static final ARunner createRunner(SolutionConfig solConf, List<TestPointConfig> tpConfs) {
+		AJudge judge = createJudge(solConf.directory.judge);
 		return createPipeline(solConf, tpConfs, judge);
 	}
 

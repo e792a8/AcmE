@@ -28,7 +28,7 @@ public class CppRunner extends ARunner {
 		public void run() {
 			TestResult res = new TestResult();
 			Runtime rt = Runtime.getRuntime();
-			String sourcePath = solutionConfig.dirPath.append(solutionConfig.path).toOSString();
+			String sourcePath = solutionConfig.directory.absPath.append(solutionConfig.path).toOSString();
 			String executablePath = FileSystem.createTempDir() + File.separator + "sol.exe";
 			String[] compileCmd = {
 				"g++",

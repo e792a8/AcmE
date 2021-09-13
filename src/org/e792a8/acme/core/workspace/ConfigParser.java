@@ -120,19 +120,16 @@ class ConfigParser {
 			handle.judge.type = judgeElem.getAttribute("type");
 			// TODO JudgeConfig attributes for other types
 			NodeList solutions = elem.getElementsByTagName("solution");
-			handle.solutions = new LinkedList<>();
-			for (int i = 0; i < solutions.getLength(); ++i) {
-				SolutionConfig sol = new SolutionConfig();
-				sol.dirPath = absPath;
-				sol.lang = ((Element) solutions.item(i)).getAttribute("lang");
-				sol.path = ((Element) solutions.item(i)).getAttribute("path");
-				handle.solutions.add(sol);
-			}
+			SolutionConfig sol = new SolutionConfig();
+			sol.directory = handle;
+			sol.lang = ((Element) solutions.item(0)).getAttribute("lang");
+			sol.path = ((Element) solutions.item(0)).getAttribute("path");
+			handle.solution = sol;
 			NodeList tests = elem.getElementsByTagName("test");
 			handle.testPoints = new LinkedList<>();
 			for (int i = 0; i < tests.getLength(); ++i) {
 				TestPointConfig test = new TestPointConfig();
-				test.dirPath = absPath;
+				test.directory = handle;
 				test.in = ((Element) tests.item(i)).getAttribute("in");
 				test.ans = ((Element) tests.item(i)).getAttribute("ans");
 				handle.testPoints.add(test);
@@ -167,18 +164,15 @@ class ConfigParser {
 			j.setAttribute("type", handle.judge.type);
 			// TODO handle attributes for other types of judge
 			elem.appendChild(j);
-			Iterator<SolutionConfig> itrS = handle.solutions.iterator();
-			while (itrS.hasNext()) {
-				SolutionConfig sol = itrS.next();
-				Element e = doc.createElement("solution");
-				e.setAttribute("lang", sol.lang);
-				e.setAttribute("path", sol.path);
-				elem.appendChild(e);
-			}
+			SolutionConfig sol = handle.solution;
+			Element e = doc.createElement("solution");
+			e.setAttribute("lang", sol.lang);
+			e.setAttribute("path", sol.path);
+			elem.appendChild(e);
 			Iterator<TestPointConfig> itrT = handle.testPoints.iterator();
 			while (itrT.hasNext()) {
 				TestPointConfig test = itrT.next();
-				Element e = doc.createElement("test");
+				e = doc.createElement("test");
 				e.setAttribute("in", test.in);
 				e.setAttribute("ans", test.ans);
 				elem.appendChild(e);

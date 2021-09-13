@@ -11,6 +11,6 @@ public class DirectoryConfig {
 	public String url;
 	public JudgeConfig judge;
 	public List<String> children;
-	public List<SolutionConfig> solutions;
+	public SolutionConfig solution; // currently we do not support multi-solutions
 	public List<TestPointConfig> testPoints;
 }

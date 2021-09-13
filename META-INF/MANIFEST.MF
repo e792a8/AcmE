@@ -13,7 +13,8 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.console,
  org.eclipse.ui.forms,
  org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.eclipse.jface.text
 Bundle-RequiredExecutionEnvironment: JavaSE-16
 Automatic-Module-Name: acme.singleton.true
 Bundle-ActivationPolicy: lazy

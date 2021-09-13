@@ -31,11 +31,8 @@ public class WorkspaceManager {
 			}
 			return true;
 		} else if ("problem".equals(handle.type)) {
-			Iterator<SolutionConfig> itrS = handle.solutions.iterator();
-			while (itrS.hasNext()) {
-				if (!path.append(itrS.next().path).toFile().isFile()) {
-					return false;
-				}
+			if (!path.append(handle.solution.path).toFile().isFile()) {
+				return false;
 			}
 			Iterator<TestPointConfig> itrT = handle.testPoints.iterator();
 			while (itrT.hasNext()) {
@@ -80,25 +77,21 @@ public class WorkspaceManager {
 			if ("strict".equals(jConf.type)) {
 			}
 			// TODO other types of judge
-			List<SolutionConfig> sConfs = config.solutions;
-			Iterator<SolutionConfig> it1 = sConfs.iterator();
-			while (it1.hasNext()) {
-				File f = dir.append(it1.next().path).toFile();
-				if (!f.isFile()) {
-					FileSystem.rmDir(f);
-					try {
-						f.createNewFile();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+			File f = dir.append(config.solution.path).toFile();
+			if (!f.isFile()) {
+				FileSystem.rmDir(f);
+				try {
+					f.createNewFile();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 			List<TestPointConfig> tpConfs = config.testPoints;
 			Iterator<TestPointConfig> it2 = tpConfs.iterator();
 			while (it2.hasNext()) {
 				TestPointConfig c = it2.next();
-				File f = dir.append(c.in).toFile();
+				f = dir.append(c.in).toFile();
 				if (!f.isFile()) {
 					FileSystem.rmDir(f);
 					try {
@@ -154,17 +147,16 @@ public class WorkspaceManager {
 			config.type = "problem";
 			config.name = "Default problem";
 			config.judge = new JudgeConfig();
-			config.judge.dirPath = absPath;
+			config.judge.directory = config;
 			config.judge.type = "strict";
-			config.solutions = new LinkedList<>();
 			SolutionConfig sc = new SolutionConfig();
-			sc.dirPath = absPath;
+			sc.directory = config;
 			sc.lang = "cpp";
 			sc.path = "sol.cpp";
-			config.solutions.add(sc);
+			config.solution = sc;
 			config.testPoints = new LinkedList<>();
 			TestPointConfig tc = new TestPointConfig();
-			tc.dirPath = absPath;
+			tc.directory = config;
 			tc.in = "in1.txt";
 			tc.ans = "ans1.txt";
 			config.testPoints.add(tc);
@@ -267,6 +259,23 @@ public class WorkspaceManager {
 		pconf.children.remove(subdir);
 		writeDirectory(pconf);
 		FileSystem.rmDir(path.toFile());
+		return true;
+	}
+
+	public static boolean deleteItem(TestPointConfig tpConf) {
+		IPath path = tpConf.directory.absPath;
+		path.append(tpConf.in).toFile().delete();
+		path.append(tpConf.ans).toFile().delete();
+		tpConf.directory.testPoints.remove(tpConf);
+		writeDirectory(tpConf.directory);
+		return true;
+	}
+
+	public static boolean deleteItem(SolutionConfig solConf) {
+		IPath path = solConf.directory.absPath;
+		path.append(solConf.path).toFile().delete();
+		solConf.directory.testPoints.remove(solConf);
+		writeDirectory(solConf.directory);
 		return true;
 	}
 }

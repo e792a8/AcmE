@@ -12,27 +12,17 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 
-public class NewWizard extends Wizard implements INewWizard {
+public class NewItemWizard extends Wizard implements INewWizard {
 	private DirectoryWizardPage page;
 	private IPath parentPath;
 
-	public NewWizard() {
+	public NewItemWizard() {
 		super();
-		setNeedsProgressMonitor(true);
 	}
 
-	public NewWizard(IPath parent) {
+	public NewItemWizard(IPath parent) {
 		super();
-		setNeedsProgressMonitor(true);
-	}
-
-	public NewWizard(IStructuredSelection selection) {
-		super();
-		setNeedsProgressMonitor(true);
-		parentPath = (IPath) selection.getFirstElement();
-		if (parentPath == null) {
-			parentPath = WorkspaceManager.readRoot().absPath;
-		}
+		this.parentPath = parent;
 	}
 
 	@Override
@@ -72,11 +62,10 @@ public class NewWizard extends Wizard implements INewWizard {
 		if (selectGroup) {
 			handle.children = new LinkedList<>();
 		} else {
-			handle.solutions = new LinkedList<>();
 			SolutionConfig sol = new SolutionConfig();
 			sol.lang = "cpp";
 			sol.path = "sol.cpp";
-			handle.solutions.add(sol);
+			handle.solution = sol;
 			handle.testPoints = new LinkedList<>();
 			TestPointConfig test = new TestPointConfig();
 			test.in = "in1.txt";

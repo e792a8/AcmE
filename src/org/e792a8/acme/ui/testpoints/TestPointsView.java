@@ -1,5 +1,7 @@
 package org.e792a8.acme.ui.testpoints;
 
+import org.e792a8.acme.core.workspace.DirectoryConfig;
+import org.e792a8.acme.core.workspace.TestPointConfig;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -18,28 +20,19 @@ import org.eclipse.ui.part.ViewPart;
 public class TestPointsView extends ViewPart {
 
 	public static final String ID = "org.e792a8.acme.ui.testpoints.TestPointsView";
-	private static TestPointsView INSTANCE;
-	private Composite testsArea;
+	Composite testsArea;
 	private ScrolledComposite scrolledComposite;
+	Button btnAdd;
+	Button btnRunAll;
+	private final Controller controller = new Controller(this);
+	private DirectoryConfig directory;
 
-	public TestPointsView() {
-		INSTANCE = this;
+	public void setDirectory(DirectoryConfig config) {
+		directory = config;
 	}
 
-	private void readTestPointFiles() {
-		// TODO
-	}
-
-	private void writeTestPointFiles() {
-		// TODO
-	}
-
-	public static void loadTestPoints() {
-		INSTANCE.readTestPointFiles();
-	}
-
-	public static void unloadTestPoints() {
-		INSTANCE.writeTestPointFiles();
+	public DirectoryConfig getDirectory() {
+		return directory;
 	}
 
 	public void refresh() {
@@ -47,8 +40,8 @@ public class TestPointsView extends ViewPart {
 		updateSize();
 	}
 
-	public void addTestPoint() {
-		new TestPointComposite(testsArea, SWT.NONE, this, testsArea.getChildren().length + 1);
+	void addTestPoint(TestPointConfig config) {
+		new TestPointComposite(testsArea, SWT.NONE, this, config, testsArea.getChildren().length + 1);
 		refresh();
 	}
 
@@ -59,16 +52,6 @@ public class TestPointsView extends ViewPart {
 			((TestPointComposite) (controls[j])).setIndex(j + 1);
 		}
 		refresh();
-	}
-
-	public void runAllTests() {
-	}
-
-	private void updateSize() {
-		ScrollBar bar = scrolledComposite.getVerticalBar();
-		testsArea.setSize(testsArea.computeSize(
-			scrolledComposite.getSize().x - (bar != null && bar.isVisible() ? bar.getSize().x : 0),
-			SWT.DEFAULT));
 	}
 
 	@Override
@@ -114,17 +97,13 @@ public class TestPointsView extends ViewPart {
 		rl_buttonsArea.center = true;
 		buttonsArea.setLayout(rl_buttonsArea);
 
-		Button btnAdd = new Button(buttonsArea, SWT.NONE);
+		btnAdd = new Button(buttonsArea, SWT.NONE);
 		btnAdd.setText("Add");
-		btnAdd.addListener(SWT.MouseDown, event -> {
-			addTestPoint();
-		});
+		btnAdd.addListener(SWT.MouseDown, controller.new AddTestPointAction());
 
-		Button btnRunAll = new Button(buttonsArea, SWT.NONE);
+		btnRunAll = new Button(buttonsArea, SWT.NONE);
 		btnRunAll.setText("Run All");
-		btnRunAll.addListener(SWT.MouseDown, event -> {
-			runAllTests();
-		});
+		btnRunAll.addListener(SWT.MouseDown, controller.new RunAllTestsAction());
 
 		Composite body = new Composite(viewArea, SWT.NONE);
 		body.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -147,5 +126,12 @@ public class TestPointsView extends ViewPart {
 		cl_testsArea.maxNumColumns = 4;
 		testsArea.setLayout(cl_testsArea);
 
+	}
+
+	private void updateSize() {
+		ScrollBar bar = scrolledComposite.getVerticalBar();
+		testsArea.setSize(testsArea.computeSize(
+			scrolledComposite.getSize().x - (bar != null && bar.isVisible() ? bar.getSize().x : 0),
+			SWT.DEFAULT));
 	}
 }

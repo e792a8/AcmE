@@ -11,6 +11,7 @@ public class FileSystem {
 	private static final int TEMP_DIR_ATTEMPTS = 4096;
 
 	public static String read(File file, int length) {
+		// FIXME don't know how to handle these
 		FileReader freader = null;
 		try {
 			freader = new FileReader(file);
@@ -67,6 +68,7 @@ public class FileSystem {
 	}
 
 	public static boolean write(File file, String content) {
+		// FIXME don't know how to handle these
 		try {
 			FileWriter fwriter = new FileWriter(file);
 			fwriter.write(content);

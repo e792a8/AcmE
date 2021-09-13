@@ -1,5 +1,6 @@
 package org.e792a8.acme.ui.testpoints;
 
+import org.e792a8.acme.core.workspace.TestPointConfig;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.layout.FillLayout;
@@ -18,6 +19,8 @@ public class TestPointComposite extends Composite {
 	private DataBlock inputBlock;
 	private DataBlock outputBlock;
 	private DataBlock answerBlock;
+	TestPointConfig testPointConfig;
+	CompositeController controller;
 
 	void remove() {
 		parentView.removeTestPoint(index);
@@ -58,15 +61,21 @@ public class TestPointComposite extends Composite {
 		lblTest.setText("Test " + index);
 	}
 
+	public TestPointConfig getConfig() {
+		return testPointConfig;
+	}
+
 	/**
 	 * Create the composite.
 	 * 
 	 * @param parent
 	 * @param style
 	 */
-	public TestPointComposite(Composite parent, int style, TestPointsView view, int index) {
+	public TestPointComposite(Composite parent, int style, TestPointsView view, TestPointConfig tpConf, int index) {
 		super(parent, style);
 		parentView = view;
+		testPointConfig = tpConf;
+		controller = new CompositeController(this);
 
 		setLayout(new FillLayout(SWT.HORIZONTAL));
 
@@ -100,18 +109,15 @@ public class TestPointComposite extends Composite {
 
 		Button btnRun = new Button(controls, SWT.NONE);
 		btnRun.setText("Run");
+		btnRun.addListener(SWT.MouseDown, controller.new RunTestPointAction());
 
 		Button btnClear = new Button(controls, SWT.NONE);
 		btnClear.setText("Clear");
-		btnClear.addListener(SWT.MouseDown, event -> {
-			clear();
-		});
+		btnClear.addListener(SWT.MouseDown, controller.new ClearTestPointAction());
 
-		Button btnRemove = new Button(controls, SWT.NONE);
-		btnRemove.setText("Remove");
-		btnRemove.addListener(SWT.MouseDown, event -> {
-			remove();
-		});
+		Button btnDelete = new Button(controls, SWT.NONE);
+		btnDelete.setText("Delete");
+		btnDelete.addListener(SWT.MouseDown, controller.new DeleteTestPointAction());
 
 		Composite body = new Composite(testPointFrame, SWT.NONE);
 		body.setLayout(new FillLayout(SWT.HORIZONTAL));

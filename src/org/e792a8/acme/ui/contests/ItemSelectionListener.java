@@ -4,11 +4,11 @@ import org.e792a8.acme.core.workspace.DirectoryConfig;
 import org.e792a8.acme.core.workspace.WorkspaceManager;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 
-class ItemSelectionListener implements ISelectionListener {
+class ItemSelectionListener implements ISelectionChangedListener {
 
 	ContestsView contestsView;
 
@@ -17,20 +17,18 @@ class ItemSelectionListener implements ISelectionListener {
 	}
 
 	@Override
-	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
-		if (part == contestsView) {
-			if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
-				DirectoryConfig handle = WorkspaceManager
-					.readDirectory((IPath) ((IStructuredSelection) selection).getFirstElement());
-				if (handle != null) {
-					contestsView.lastSelectedDirectory = handle.absPath;
-				} else {
-					contestsView.lastSelectedDirectory = null;
-				}
+	public void selectionChanged(SelectionChangedEvent event) {
+		ISelection selection = event.getSelection();
+		if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
+			DirectoryConfig handle = WorkspaceManager
+				.readDirectory((IPath) ((IStructuredSelection) selection).getFirstElement());
+			if (handle != null) {
+				contestsView.lastSelectedDirectory = handle.absPath;
 			} else {
-				contestsView.lastSelectedDirectory = WorkspaceManager.readRoot().absPath;
+				contestsView.lastSelectedDirectory = null;
 			}
-			return;
+		} else {
+			contestsView.lastSelectedDirectory = WorkspaceManager.readRoot().absPath;
 		}
 	}
 

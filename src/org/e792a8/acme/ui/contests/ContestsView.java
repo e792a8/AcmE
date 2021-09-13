@@ -1,7 +1,6 @@
 package org.e792a8.acme.ui.contests;
 
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -12,7 +11,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
@@ -23,10 +21,8 @@ public class ContestsView extends ViewPart {
 
 	TreeViewer viewer;
 	private DrillDownAdapter drillDownAdapter;
-	private Action addItemAction;
-	private Action doubleClickAction;
 	IPath lastSelectedDirectory;
-	private final ISelectionListener selectionChangedListener = new ItemSelectionListener(this);
+	private final Controller controller = new Controller(this);
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -38,9 +34,8 @@ public class ContestsView extends ViewPart {
 		viewer.setLabelProvider(new ContestsViewLabelProvider(this));
 
 		getSite().setSelectionProvider(viewer);
-		makeActions();
 		hookContextMenu();
-		hookDoubleClickAction();
+		hookClickEvents();
 		contributeToActionBars();
 	}
 
@@ -68,7 +63,7 @@ public class ContestsView extends ViewPart {
 	}
 
 	private void fillContextMenu(IMenuManager manager) {
-		manager.add(addItemAction);
+		manager.add(controller.new AddItemAction());
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
@@ -76,21 +71,14 @@ public class ContestsView extends ViewPart {
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager) {
-		Action addRootItemAction = new AddRootItemAction(this);
-		manager.add(addRootItemAction);
+		manager.add(controller.new AddRootItemAction());
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 	}
 
-	private void makeActions() {
-		addItemAction = new AddItemAction(this);
-		doubleClickAction = new DoubleClickAction(this);
-	}
-
-	private void hookDoubleClickAction() {
-		viewer.addDoubleClickListener(event -> {
-			doubleClickAction.run();
-		});
+	private void hookClickEvents() {
+		viewer.addPostSelectionChangedListener(new ItemSelectionListener(this));
+		viewer.addDoubleClickListener(controller.new DoubleClickAction());
 	}
 
 	@Override
