@@ -1,7 +1,5 @@
 package org.e792a8.acme.ui.contests;
 
-import org.e792a8.acme.core.workspace.DirectoryConfig;
-import org.e792a8.acme.core.workspace.WorkspaceManager;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -9,17 +7,13 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionListener;
-import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 
@@ -27,27 +21,12 @@ public class ContestsView extends ViewPart {
 
 	public static final String ID = "org.e792a8.acme.ui.contests.ContestsView";
 
-	private TreeViewer viewer;
+	TreeViewer viewer;
 	private DrillDownAdapter drillDownAdapter;
 	private Action addItemAction;
 	private Action doubleClickAction;
-	private IPath lastSelectedDirectory;
-	private final ISelectionListener selectionChangedListener = (part, selection) -> {
-		if (part == ContestsView.this) {
-			if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
-				DirectoryConfig handle = WorkspaceManager
-					.readDirectory((IPath) ((IStructuredSelection) selection).getFirstElement());
-				if (handle != null) {
-					lastSelectedDirectory = handle.absPath;
-				} else {
-					lastSelectedDirectory = null;
-				}
-			} else {
-				lastSelectedDirectory = WorkspaceManager.readRoot().absPath;
-			}
-			return;
-		}
-	};
+	IPath lastSelectedDirectory;
+	private final ISelectionListener selectionChangedListener = new ItemSelectionListener(this);
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -97,42 +76,15 @@ public class ContestsView extends ViewPart {
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager) {
-		Action addRootItemAction = new Action() {
-			@Override
-			public void run() {
-				new WizardDialog(null, new NewWizard(WorkspaceManager.readRoot().absPath)).open();
-				refreshView();
-			}
-		};
-		addRootItemAction.setText("Add");
-		addRootItemAction.setToolTipText("Add a problem / group under root");
-		addRootItemAction.setImageDescriptor(
-			PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		Action addRootItemAction = new AddRootItemAction(this);
 		manager.add(addRootItemAction);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 	}
 
 	private void makeActions() {
-		addItemAction = new Action() {
-			@Override
-			public void run() {
-				IStructuredSelection selection = viewer.getStructuredSelection();
-				new WizardDialog(null, new NewWizard(selection)).open();
-				refreshView();
-			}
-		};
-		addItemAction.setText("Add");
-		addItemAction.setToolTipText("Add a problem / group");
-		addItemAction.setImageDescriptor(
-			PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-
-		doubleClickAction = new Action() {
-			@Override
-			public void run() {
-				// TODO
-			}
-		};
+		addItemAction = new AddItemAction(this);
+		doubleClickAction = new DoubleClickAction(this);
 	}
 
 	private void hookDoubleClickAction() {
