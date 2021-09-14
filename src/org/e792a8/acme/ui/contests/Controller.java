@@ -1,6 +1,11 @@
 package org.e792a8.acme.ui.contests;
 
+import java.io.File;
+
+import org.e792a8.acme.core.workspace.DirectoryConfig;
 import org.e792a8.acme.core.workspace.WorkspaceManager;
+import org.e792a8.acme.ui.editor.CodeEditor;
+import org.e792a8.acme.ui.editor.CodeEditorInput;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -9,6 +14,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
 class Controller {
@@ -65,7 +71,18 @@ class Controller {
 
 		@Override
 		public void run() {
-			// TODO
+			DirectoryConfig config = WorkspaceManager.readDirectory(contestsView.lastSelectedDirectory);
+			if (!"problem".equals(config.type)) {
+				return;
+			}
+			File f = config.absPath.append(config.solution.path).toFile();
+			try {
+				PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+					.getActivePage().openEditor(new CodeEditorInput(config.solution), CodeEditor.ID);
+			} catch (PartInitException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		@Override
