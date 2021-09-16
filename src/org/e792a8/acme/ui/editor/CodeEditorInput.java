@@ -11,7 +11,7 @@ import org.eclipse.ui.model.IWorkbenchAdapter;
 
 public class CodeEditorInput implements IEditorInput, IPersistableElement {
 
-	private SolutionConfig solutionConfig;
+	SolutionConfig solutionConfig;
 	private WorkbenchAdapter workbenchAdapter = new WorkbenchAdapter();
 
 	private static class WorkbenchAdapter implements IWorkbenchAdapter {
