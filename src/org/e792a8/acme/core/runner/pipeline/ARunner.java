@@ -1,9 +1,10 @@
 package org.e792a8.acme.core.runner.pipeline;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
+import org.e792a8.acme.core.runner.IRunnerCallback;
+import org.e792a8.acme.core.runner.TestPointRequest;
 import org.e792a8.acme.core.runner.TestResult;
 import org.e792a8.acme.core.runner.judge.AJudge;
 import org.e792a8.acme.core.workspace.SolutionConfig;
@@ -19,25 +20,26 @@ import org.e792a8.acme.core.workspace.TestPointConfig;
  */
 public abstract class ARunner {
 	private SolutionConfig solutionConfig;
-	private List<TestPointConfig> testPointConfigs;
 	private AJudge judge;
 	private APreprocessor preprocessor;
-	private List<RunnerThread> runnerThreads;
+	private List<TestRunnerThread> runnerThreads;
 	private TestResult mainTestResult;
-	private List<TestResult> testResults;
 	private boolean finished;
-	private MonitorThread monitorThread;
+	private MainRunnerThread monitorThread;
+	private IRunnerCallback mainCallback;
 
-	private class RunnerThread extends Thread {
+	private class TestRunnerThread extends Thread {
 
 		protected ATestRunner runner;
 		private AJudge judge;
 		private TestResult testResult;
 		private boolean finished;
+		protected IRunnerCallback callback;
 
-		public RunnerThread(ATestRunner runner, AJudge judge) {
+		public TestRunnerThread(ATestRunner runner, AJudge judge, IRunnerCallback callback) {
 			this.runner = runner;
 			this.judge = judge;
+			this.callback = callback;
 			testResult = null;
 			finished = false;
 		}
@@ -45,6 +47,8 @@ public abstract class ARunner {
 		private void finish(TestResult res) {
 			testResult = res;
 			finished = true;
+			if (callback != null)
+				callback.finish(res);
 		}
 
 		public boolean isFinished() {
@@ -59,6 +63,8 @@ public abstract class ARunner {
 		public void run() {
 			TestResult res = null;
 			runner.run();
+			if (callback != null)
+				callback.start();
 			if (!runner.isFinished()) {
 				res = new TestResult();
 				res.resultCode = "CE";
@@ -77,24 +83,39 @@ public abstract class ARunner {
 		}
 	}
 
-	private class MonitorThread extends Thread {
+	private class MainRunnerThread extends Thread {
+
 		@Override
 		public void run() {
+			preprocessor.run();
+			TestResult res = preprocessor.getResult();
+			if (!"AC".equals(res.resultCode)) {
+				for (TestRunnerThread t : runnerThreads) {
+					if (t.callback != null)
+						t.callback.finish(null);
+				}
+				finish(res);
+				return;
+			}
+			if (mainCallback != null)
+				mainCallback.start();
+			for (TestRunnerThread t : runnerThreads) {
+				t.start();
+			}
 			boolean allFinished = false;
 			while (!allFinished) {
 				boolean notFinished = false;
-				for (int i = 0; i < runnerThreads.size(); ++i) {
-					if (!runnerThreads.get(i).isFinished()) {
-						notFinished = true;
+				for (TestRunnerThread t : runnerThreads) {
+					try {
+						t.join();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 						continue;
 					}
-					TestResult res = runnerThreads.get(i).getResult();
-					if (!"AC".equals(res.resultCode)) {
-						testResults.set(i, res);
-					} else {
-						ATestRunner r = runnerThreads.get(i).runner;
-						res = judge.judge(r.getInput(), r.getOutput(), r.getAnswer());
-						testResults.set(i, res);
+					if (!t.isFinished()) {
+						notFinished = true;
+						break;
 					}
 				}
 				if (!notFinished) {
@@ -105,38 +126,34 @@ public abstract class ARunner {
 		}
 	}
 
-	public ARunner(SolutionConfig solConf, List<TestPointConfig> tpConfs, AJudge judge) {
+	public ARunner(SolutionConfig solConf, List<TestPointRequest> requests, AJudge judge,
+		IRunnerCallback mainCallback) {
 		solutionConfig = solConf;
-		testPointConfigs = tpConfs;
+		this.mainCallback = mainCallback;
+		this.preprocessor = createPreprocessor(solConf);
 		this.judge = judge;
 		finished = false;
-		initialize();
+		initialize(requests);
 	}
 
-	private final void initialize() {
+	private final void initialize(List<TestPointRequest> requests) {
 		preprocessor = createPreprocessor(solutionConfig);
-		runnerThreads = new ArrayList<>(testPointConfigs.size());
-		testResults = new ArrayList<>(testPointConfigs.size());
-		monitorThread = new MonitorThread();
-		Iterator<TestPointConfig> it1 = testPointConfigs.iterator();
-		int i = 0;
-		while (it1.hasNext()) {
-			TestPointConfig config = it1.next();
-			runnerThreads.set(i, new RunnerThread(createTestRunner(config), judge));
-			++i;
+		runnerThreads = new LinkedList<>();
+		for (TestPointRequest req : requests) {
+			runnerThreads.add(new TestRunnerThread(createTestRunner(req.getTestPoint()), judge, req.getCallback()));
 		}
+		monitorThread = new MainRunnerThread();
 	}
 
 	private final TestResult checkResult() {
-		Iterator<TestResult> it = testResults.iterator();
-		TestResult r = null;
-		while (it.hasNext()) {
-			TestResult res = it.next();
+		TestResult res = null;
+		for (TestRunnerThread t : runnerThreads) {
+			res = t.getResult();
 			if (!"AC".equals(res.resultCode)) {
 				return res;
 			}
 		}
-		r = new TestResult();
+		TestResult r = new TestResult();
 		r.resultCode = "AC";
 		r.message = "Passed all test points";
 		return r;
@@ -151,6 +168,8 @@ public abstract class ARunner {
 	protected final void finish(TestResult mainResult) {
 		mainTestResult = mainResult;
 		finished = true;
+		if (mainCallback != null)
+			mainCallback.finish(mainResult);
 	}
 
 	public final boolean isFinished() {
@@ -158,47 +177,24 @@ public abstract class ARunner {
 	}
 
 	public final TestResult getMainResult() {
-		if (finished)
+		if (isFinished())
 			return mainTestResult;
 		return null;
 	}
 
 	public final List<TestResult> getResults() {
-		if (finished)
-			return testResults;
-		return null;
-	}
-
-	private final boolean preprocess() {
-		preprocessor.run();
-		TestResult result = null;
-		if (preprocessor.isFinished()) {
-			result = preprocessor.getResult();
+		if (!isFinished()) {
+			return null;
 		}
-		if (result == null) {
-			return false;
+		List<TestResult> results = new LinkedList<>();
+		for (TestRunnerThread t : runnerThreads) {
+			results.add(t.getResult());
 		}
-		if (!"AC".equals(result.resultCode)) {
-			finish(result);
-			return false;
-		}
-		return true;
-	}
-
-	private final boolean run() {
-		Iterator<RunnerThread> it = runnerThreads.iterator();
-		while (it.hasNext()) {
-			it.next().start();
-		}
-		monitorThread.start();
-		return true;
+		return results;
 	}
 
 	public final boolean launch() {
-		boolean res = false;
-		res = preprocess();
-		if (res)
-			res = run();
+		monitorThread.start();
 		return true;
 	}
 

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.e792a8.acme.core.runner.IRunnerCallback;
+import org.e792a8.acme.core.runner.TestPointRequest;
 import org.e792a8.acme.core.runner.TestResult;
 import org.e792a8.acme.core.runner.judge.AJudge;
 import org.e792a8.acme.core.workspace.SolutionConfig;
@@ -12,8 +14,9 @@ import org.e792a8.acme.utils.FileSystem;
 
 public class CppRunner extends ARunner {
 
-	public CppRunner(SolutionConfig solConf, List<TestPointConfig> tpConfs, AJudge judge) {
-		super(solConf, tpConfs, judge);
+	public CppRunner(SolutionConfig solConf, List<TestPointRequest> requests, AJudge judge,
+		IRunnerCallback mainCallback) {
+		super(solConf, requests, judge, mainCallback);
 	}
 
 	private String executable;

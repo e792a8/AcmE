@@ -1,6 +1,6 @@
 package org.e792a8.acme.core.runner;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.e792a8.acme.core.runner.judge.AJudge;
@@ -9,7 +9,6 @@ import org.e792a8.acme.core.runner.pipeline.ARunner;
 import org.e792a8.acme.core.runner.pipeline.CppRunner;
 import org.e792a8.acme.core.workspace.JudgeConfig;
 import org.e792a8.acme.core.workspace.SolutionConfig;
-import org.e792a8.acme.core.workspace.TestPointConfig;
 
 /**
  * 
@@ -19,15 +18,17 @@ import org.e792a8.acme.core.workspace.TestPointConfig;
  *
  */
 public class RunnerFactory {
-	public static final ARunner createRunner(SolutionConfig solConf, TestPointConfig tpConf) {
-		List<TestPointConfig> confs = new LinkedList<>();
-		confs.add(tpConf);
-		return createRunner(solConf, confs);
+	public static final ARunner createRunner(SolutionConfig solConf, TestPointRequest request,
+		IRunnerCallback mainCallback) {
+		List<TestPointRequest> req = new ArrayList<>(1);
+		req.set(0, request);
+		return createRunner(solConf, req, mainCallback);
 	}
 
-	public static final ARunner createRunner(SolutionConfig solConf, List<TestPointConfig> tpConfs) {
+	public static final ARunner createRunner(SolutionConfig solConf, List<TestPointRequest> requests,
+		IRunnerCallback mainCallback) {
 		AJudge judge = createJudge(solConf.directory.judge);
-		return createPipeline(solConf, tpConfs, judge);
+		return createPipeline(solConf, requests, judge, mainCallback);
 	}
 
 	/**
@@ -51,11 +52,11 @@ public class RunnerFactory {
 	 * @param judge  the judge to use in the pipeline
 	 * @return
 	 */
-	public static final ARunner createPipeline(SolutionConfig config, List<TestPointConfig> testPointConfigs,
-		AJudge judge) {
+	public static final ARunner createPipeline(SolutionConfig config, List<TestPointRequest> requests,
+		AJudge judge, IRunnerCallback mainCallback) {
 		String lang = config.lang;
 		if ("cpp".equals(lang)) {
-			return new CppRunner(config, testPointConfigs, judge);
+			return new CppRunner(config, requests, judge, mainCallback);
 		}
 		return null;
 	}

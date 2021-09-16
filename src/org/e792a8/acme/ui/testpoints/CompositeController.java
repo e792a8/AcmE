@@ -2,8 +2,10 @@ package org.e792a8.acme.ui.testpoints;
 
 import java.io.File;
 
+import org.e792a8.acme.core.runner.IRunnerCallback;
 import org.e792a8.acme.core.runner.RunnerFactory;
-import org.e792a8.acme.core.runner.pipeline.ARunner;
+import org.e792a8.acme.core.runner.TestPointRequest;
+import org.e792a8.acme.core.runner.TestResult;
 import org.e792a8.acme.core.workspace.TestPointConfig;
 import org.e792a8.acme.core.workspace.WorkspaceManager;
 import org.e792a8.acme.utils.FileSystem;
@@ -57,8 +59,17 @@ class CompositeController {
 		@Override
 		public void run() {
 			// TODO better ways to get solution config
-			ARunner runner = RunnerFactory.createRunner(composite.getConfig().directory.solution,
-				composite.getConfig());
+			RunnerFactory.createRunner(composite.getConfig().directory.solution,
+				getTestPointRequest(), new IRunnerCallback() {
+
+					@Override
+					public void start() {
+					}
+
+					@Override
+					public void finish(TestResult result) {
+					}
+				}).launch();
 		}
 
 		@Override
@@ -66,5 +77,23 @@ class CompositeController {
 			run();
 		}
 
+	}
+
+	public TestPointRequest getTestPointRequest() {
+		final TestPointRequest req = new TestPointRequest(composite.getConfig(), new IRunnerCallback() {
+
+			@Override
+			public void start() {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void finish(TestResult result) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		return req;
 	}
 }
