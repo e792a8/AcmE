@@ -22,7 +22,7 @@ public class ContestsView extends ViewPart {
 	TreeViewer viewer;
 	private DrillDownAdapter drillDownAdapter;
 	IPath lastSelectedDirectory;
-	private final Controller controller = new Controller(this);
+	private final ContestsViewController controller = new ContestsViewController(this);
 
 	@Override
 	public void createPartControl(Composite parent) {

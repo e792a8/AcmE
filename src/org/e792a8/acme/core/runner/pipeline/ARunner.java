@@ -81,6 +81,13 @@ public abstract class ARunner {
 			finish(res);
 			return;
 		}
+
+		@Override
+		public void interrupt() {
+			if (runner != null)
+				runner.kill();
+			super.interrupt();
+		}
 	}
 
 	private class MainRunnerThread extends Thread {
@@ -195,6 +202,16 @@ public abstract class ARunner {
 
 	public final boolean launch() {
 		monitorThread.start();
+		return true;
+	}
+
+	public final boolean terminate() {
+		if (!isFinished()) {
+			monitorThread.interrupt();
+			for (TestRunnerThread t : runnerThreads) {
+				t.interrupt();
+			}
+		}
 		return true;
 	}
 

@@ -6,6 +6,7 @@ import org.e792a8.acme.core.workspace.DirectoryConfig;
 import org.e792a8.acme.core.workspace.WorkspaceManager;
 import org.e792a8.acme.ui.editor.CodeEditor;
 import org.e792a8.acme.ui.editor.CodeEditorInput;
+import org.e792a8.acme.ui.testpoints.TestPointsView;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -17,11 +18,11 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-class Controller {
+class ContestsViewController {
 
 	ContestsView contestsView;
 
-	Controller(ContestsView view) {
+	ContestsViewController(ContestsView view) {
 		contestsView = view;
 	}
 
@@ -83,6 +84,7 @@ class Controller {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			TestPointsView.openDirectory(config);
 		}
 
 		@Override

@@ -7,14 +7,16 @@ import org.e792a8.acme.core.runner.IRunnerCallback;
 import org.e792a8.acme.core.runner.RunnerFactory;
 import org.e792a8.acme.core.runner.TestPointRequest;
 import org.e792a8.acme.core.runner.TestResult;
+import org.e792a8.acme.core.workspace.DirectoryConfig;
+import org.e792a8.acme.core.workspace.TestPointConfig;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
-class Controller {
+class TestPointsViewController {
 	TestPointsView testsView;
 
-	Controller(TestPointsView view) {
+	TestPointsViewController(TestPointsView view) {
 		testsView = view;
 	}
 
@@ -34,7 +36,7 @@ class Controller {
 		@Override
 		public void run() {
 			List<TestPointRequest> requests = new LinkedList<>();
-			for (TestPointComposite c : (TestPointComposite[]) testsView.testsArea.getChildren()) {
+			for (TestPointComposite c : testsView.composites) {
 				requests.add(c.controller.getTestPointRequest());
 			}
 			RunnerFactory.createRunner(testsView.getDirectory().solution,
@@ -49,7 +51,7 @@ class Controller {
 					@Override
 					public void finish(TestResult result) {
 						// TODO Auto-generated method stub
-
+						System.out.println("Main result: " + result.resultCode);
 					}
 				}).launch();
 		}
@@ -57,6 +59,17 @@ class Controller {
 		@Override
 		public void handleEvent(Event event) {
 			run();
+		}
+	}
+
+	protected void openDirectory(DirectoryConfig config) {
+		for (TestPointComposite c : testsView.composites) {
+			c.controller.dispose();
+			c.dispose();
+		}
+		int i = 0;
+		for (TestPointConfig c : config.testPoints) {
+			testsView.addTestPointToView(c);
 		}
 	}
 }

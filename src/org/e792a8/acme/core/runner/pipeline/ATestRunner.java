@@ -57,4 +57,6 @@ abstract class ATestRunner implements Runnable {
 		return null;
 	}
 
+	public abstract void kill();
+
 }

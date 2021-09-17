@@ -22,8 +22,8 @@ public class TestPointComposite extends Composite {
 	TestPointConfig testPointConfig;
 	CompositeController controller;
 
-	void remove() {
-		parentView.removeTestPoint(index);
+	void delete() {
+		parentView.deleteTestPoint(index);
 	}
 
 	void clear() {
@@ -142,4 +142,5 @@ public class TestPointComposite extends Composite {
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
 	}
+
 }

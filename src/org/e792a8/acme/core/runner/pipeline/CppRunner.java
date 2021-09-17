@@ -64,6 +64,8 @@ public class CppRunner extends ARunner {
 
 	private class CppTestRunner extends ATestRunner {
 
+		private Process runProcess = null;
+
 		public CppTestRunner(TestPointConfig testConf) {
 			super(testConf);
 		}
@@ -77,7 +79,6 @@ public class CppRunner extends ARunner {
 				.redirectInput(inputFile).redirectOutput(outputFile);
 			int retCode;
 			TestResult res = null;
-			Process runProcess = null;
 			try {
 				startTime = System.currentTimeMillis();
 				runProcess = processBuilder.start();
@@ -104,6 +105,13 @@ public class CppRunner extends ARunner {
 			res.memoryKb = -1; // TODO memory monitor
 			finish(res, outputFile);
 			return;
+		}
+
+		@Override
+		public void kill() {
+			if (runProcess != null) {
+				runProcess.destroy();
+			}
 		}
 
 	}

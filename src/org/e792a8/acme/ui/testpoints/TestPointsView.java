@@ -1,5 +1,8 @@
 package org.e792a8.acme.ui.testpoints;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.e792a8.acme.core.workspace.DirectoryConfig;
 import org.e792a8.acme.core.workspace.TestPointConfig;
 import org.eclipse.swt.SWT;
@@ -24,8 +27,20 @@ public class TestPointsView extends ViewPart {
 	private ScrolledComposite scrolledComposite;
 	Button btnAdd;
 	Button btnRunAll;
-	private final Controller controller = new Controller(this);
+	private final TestPointsViewController controller = new TestPointsViewController(this);
 	private DirectoryConfig directory;
+	private static TestPointsView instance;
+	protected List<TestPointComposite> composites = new LinkedList<>();
+
+	public TestPointsView() {
+		super();
+		instance = this;
+	}
+
+	public static void openDirectory(DirectoryConfig config) {
+		instance.controller.openDirectory(config);
+		instance.setDirectory(config);
+	}
 
 	public void setDirectory(DirectoryConfig config) {
 		directory = config;
@@ -40,16 +55,22 @@ public class TestPointsView extends ViewPart {
 		updateSize();
 	}
 
-	void addTestPoint(TestPointConfig config) {
-		new TestPointComposite(testsArea, SWT.NONE, this, config, testsArea.getChildren().length + 1);
+	void addTestPointToView(TestPointConfig config) {
+		composites.add(new TestPointComposite(testsArea, SWT.NONE, this, config, composites.size() + 1));
 		refresh();
 	}
 
-	public void removeTestPoint(int i) {
-		testsArea.getChildren()[i - 1].dispose();
+	void deleteTestPoint(int i) {
+		TestPointComposite c = composites.get(i);
+		c.controller.deleteTestPoint();
+		c.controller.dispose();
+		c.dispose();
+		composites.remove(c);
 		Control[] controls = testsArea.getChildren();
-		for (int j = 0; j < controls.length; ++j) {
-			((TestPointComposite) (controls[j])).setIndex(j + 1);
+		int j = 0;
+		for (TestPointComposite co : composites) {
+			++j;
+			co.setIndex(j);
 		}
 		refresh();
 	}
