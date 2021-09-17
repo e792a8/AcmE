@@ -77,8 +77,9 @@ public abstract class ARunner {
 				finish(res);
 				return;
 			}
-			res = judge.judge(runner.getInput(), runner.getOutput(), runner.getAnswer());
-			finish(res);
+			TestResult jres = judge.judge(runner.getInput(), runner.getOutput(), runner.getAnswer());
+			jres.outputFile = res.outputFile;
+			finish(jres);
 			return;
 		}
 

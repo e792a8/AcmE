@@ -1,5 +1,6 @@
 package org.e792a8.acme.core.runner;
 
+import java.io.File;
 import java.util.List;
 
 public class TestResult {
@@ -8,4 +9,5 @@ public class TestResult {
 	public List<int[]> diffRanges;
 	public long timeMs;
 	public long memoryKb;
+	public File outputFile;
 }

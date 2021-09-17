@@ -23,9 +23,8 @@ abstract class ATestRunner implements Runnable {
 	 * 
 	 * @param result resultCode should be "AC" if not "RE" or "SYSTEM ERROR"
 	 */
-	protected final void finish(TestResult result, File output) {
+	protected final void finish(TestResult result) {
 		testResult = result;
-		outputFile = output;
 		finished = true;
 	}
 
@@ -47,7 +46,7 @@ abstract class ATestRunner implements Runnable {
 
 	public final File getOutput() {
 		if (isFinished())
-			return outputFile;
+			return testResult.outputFile;
 		return null;
 	}
 

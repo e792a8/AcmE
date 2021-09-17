@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.e792a8.acme.core.workspace.DirectoryConfig;
 import org.e792a8.acme.core.workspace.TestPointConfig;
+import org.e792a8.acme.utils.FileSystem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -19,6 +20,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class TestPointsView extends ViewPart {
 
@@ -31,6 +33,7 @@ public class TestPointsView extends ViewPart {
 	private DirectoryConfig directory;
 	private static TestPointsView instance;
 	protected List<TestPointComposite> composites = new LinkedList<>();
+	CLabel lblResult;
 
 	public TestPointsView() {
 		super();
@@ -39,11 +42,28 @@ public class TestPointsView extends ViewPart {
 
 	public static void openDirectory(DirectoryConfig config) {
 		instance.controller.openDirectory(config);
-		instance.setDirectory(config);
+		instance.directory = config;
 	}
 
-	public void setDirectory(DirectoryConfig config) {
-		directory = config;
+	public void setResultText(String txt) {
+		lblResult.getDisplay().asyncExec(() -> {
+			try {
+				lblResult.setText(txt);
+				int color = SWT.COLOR_DARK_GRAY;
+				if ("AC".equals(txt)) {
+					color = SWT.COLOR_DARK_GREEN;
+				} else if ("--".equals(txt)) {
+					color = SWT.COLOR_DARK_GRAY;
+				} else if ("**".equals(txt)) {
+					color = SWT.COLOR_BLACK;
+				} else {
+					color = SWT.COLOR_RED;
+				}
+				lblResult.setForeground(SWTResourceManager.getColor(color));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
 	public DirectoryConfig getDirectory() {
@@ -56,7 +76,10 @@ public class TestPointsView extends ViewPart {
 	}
 
 	void addTestPointToView(TestPointConfig config) {
-		composites.add(new TestPointComposite(testsArea, SWT.NONE, this, config, composites.size() + 1));
+		TestPointComposite comp = new TestPointComposite(testsArea, SWT.NONE, this, config, composites.size() + 1);
+		composites.add(comp);
+		comp.setInput(FileSystem.read(config.directory.absPath.append(config.in).toFile(), 4096));
+		comp.setAnswer(FileSystem.read(config.directory.absPath.append(config.ans).toFile(), 4096));
 		refresh();
 	}
 
@@ -99,14 +122,6 @@ public class TestPointsView extends ViewPart {
 		fd_header.top = new FormAttachment(0);
 		header.setLayoutData(fd_header);
 
-		CLabel lblTestPoints = new CLabel(header, SWT.NONE);
-		FormData fd_lblTestPoints = new FormData();
-		fd_lblTestPoints.bottom = new FormAttachment(100);
-		fd_lblTestPoints.top = new FormAttachment(0);
-		fd_lblTestPoints.left = new FormAttachment(0);
-		lblTestPoints.setLayoutData(fd_lblTestPoints);
-		lblTestPoints.setText("Test Points");
-
 		Composite buttonsArea = new Composite(header, SWT.NONE);
 		FormData fd_buttonsArea = new FormData();
 		fd_buttonsArea.bottom = new FormAttachment(100);
@@ -130,6 +145,21 @@ public class TestPointsView extends ViewPart {
 		body.setLayout(new FillLayout(SWT.HORIZONTAL));
 		FormData fd_body = new FormData();
 		fd_body.top = new FormAttachment(header);
+
+		Composite composite = new Composite(header, SWT.NONE);
+		composite.setLayout(new FillLayout(SWT.HORIZONTAL));
+		FormData fd_composite = new FormData();
+		fd_composite.bottom = new FormAttachment(100);
+		fd_composite.top = new FormAttachment(0);
+		fd_composite.left = new FormAttachment(0);
+		fd_composite.right = new FormAttachment(buttonsArea);
+		composite.setLayoutData(fd_composite);
+
+		CLabel lblTestPoints = new CLabel(composite, SWT.NONE);
+		lblTestPoints.setText("Test Points");
+
+		lblResult = new CLabel(composite, SWT.NONE);
+		lblResult.setText("--");
 		fd_body.bottom = new FormAttachment(100);
 		fd_body.right = new FormAttachment(100);
 		fd_body.left = new FormAttachment(0);

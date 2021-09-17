@@ -43,6 +43,8 @@ public class TestPointComposite extends Composite {
 					color = SWT.COLOR_DARK_GREEN;
 				} else if ("--".equals(txt)) {
 					color = SWT.COLOR_DARK_GRAY;
+				} else if ("**".equals(txt)) {
+					color = SWT.COLOR_BLACK;
 				} else {
 					color = SWT.COLOR_RED;
 				}
@@ -58,7 +60,9 @@ public class TestPointComposite extends Composite {
 	}
 
 	public void setOutput(String txt) {
-		outputBlock.setText(txt);
+		outputBlock.getDisplay().asyncExec(() -> {
+			outputBlock.setText(txt);
+		});
 	}
 
 	public void setAnswer(String txt) {

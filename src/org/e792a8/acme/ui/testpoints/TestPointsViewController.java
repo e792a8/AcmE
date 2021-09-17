@@ -39,19 +39,19 @@ class TestPointsViewController {
 			for (TestPointComposite c : testsView.composites) {
 				requests.add(c.controller.getTestPointRequest());
 			}
+			testsView.setResultText("--");
 			RunnerFactory.createRunner(testsView.getDirectory().solution,
 				requests, new IRunnerCallback() {
 
 					@Override
 					public void start() {
-						// TODO Auto-generated method stub
-
+						testsView.setResultText("**");
 					}
 
 					@Override
 					public void finish(TestResult result) {
 						// TODO Auto-generated method stub
-						System.out.println("Main result: " + result.resultCode);
+						testsView.setResultText(result.resultCode);
 					}
 				}).launch();
 		}

@@ -61,6 +61,7 @@ class CompositeController {
 		@Override
 		public void run() {
 			// TODO better ways to get solution config
+			composite.setResultText("--");
 			runner = RunnerFactory.createRunner(composite.getConfig().directory.solution,
 				getTestPointRequest(), new IRunnerCallback() {
 
@@ -87,15 +88,14 @@ class CompositeController {
 
 			@Override
 			public void start() {
-				// TODO Auto-generated method stub
-
+				composite.setResultText("**");
 			}
 
 			@Override
 			public void finish(TestResult result) {
 				// TODO Auto-generated method stub
-				System.out.println(result.resultCode);
 				composite.setResultText(result.resultCode);
+				composite.setOutput(FileSystem.read(result.outputFile, 4096));
 			}
 		});
 		return req;

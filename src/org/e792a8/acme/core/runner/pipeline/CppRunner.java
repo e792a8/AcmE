@@ -89,21 +89,22 @@ public class CppRunner extends ARunner {
 				res = new TestResult();
 				res.resultCode = "RE";
 				res.message = e.getMessage();
-				finish(res, null);
+				finish(res);
 				return;
 			}
 			if (retCode != 0) {
 				res = new TestResult();
 				res.resultCode = "RE";
 				res.message = "Return code: " + retCode;
-				finish(res, null);
+				finish(res);
 				return;
 			}
 			res = new TestResult();
 			res.resultCode = "AC";
 			res.timeMs = duration;
 			res.memoryKb = -1; // TODO memory monitor
-			finish(res, outputFile);
+			res.outputFile = outputFile;
+			finish(res);
 			return;
 		}
 
