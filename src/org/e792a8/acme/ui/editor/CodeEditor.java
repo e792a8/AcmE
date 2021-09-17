@@ -7,8 +7,8 @@ public class CodeEditor extends TextEditor {
 
 	public CodeEditor() {
 		super();
-		setDocumentProvider(new CodeDocumentProvider());
-		setSourceViewerConfiguration(new CodeConfiguration());
+//		setDocumentProvider(new CodeDocumentProvider());
+//		setSourceViewerConfiguration(new CodeConfiguration());
 	}
 
 	@Override
