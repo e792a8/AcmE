@@ -10,6 +10,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class TestPointComposite extends Composite {
 
@@ -21,15 +22,35 @@ public class TestPointComposite extends Composite {
 	private DataBlock answerBlock;
 	TestPointConfig testPointConfig;
 	CompositeController controller;
+	CLabel lblResult;
 
 	void delete() {
-		parentView.deleteTestPoint(index);
+		parentView.deleteTestPoint(index - 1);
 	}
 
 	void clear() {
 		inputBlock.setText("");
 		outputBlock.setText("");
 		answerBlock.setText("");
+	}
+
+	public void setResultText(String txt) {
+		lblResult.getDisplay().asyncExec(() -> {
+			try {
+				lblResult.setText(txt);
+				int color = SWT.COLOR_DARK_GRAY;
+				if ("AC".equals(txt)) {
+					color = SWT.COLOR_DARK_GREEN;
+				} else if ("--".equals(txt)) {
+					color = SWT.COLOR_DARK_GRAY;
+				} else {
+					color = SWT.COLOR_RED;
+				}
+				lblResult.setForeground(SWTResourceManager.getColor(color));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
 	public void setInput(String txt) {
@@ -90,13 +111,6 @@ public class TestPointComposite extends Composite {
 		fd_header.left = new FormAttachment(0);
 		header.setLayoutData(fd_header);
 
-		lblTest = new CLabel(header, SWT.NONE);
-		FormData fd_lblTest = new FormData();
-		fd_lblTest.top = new FormAttachment(0);
-		fd_lblTest.bottom = new FormAttachment(100);
-		fd_lblTest.left = new FormAttachment(0);
-		lblTest.setLayoutData(fd_lblTest);
-
 		Composite controls = new Composite(header, SWT.NONE);
 		FormData fd_controls = new FormData();
 		fd_controls.right = new FormAttachment(100);
@@ -106,6 +120,21 @@ public class TestPointComposite extends Composite {
 		rl_controls.pack = false;
 		rl_controls.center = true;
 		controls.setLayout(rl_controls);
+
+		Composite labels = new Composite(header, SWT.NONE);
+		labels.setLayout(new FillLayout(SWT.HORIZONTAL));
+		FormData fd_labels = new FormData();
+		fd_labels.right = new FormAttachment(controls);
+		fd_labels.bottom = new FormAttachment(100);
+		fd_labels.top = new FormAttachment(0);
+		fd_labels.left = new FormAttachment(0);
+		labels.setLayoutData(fd_labels);
+
+		lblTest = new CLabel(labels, SWT.NONE);
+
+		lblResult = new CLabel(labels, SWT.NONE);
+		lblResult.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_GRAY));
+		lblResult.setText("--");
 
 		Button btnRun = new Button(controls, SWT.NONE);
 		btnRun.setText("Run");

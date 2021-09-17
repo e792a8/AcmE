@@ -20,8 +20,8 @@ import org.e792a8.acme.core.workspace.SolutionConfig;
 public class RunnerFactory {
 	public static final ARunner createRunner(SolutionConfig solConf, TestPointRequest request,
 		IRunnerCallback mainCallback) {
-		List<TestPointRequest> req = new ArrayList<>(1);
-		req.set(0, request);
+		List<TestPointRequest> req = new ArrayList<>();
+		req.add(request);
 		return createRunner(solConf, req, mainCallback);
 	}
 

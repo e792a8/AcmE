@@ -95,6 +95,7 @@ class CompositeController {
 			public void finish(TestResult result) {
 				// TODO Auto-generated method stub
 				System.out.println(result.resultCode);
+				composite.setResultText(result.resultCode);
 			}
 		});
 		return req;
