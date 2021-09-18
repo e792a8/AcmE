@@ -84,6 +84,7 @@ class CompositeController {
 	}
 
 	public TestPointRequest getTestPointRequest() {
+		composite.setResultText("--");
 		final TestPointRequest req = new TestPointRequest(composite.getConfig(), new IRunnerCallback() {
 
 			@Override

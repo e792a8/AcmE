@@ -7,8 +7,6 @@ import org.e792a8.acme.core.runner.IRunnerCallback;
 import org.e792a8.acme.core.runner.RunnerFactory;
 import org.e792a8.acme.core.runner.TestPointRequest;
 import org.e792a8.acme.core.runner.TestResult;
-import org.e792a8.acme.core.workspace.DirectoryConfig;
-import org.e792a8.acme.core.workspace.TestPointConfig;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -62,14 +60,4 @@ class TestPointsViewController {
 		}
 	}
 
-	protected void openDirectory(DirectoryConfig config) {
-		for (TestPointComposite c : testsView.composites) {
-			c.controller.dispose();
-			c.dispose();
-		}
-		int i = 0;
-		for (TestPointConfig c : config.testPoints) {
-			testsView.addTestPointToView(c);
-		}
-	}
 }

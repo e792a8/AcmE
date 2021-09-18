@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.e792a8.acme.core.workspace.DirectoryConfig;
 import org.e792a8.acme.core.workspace.TestPointConfig;
+import org.e792a8.acme.ui.AcmeUI;
+import org.e792a8.acme.ui.IOpenDirectoryObserver;
 import org.e792a8.acme.utils.FileSystem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -34,15 +36,23 @@ public class TestPointsView extends ViewPart {
 	private static TestPointsView instance;
 	protected List<TestPointComposite> composites = new LinkedList<>();
 	CLabel lblResult;
+	private IOpenDirectoryObserver openDirectoryObserver = (config) -> {
+		directory = config;
+		for (TestPointComposite c : composites) {
+			c.controller.dispose();
+			c.dispose();
+		}
+		composites.clear();
+		int i = 0;
+		for (TestPointConfig c : config.testPoints) {
+			addTestPointToView(c);
+		}
+	};
 
 	public TestPointsView() {
 		super();
 		instance = this;
-	}
-
-	public static void openDirectory(DirectoryConfig config) {
-		instance.controller.openDirectory(config);
-		instance.directory = config;
+		AcmeUI.addOpenDirectoryObserver(openDirectoryObserver);
 	}
 
 	public void setResultText(String txt) {
@@ -100,6 +110,8 @@ public class TestPointsView extends ViewPart {
 
 	@Override
 	public void dispose() {
+		AcmeUI.deleteOpenDirectoryObserver(openDirectoryObserver);
+		super.dispose();
 	}
 
 	@Override
