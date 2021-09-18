@@ -1,25 +1,50 @@
 package org.e792a8.acme.ui.dashboard;
 
+import org.e792a8.acme.core.workspace.DirectoryConfig;
+import org.e792a8.acme.core.workspace.WorkspaceManager;
+import org.e792a8.acme.ui.AcmeUI;
+import org.e792a8.acme.ui.IOpenDirectoryObserver;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.console.MessageConsole;
-import org.eclipse.ui.console.TextConsoleViewer;
 import org.eclipse.ui.part.ViewPart;
 
 public class DashboardView extends ViewPart {
 
 	public static final String ID = "org.e792a8.acme.ui.dashboard.DashboardView";
-	private CLabel lblContestName;
-	private CLabel lblProblemTitle;
+	private CLabel lbl1;
+	private CLabel lbl2;
+	Composite labels;
+	CLabel lblContestName;
+	CLabel lblProblemTitle;
+	private DirectoryConfig directoryConfig;
+	private IOpenDirectoryObserver openDirectoryObserver = (config) -> {
+		directoryConfig = config;
+		DirectoryConfig pa = WorkspaceManager.readDirectory(WorkspaceManager.getParent(config.absPath));
+		if (pa == null) {
+			lblContestName.setText("");
+		} else {
+			lblContestName.setText(pa.name);
+		}
+		lblProblemTitle.setText(config.name);
+
+		lblContestName.requestLayout();
+		lblProblemTitle.requestLayout();
+	};
 
 	public DashboardView() {
+		AcmeUI.addOpenDirectoryObserver(openDirectoryObserver);
+	}
+
+	@Override
+	public void dispose() {
+		AcmeUI.deleteOpenDirectoryObserver(openDirectoryObserver);
+		super.dispose();
 	}
 
 	@Override
@@ -37,68 +62,25 @@ public class DashboardView extends ViewPart {
 		fd_panel.top = new FormAttachment(0);
 		panel.setLayoutData(fd_panel);
 
-		Composite messages = new Composite(viewArea, SWT.NONE);
-		messages.setLayout(new FillLayout(SWT.HORIZONTAL));
-		FormData fd_messages = new FormData();
-		fd_messages.left = new FormAttachment(0);
-		fd_messages.right = new FormAttachment(100);
-		fd_messages.top = new FormAttachment(panel);
-		fd_messages.bottom = new FormAttachment(100);
-		messages.setLayoutData(fd_messages);
-
-		Composite labels = new Composite(panel, SWT.NONE);
-		labels.setLayout(new FillLayout(SWT.VERTICAL));
+		labels = new Composite(panel, SWT.NONE);
+		labels.setLayout(new GridLayout(2, false));
 		FormData fd_labels = new FormData();
 		fd_labels.left = new FormAttachment(0);
 		fd_labels.top = new FormAttachment(0);
 		fd_labels.bottom = new FormAttachment(100);
 		labels.setLayoutData(fd_labels);
 
+		lbl1 = new CLabel(labels, SWT.NONE);
+		lbl1.setText("Contest Name");
+
 		lblContestName = new CLabel(labels, SWT.NONE);
-		lblContestName.setText("Contest Name");
+		lblContestName.setText("");
+
+		lbl2 = new CLabel(labels, SWT.NONE);
+		lbl2.setText("Problem Title");
 
 		lblProblemTitle = new CLabel(labels, SWT.NONE);
-		lblProblemTitle.setText("Problem Title");
-
-		Composite actions = new Composite(panel, SWT.NONE);
-		actions.setLayout(new FillLayout(SWT.VERTICAL));
-		FormData fd_actions = new FormData();
-		fd_actions.right = new FormAttachment(100);
-		fd_actions.top = new FormAttachment(0);
-		fd_actions.bottom = new FormAttachment(100);
-		actions.setLayoutData(fd_actions);
-
-		Composite actions_r1 = new Composite(actions, SWT.NONE);
-		RowLayout rl_actions_r1 = new RowLayout(SWT.HORIZONTAL);
-		rl_actions_r1.justify = true;
-		rl_actions_r1.fill = true;
-		rl_actions_r1.pack = false;
-		actions_r1.setLayout(rl_actions_r1);
-
-		Button btnNewContest = new Button(actions_r1, SWT.NONE);
-		btnNewContest.setText("New Contest");
-
-		Button btnNewProblem = new Button(actions_r1, SWT.NONE);
-		btnNewProblem.setText("New Problem");
-
-		Composite actions_r2 = new Composite(actions, SWT.NONE);
-		RowLayout rl_actions_r2 = new RowLayout(SWT.HORIZONTAL);
-		rl_actions_r2.pack = false;
-		rl_actions_r2.justify = true;
-		rl_actions_r2.fill = true;
-		actions_r2.setLayout(rl_actions_r2);
-
-		Button btnRunTests = new Button(actions_r2, SWT.NONE);
-		btnRunTests.setText("Run Tests");
-
-		Button btnClear = new Button(actions_r2, SWT.NONE);
-		btnClear.setText("Clear");
-
-		btnClear.addListener(SWT.MouseDown, event -> {
-		});
-
-		MessageConsole console = new MessageConsole("Messages", null);
-		TextConsoleViewer consoleViewer = new TextConsoleViewer(messages, console);
+		lblProblemTitle.setText("");
 
 	}
 
