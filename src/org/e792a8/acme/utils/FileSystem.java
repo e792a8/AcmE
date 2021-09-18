@@ -1,82 +1,56 @@
 package org.e792a8.acme.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
 public class FileSystem {
-	private static final int BUFSIZE = 4096;
 	private static final int TEMP_DIR_ATTEMPTS = 4096;
 
+	// https://www.cnblogs.com/longronglang/p/7458027.html
 	public static String read(File file, int length) {
-		// FIXME don't know how to handle these
-		FileReader freader = null;
+//		String encoding = "UTF-8";
+		Long filelength = file.length();
+		byte[] filecontent = new byte[filelength.intValue()];
 		try {
-			freader = new FileReader(file);
+			FileInputStream in = new FileInputStream(file);
+			in.read(filecontent);
+			in.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			return null;
-		}
-		char[] buf = new char[BUFSIZE];
-		StringBuffer strbuf = new StringBuffer();
-		while (length >= BUFSIZE) {
-			length -= BUFSIZE;
-			try {
-				freader.read(buf);
-				if (buf[0] == '\0') {
-					freader.close();
-					return strbuf.toString();
-				}
-				strbuf.append(buf);
-			} catch (IOException e) {
-				e.printStackTrace();
-				try {
-					freader.close();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				return null;
-			}
-		}
-		if (length > 0) {
-			length %= BUFSIZE;
-			buf = new char[length];
-			try {
-				freader.read(buf);
-				strbuf.append(buf);
-			} catch (IOException e) {
-				e.printStackTrace();
-				try {
-					freader.close();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				return null;
-			}
-		}
-		try {
-			freader.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return null;
 		}
-		return strbuf.toString();
+//		try {
+//			return new String(filecontent, encoding);
+//		} catch (UnsupportedEncodingException e) {
+//			System.err.println("The OS does not support " + encoding);
+//			e.printStackTrace();
+//			return null;
+//		}
+		return new String(filecontent);
 	}
 
+	// https://www.cnblogs.com/longronglang/p/7458027.html
 	public static boolean write(File file, String content) {
-		// FIXME don't know how to handle these
+		FileWriter writer = null;
 		try {
-			FileWriter fwriter = new FileWriter(file);
-			fwriter.write(content);
-			fwriter.flush();
-			fwriter.close();
+			writer = new FileWriter(file);
+			writer.write(content);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
+		} finally {
+			try {
+				writer.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}
 		}
 		return true;
 	}
