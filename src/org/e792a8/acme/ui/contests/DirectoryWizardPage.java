@@ -1,5 +1,6 @@
 package org.e792a8.acme.ui.contests;
 
+import org.e792a8.acme.core.workspace.DirectoryConfig;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -20,20 +21,47 @@ public class DirectoryWizardPage extends WizardPage {
 	private IPath parentPath;
 	private boolean groupTypeSelected;
 	private Text pathText;
+	private Button btnGroup;
+	private Button btnProblem;
+	private DirectoryConfig directoryConfig;
+	private boolean isNewWizard;
 
 	public DirectoryWizardPage(IPath parent) {
 		super("wizardPage");
-		setTitle("Group / Contest / Problem");
+		// FIXME
+		setTitle("New Directory");
 		setDescription("Add a new problem group / contest / problem");
+		selectGroupType();
 		this.parentPath = parent;
+		isNewWizard = true;
+	}
+
+	public DirectoryWizardPage(DirectoryConfig directoryConfig) {
+		super("wizardPage");
+		// FIXME
+		setTitle("Configuring " + directoryConfig.name);
+		if ("group".equals(directoryConfig.type)) {
+			selectGroupType();
+		} else {
+			selectProblemType();
+		}
+		nameText.setText(directoryConfig.name);
+		urlText.setText(directoryConfig.url);
+		pathText.setEnabled(false);
+		this.directoryConfig = directoryConfig;
+		isNewWizard = false;
 	}
 
 	private void selectGroupType() {
 		groupTypeSelected = true;
+		btnProblem.setSelection(false);
+		btnGroup.setSelection(true);
 	}
 
 	private void selectProblemType() {
 		groupTypeSelected = false;
+		btnGroup.setSelection(false);
+		btnProblem.setSelection(true);
 	}
 
 	@Override
@@ -51,9 +79,9 @@ public class DirectoryWizardPage extends WizardPage {
 		typeRadios.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		typeRadios.setLayout(new RowLayout(SWT.HORIZONTAL));
 
-		Button btnGroup = new Button(typeRadios, SWT.RADIO);
+		btnGroup = new Button(typeRadios, SWT.RADIO);
 		btnGroup.setText("Group / Contest");
-		Button btnProblem = new Button(typeRadios, SWT.RADIO);
+		btnProblem = new Button(typeRadios, SWT.RADIO);
 		btnProblem.setText("Problem");
 		btnGroup.addSelectionListener(new SelectionListener() {
 			@Override
