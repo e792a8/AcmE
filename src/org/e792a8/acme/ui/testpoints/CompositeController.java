@@ -47,8 +47,13 @@ class CompositeController {
 	class DeleteTestPointAction extends Action implements Listener {
 		@Override
 		public void run() {
-			WorkspaceManager.deleteItem(composite.getConfig());
+			TestPointsView parentView = composite.parentView;
+			parentView.composites.remove(composite);
 			composite.dispose();
+			dispose();
+			WorkspaceManager.deleteItem(composite.getConfig());
+			parentView.updateIndexes();
+			parentView.refresh();
 		}
 
 		@Override
@@ -62,6 +67,8 @@ class CompositeController {
 		public void run() {
 			// TODO better ways to get solution config
 			composite.setResultText("--");
+			composite.saveTestPoint();
+			composite.clearOutput();
 			runner = RunnerFactory.createRunner(composite.getConfig().directory.solution,
 				getTestPointRequest(), new IRunnerCallback() {
 

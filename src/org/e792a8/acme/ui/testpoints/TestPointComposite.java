@@ -1,6 +1,9 @@
 package org.e792a8.acme.ui.testpoints;
 
+import java.io.File;
+
 import org.e792a8.acme.core.workspace.TestPointConfig;
+import org.e792a8.acme.utils.FileSystem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.layout.FillLayout;
@@ -24,14 +27,11 @@ public class TestPointComposite extends Composite {
 	CompositeController controller;
 	CLabel lblResult;
 
-	void delete() {
-		parentView.deleteTestPoint(index - 1);
-	}
-
 	void clear() {
 		inputBlock.setText("");
 		outputBlock.setText("");
 		answerBlock.setText("");
+		saveTestPoint();
 	}
 
 	public void setResultText(String txt) {
@@ -69,15 +69,15 @@ public class TestPointComposite extends Composite {
 		answerBlock.setText(txt);
 	}
 
-	public String getInput() {
+	String getInput() {
 		return inputBlock.getText();
 	}
 
-	public String getOutput() {
+	String getOutput() {
 		return outputBlock.getText();
 	}
 
-	public String getAnswer() {
+	String getAnswer() {
 		return answerBlock.getText();
 	}
 
@@ -88,6 +88,17 @@ public class TestPointComposite extends Composite {
 
 	public TestPointConfig getConfig() {
 		return testPointConfig;
+	}
+
+	public void clearOutput() {
+		setOutput("");
+	}
+
+	public void saveTestPoint() {
+		File f = testPointConfig.directory.absPath.append(testPointConfig.in).toFile();
+		FileSystem.write(f, getInput());
+		f = testPointConfig.directory.absPath.append(testPointConfig.ans).toFile();
+		FileSystem.write(f, getAnswer());
 	}
 
 	/**
@@ -174,6 +185,12 @@ public class TestPointComposite extends Composite {
 	@Override
 	protected void checkSubclass() {
 		// Disable the check that prevents subclassing of SWT components
+	}
+
+	@Override
+	public void dispose() {
+		saveTestPoint();
+		super.dispose();
 	}
 
 }

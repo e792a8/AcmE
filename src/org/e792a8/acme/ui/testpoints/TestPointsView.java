@@ -18,7 +18,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.part.ViewPart;
@@ -85,6 +84,14 @@ public class TestPointsView extends ViewPart {
 		updateSize();
 	}
 
+	public void updateIndexes() {
+		int i = 1;
+		for (TestPointComposite c : composites) {
+			c.setIndex(i);
+			++i;
+		}
+	}
+
 	void addTestPointToView(TestPointConfig config) {
 		TestPointComposite comp = new TestPointComposite(testsArea, SWT.NONE, this, config, composites.size() + 1);
 		composites.add(comp);
@@ -93,19 +100,16 @@ public class TestPointsView extends ViewPart {
 		refresh();
 	}
 
-	void deleteTestPoint(int i) {
-		TestPointComposite c = composites.get(i);
-		c.controller.deleteTestPoint();
-		c.controller.dispose();
-		c.dispose();
-		composites.remove(c);
-		Control[] controls = testsArea.getChildren();
-		int j = 0;
-		for (TestPointComposite co : composites) {
-			++j;
-			co.setIndex(j);
+	void clearOutputs() {
+		for (TestPointComposite c : composites) {
+			c.clearOutput();
 		}
-		refresh();
+	}
+
+	void saveTestPoints() {
+		for (TestPointComposite c : composites) {
+			c.saveTestPoint();
+		}
 	}
 
 	@Override
