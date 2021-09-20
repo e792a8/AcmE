@@ -102,8 +102,12 @@ class CompositeController {
 			@Override
 			public void finish(TestResult result) {
 				// TODO Auto-generated method stub
-				composite.setResultText(result.resultCode);
-				composite.setOutput(FileSystem.read(result.outputFile, 4096));
+				if (result != null) {
+					composite.setResultText(result.resultCode);
+					if (result.outputFile != null) {
+						composite.setOutput(FileSystem.read(result.outputFile, 4096));
+					}
+				}
 			}
 		});
 		return req;

@@ -3,6 +3,7 @@ package org.e792a8.acme.core.runner.pipeline;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.e792a8.acme.core.runner.IRunnerCallback;
 import org.e792a8.acme.core.runner.TestPointRequest;
@@ -82,7 +83,17 @@ public class CppRunner extends ARunner {
 			try {
 				startTime = System.currentTimeMillis();
 				runProcess = processBuilder.start();
-				retCode = runProcess.waitFor();
+				boolean processFinished = runProcess.waitFor(10, TimeUnit.SECONDS);
+				if (!processFinished) {
+					runProcess.destroy();
+					res = new TestResult();
+					res.resultCode = "TL";
+					res.timeMs = 10000;
+					res.message = "The process won't exit";
+					finish(res);
+					return;
+				}
+				retCode = runProcess.exitValue();
 				duration = System.currentTimeMillis() - startTime;
 			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
