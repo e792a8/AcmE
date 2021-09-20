@@ -15,11 +15,11 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ScrollBar;
-import org.eclipse.ui.forms.widgets.ColumnLayout;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.wb.swt.SWTResourceManager;
 
@@ -50,6 +50,7 @@ public class TestPointsView extends ViewPart {
 			addTestPointToView(c);
 		}
 	};
+	private GridLayout testsAreaLayout;
 
 	public TestPointsView() {
 		super();
@@ -192,16 +193,17 @@ public class TestPointsView extends ViewPart {
 			updateSize();
 		});
 
-		ColumnLayout cl_testsArea = new ColumnLayout();
-		cl_testsArea.maxNumColumns = 4;
-		testsArea.setLayout(cl_testsArea);
+		testsAreaLayout = new GridLayout();
+		testsAreaLayout.makeColumnsEqualWidth = true;
+		testsArea.setLayout(testsAreaLayout);
 
 	}
 
 	private void updateSize() {
+		final int MAX_CELL_WIDTH = 480;
 		ScrollBar bar = scrolledComposite.getVerticalBar();
-		testsArea.setSize(testsArea.computeSize(
-			scrolledComposite.getSize().x - (bar != null && bar.isVisible() ? bar.getSize().x : 0),
-			SWT.DEFAULT));
+		int width = scrolledComposite.getSize().x - (bar != null && bar.isVisible() ? bar.getSize().x : 0);
+		testsAreaLayout.numColumns = width / MAX_CELL_WIDTH + (width % MAX_CELL_WIDTH > 0 ? 1 : 0);
+		testsArea.setSize(testsArea.computeSize(width, SWT.DEFAULT));
 	}
 }

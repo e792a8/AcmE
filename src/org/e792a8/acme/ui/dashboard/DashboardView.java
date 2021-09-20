@@ -19,15 +19,18 @@ public class DashboardView extends ViewPart {
 	public static final String ID = "org.e792a8.acme.ui.dashboard.DashboardView";
 	private CLabel lbl1;
 	private CLabel lbl2;
+	private CLabel lbl3;
 	Composite labels;
 	CLabel lblContestName;
 	CLabel lblProblemTitle;
+	CLabel lblUrl;
 	private DirectoryConfig directoryConfig;
 	private IOpenDirectoryObserver openDirectoryObserver = (config) -> {
 		directoryConfig = config;
 		if (config == null) {
 			lblContestName.setText("");
 			lblProblemTitle.setText("");
+			lblUrl.setText("");
 			return;
 		}
 		DirectoryConfig pa = WorkspaceManager.readDirectory(WorkspaceManager.getParent(config.absPath));
@@ -37,9 +40,11 @@ public class DashboardView extends ViewPart {
 			lblContestName.setText(pa.name);
 		}
 		lblProblemTitle.setText(config.name);
+		lblUrl.setText(config.url);
 
 		lblContestName.requestLayout();
 		lblProblemTitle.requestLayout();
+		lblUrl.requestLayout();
 	};
 
 	public DashboardView() {
@@ -86,6 +91,12 @@ public class DashboardView extends ViewPart {
 
 		lblProblemTitle = new CLabel(labels, SWT.NONE);
 		lblProblemTitle.setText("");
+
+		lbl3 = new CLabel(labels, SWT.NONE);
+		lbl3.setText("URL");
+
+		lblUrl = new CLabel(labels, SWT.NONE);
+		lblUrl.setText("");
 
 	}
 

@@ -10,6 +10,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -178,6 +179,11 @@ public class TestPointComposite extends Composite {
 		outputBlock = new DataBlock(body, SWT.NONE, "Output");
 
 		answerBlock = new DataBlock(body, SWT.NONE, "Answer");
+
+		GridData gridData = new GridData();
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.horizontalAlignment = SWT.FILL;
+		setLayoutData(gridData);
 
 		setIndex(index);
 	}

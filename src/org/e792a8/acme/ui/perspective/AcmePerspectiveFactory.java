@@ -3,7 +3,6 @@ package org.e792a8.acme.ui.perspective;
 import org.e792a8.acme.ui.contests.ContestsView;
 import org.e792a8.acme.ui.dashboard.DashboardView;
 import org.e792a8.acme.ui.testpoints.TestPointsView;
-import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
@@ -57,8 +56,6 @@ public class AcmePerspectiveFactory implements IPerspectiveFactory {
 
 	private void addActionSets() {
 		final String[] actionSets = {
-			JavaUI.ID_ACTION_SET,
-			JavaUI.ID_ELEMENT_CREATION_ACTION_SET,
 			IPageLayout.ID_NAVIGATE_ACTION_SET,
 		};
 		for (String s : actionSets) {

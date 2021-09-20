@@ -34,7 +34,6 @@ public class DirectoryWizardPage extends WizardPage {
 
 	public DirectoryWizardPage(IPath parent) {
 		super("wizardPage");
-		// FIXME
 		this.parentPath = parent;
 		this.directoryConfig = new DirectoryConfig();
 		isNewWizard = true;
@@ -42,7 +41,6 @@ public class DirectoryWizardPage extends WizardPage {
 
 	public DirectoryWizardPage(DirectoryConfig directoryConfig) {
 		super("wizardPage");
-		// FIXME
 		this.directoryConfig = directoryConfig;
 		isNewWizard = false;
 	}
