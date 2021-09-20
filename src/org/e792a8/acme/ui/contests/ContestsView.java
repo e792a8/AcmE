@@ -64,6 +64,7 @@ public class ContestsView extends ViewPart {
 
 	private void fillContextMenu(IMenuManager manager) {
 		manager.add(controller.new AddItemAction());
+		manager.add(controller.new DeleteItemAction());
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here

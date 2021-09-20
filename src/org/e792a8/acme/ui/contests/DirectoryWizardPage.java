@@ -1,6 +1,12 @@
 package org.e792a8.acme.ui.contests;
 
+import java.util.LinkedList;
+
 import org.e792a8.acme.core.workspace.DirectoryConfig;
+import org.e792a8.acme.core.workspace.JudgeConfig;
+import org.e792a8.acme.core.workspace.SolutionConfig;
+import org.e792a8.acme.core.workspace.TestPointConfig;
+import org.e792a8.acme.utils.FileSystem;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -29,25 +35,14 @@ public class DirectoryWizardPage extends WizardPage {
 	public DirectoryWizardPage(IPath parent) {
 		super("wizardPage");
 		// FIXME
-		setTitle("New Directory");
-		setDescription("Add a new problem group / contest / problem");
-		selectGroupType();
 		this.parentPath = parent;
+		this.directoryConfig = new DirectoryConfig();
 		isNewWizard = true;
 	}
 
 	public DirectoryWizardPage(DirectoryConfig directoryConfig) {
 		super("wizardPage");
 		// FIXME
-		setTitle("Configuring " + directoryConfig.name);
-		if ("group".equals(directoryConfig.type)) {
-			selectGroupType();
-		} else {
-			selectProblemType();
-		}
-		nameText.setText(directoryConfig.name);
-		urlText.setText(directoryConfig.url);
-		pathText.setEnabled(false);
 		this.directoryConfig = directoryConfig;
 		isNewWizard = false;
 	}
@@ -133,12 +128,29 @@ public class DirectoryWizardPage extends WizardPage {
 	}
 
 	private void initialize() {
+		if (isNewWizard) {
+			setTitle("New Directory");
+			setDescription("Add a new problem group / contest / problem");
+			selectGroupType();
+		} else {
+			setTitle("Configuring " + directoryConfig.name);
+			if ("group".equals(directoryConfig.type)) {
+				selectGroupType();
+			} else {
+				selectProblemType();
+			}
+			nameText.setText(directoryConfig.name);
+			urlText.setText(directoryConfig.url);
+			pathText.setEnabled(false);
+		}
 	}
 
 	private void dialogChanged(ModifyEvent event) {
 		if (event != null) {
-			if (event.getSource().equals(nameText)) {
-				pathText.setText(nameText.getText().replaceAll("[\\ /\\\\]+", "_"));
+			if (isNewWizard && event.getSource().equals(nameText)) {
+				pathText.setText(FileSystem.safePathName(nameText.getText()));
+				if (isNewWizard && pathText.getText().length() > 0)
+					directoryConfig.absPath = parentPath.append(pathText.getText());
 			}
 		}
 		updateStatus(null);
@@ -149,21 +161,29 @@ public class DirectoryWizardPage extends WizardPage {
 		setPageComplete(message == null);
 	}
 
-	public boolean getSelectGroup() {
-		return groupTypeSelected;
+	public DirectoryConfig getDirectoryConfig() {
+		if (isNewWizard) {
+			directoryConfig = new DirectoryConfig();
+			directoryConfig.absPath = parentPath.append(pathText.getText());
+		}
+		directoryConfig.name = nameText.getText();
+		directoryConfig.url = urlText.getText();
+		if (groupTypeSelected) {
+			directoryConfig.type = "group";
+			directoryConfig.children = new LinkedList<>();
+		} else {
+			directoryConfig.type = "problem";
+			directoryConfig.judge = new JudgeConfig();
+			directoryConfig.judge.type = "strict";
+			directoryConfig.solution = new SolutionConfig();
+			directoryConfig.solution.lang = "cpp";
+			directoryConfig.solution.path = "sol.cpp";
+			directoryConfig.testPoints = new LinkedList<>();
+			TestPointConfig tpConf = new TestPointConfig();
+			tpConf.in = "in1.txt";
+			tpConf.ans = "ans1.txt";
+			directoryConfig.testPoints.add(tpConf);
+		}
+		return directoryConfig;
 	}
-
-	@Override
-	public String getName() {
-		return nameText.getText();
-	}
-
-	public String getPath() {
-		return pathText.getText();
-	}
-
-	public String getUrl() {
-		return urlText.getText();
-	}
-
 }

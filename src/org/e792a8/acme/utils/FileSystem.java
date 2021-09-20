@@ -74,7 +74,11 @@ public class FileSystem {
 					rmDir(f);
 				}
 			}
-			file.delete();
 		}
+		file.delete();
+	}
+
+	public static String safePathName(String s) {
+		return s.replaceAll("[/\\\\:*?|\"<> ]", "_");
 	}
 }

@@ -42,6 +42,9 @@ public class TestPointsView extends ViewPart {
 			c.dispose();
 		}
 		composites.clear();
+		if (config == null) {
+			return;
+		}
 		int i = 0;
 		for (TestPointConfig c : config.testPoints) {
 			addTestPointToView(c);

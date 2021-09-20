@@ -25,6 +25,11 @@ public class DashboardView extends ViewPart {
 	private DirectoryConfig directoryConfig;
 	private IOpenDirectoryObserver openDirectoryObserver = (config) -> {
 		directoryConfig = config;
+		if (config == null) {
+			lblContestName.setText("");
+			lblProblemTitle.setText("");
+			return;
+		}
 		DirectoryConfig pa = WorkspaceManager.readDirectory(WorkspaceManager.getParent(config.absPath));
 		if (pa == null) {
 			lblContestName.setText("");

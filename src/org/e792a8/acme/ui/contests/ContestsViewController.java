@@ -81,4 +81,27 @@ class ContestsViewController {
 
 	}
 
+	class DeleteItemAction extends Action implements Listener {
+
+		public DeleteItemAction() {
+			setText("Delete");
+			setToolTipText("Delete this item and everything inside");
+			setImageDescriptor(
+				PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_DELETE));
+		}
+
+		@Override
+		public void run() {
+			AcmeUI.fireOpenDirectory(null);
+			WorkspaceManager.deleteDirectory(contestsView.lastSelectedDirectory);
+			contestsView.refreshView();
+		}
+
+		@Override
+		public void handleEvent(Event event) {
+			run();
+		}
+
+	}
+
 }

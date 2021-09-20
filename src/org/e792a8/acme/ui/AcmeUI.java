@@ -18,7 +18,11 @@ public class AcmeUI {
 
 	public static void fireOpenDirectory(DirectoryConfig config) {
 		for (IOpenDirectoryObserver o : openDirectoryObservers) {
-			o.run(config);
+			try {
+				o.run(config);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

@@ -30,6 +30,9 @@ public class AcmePlugin extends AbstractUIPlugin {
 
 	private static IOpenDirectoryObserver[] globalOpenDirectoryObservers = {
 		(config) -> {
+			if (config == null) {
+				return;
+			}
 			File f = config.absPath.append(config.solution.path).toFile();
 			try {
 				PlatformUI.getWorkbench().getActiveWorkbenchWindow()

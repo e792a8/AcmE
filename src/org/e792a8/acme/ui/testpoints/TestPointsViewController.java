@@ -47,6 +47,9 @@ class TestPointsViewController {
 	class RunAllTestsAction extends Action implements Listener {
 		@Override
 		public void run() {
+			if (testsView.getDirectory() == null) {
+				return;
+			}
 			List<TestPointRequest> requests = new LinkedList<>();
 			for (TestPointComposite c : testsView.composites) {
 				requests.add(c.controller.getTestPointRequest());
