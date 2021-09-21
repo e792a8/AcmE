@@ -2,8 +2,9 @@ package org.e792a8.acme;
 
 import java.io.File;
 
+import org.e792a8.acme.core.workspace.DirectoryConfig;
 import org.e792a8.acme.ui.AcmeUI;
-import org.e792a8.acme.ui.IOpenDirectoryObserver;
+import org.e792a8.acme.ui.IDirectoryActionObserver;
 import org.e792a8.acme.ui.editor.CodeEditor;
 import org.e792a8.acme.ui.editor.CodeEditorInput;
 import org.eclipse.ui.PartInitException;
@@ -28,31 +29,39 @@ public class AcmePlugin extends AbstractUIPlugin {
 	public AcmePlugin() {
 	}
 
-	private static IOpenDirectoryObserver[] globalOpenDirectoryObservers = {
-		(config) -> {
-			if (config == null) {
-				return;
-			}
-			File f = config.absPath.append(config.solution.path).toFile();
-			try {
-				PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-					.getActivePage().openEditor(new CodeEditorInput(config.solution), CodeEditor.ID);
-			} catch (PartInitException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+	private static IDirectoryActionObserver[] globalOpenDirectoryObservers = {
+		new IDirectoryActionObserver() {
+			@Override
+			public void open(DirectoryConfig config) {
+				if (config == null) {
+					return;
+				}
+				File f = config.absPath.append(config.solution.path).toFile();
+				try {
+					PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+						.getActivePage().openEditor(new CodeEditorInput(config.solution), CodeEditor.ID);
+				} catch (PartInitException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
 			}
 
+			@Override
+			public void close(DirectoryConfig config) {
+				// TODO some state persisting workarounds
+			}
 		}
 	};
 
 	private void addGlobalOpenDirectoryObservers() {
-		for (IOpenDirectoryObserver o : globalOpenDirectoryObservers) {
+		for (IDirectoryActionObserver o : globalOpenDirectoryObservers) {
 			AcmeUI.addOpenDirectoryObserver(o);
 		}
 	}
 
 	private void deleteGlobalOpenDirectoryObservers() {
-		for (IOpenDirectoryObserver o : globalOpenDirectoryObservers) {
+		for (IDirectoryActionObserver o : globalOpenDirectoryObservers) {
 			AcmeUI.deleteOpenDirectoryObserver(o);
 		}
 	}

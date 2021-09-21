@@ -3,7 +3,7 @@ package org.e792a8.acme.ui.dashboard;
 import org.e792a8.acme.core.workspace.DirectoryConfig;
 import org.e792a8.acme.core.workspace.WorkspaceManager;
 import org.e792a8.acme.ui.AcmeUI;
-import org.e792a8.acme.ui.IOpenDirectoryObserver;
+import org.e792a8.acme.ui.IDirectoryActionObserver;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.layout.FillLayout;
@@ -25,35 +25,43 @@ public class DashboardView extends ViewPart {
 	CLabel lblProblemTitle;
 	CLabel lblUrl;
 	private DirectoryConfig directoryConfig;
-	private IOpenDirectoryObserver openDirectoryObserver = (config) -> {
-		directoryConfig = config;
-		if (config == null) {
-			lblContestName.setText("");
-			lblProblemTitle.setText("");
-			lblUrl.setText("");
-			return;
-		}
-		DirectoryConfig pa = WorkspaceManager.readDirectory(WorkspaceManager.getParent(config.absPath));
-		if (pa == null) {
-			lblContestName.setText("");
-		} else {
-			lblContestName.setText(pa.name);
-		}
-		lblProblemTitle.setText(config.name);
-		lblUrl.setText(config.url);
+	private IDirectoryActionObserver directoryActionObserver = new IDirectoryActionObserver() {
+		@Override
+		public void open(DirectoryConfig config) {
+			directoryConfig = config;
+			if (config == null) {
+				lblContestName.setText("");
+				lblProblemTitle.setText("");
+				lblUrl.setText("");
+				return;
+			}
+			DirectoryConfig pa = WorkspaceManager.readDirectory(WorkspaceManager.getParent(config.absPath));
+			if (pa == null) {
+				lblContestName.setText("");
+			} else {
+				lblContestName.setText(pa.name);
+			}
+			lblProblemTitle.setText(config.name);
+			lblUrl.setText(config.url);
 
-		lblContestName.requestLayout();
-		lblProblemTitle.requestLayout();
-		lblUrl.requestLayout();
+			lblContestName.requestLayout();
+			lblProblemTitle.requestLayout();
+			lblUrl.requestLayout();
+		}
+
+		@Override
+		public void close(DirectoryConfig config) {
+			// TODO some state persisting workarounds
+		}
 	};
 
 	public DashboardView() {
-		AcmeUI.addOpenDirectoryObserver(openDirectoryObserver);
+		AcmeUI.addOpenDirectoryObserver(directoryActionObserver);
 	}
 
 	@Override
 	public void dispose() {
-		AcmeUI.deleteOpenDirectoryObserver(openDirectoryObserver);
+		AcmeUI.deleteOpenDirectoryObserver(directoryActionObserver);
 		super.dispose();
 	}
 

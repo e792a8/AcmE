@@ -6,7 +6,7 @@ import java.util.List;
 import org.e792a8.acme.core.workspace.DirectoryConfig;
 import org.e792a8.acme.core.workspace.TestPointConfig;
 import org.e792a8.acme.ui.AcmeUI;
-import org.e792a8.acme.ui.IOpenDirectoryObserver;
+import org.e792a8.acme.ui.IDirectoryActionObserver;
 import org.e792a8.acme.utils.FileSystem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -35,22 +35,30 @@ public class TestPointsView extends ViewPart {
 	private static TestPointsView instance;
 	protected List<TestPointComposite> composites = new LinkedList<>();
 	CLabel lblResult;
-	private IOpenDirectoryObserver openDirectoryObserver = (config) -> {
-		if (directory == config) {
-			return;
+	private IDirectoryActionObserver directoryActionObserver = new IDirectoryActionObserver() {
+		@Override
+		public void open(DirectoryConfig config) {
+			if (directory == config) {
+				return;
+			}
+			directory = config;
+			for (TestPointComposite c : composites) {
+				c.controller.dispose();
+				c.dispose();
+			}
+			composites.clear();
+			if (config == null) {
+				return;
+			}
+			int i = 0;
+			for (TestPointConfig c : config.testPoints) {
+				addTestPointToView(c);
+			}
 		}
-		directory = config;
-		for (TestPointComposite c : composites) {
-			c.controller.dispose();
-			c.dispose();
-		}
-		composites.clear();
-		if (config == null) {
-			return;
-		}
-		int i = 0;
-		for (TestPointConfig c : config.testPoints) {
-			addTestPointToView(c);
+
+		@Override
+		public void close(DirectoryConfig config) {
+			// TODO some state persisting workarounds
 		}
 	};
 	private GridLayout testsAreaLayout;
@@ -58,7 +66,7 @@ public class TestPointsView extends ViewPart {
 	public TestPointsView() {
 		super();
 		instance = this;
-		AcmeUI.addOpenDirectoryObserver(openDirectoryObserver);
+		AcmeUI.addOpenDirectoryObserver(directoryActionObserver);
 	}
 
 	public void setResultText(String txt) {
@@ -121,7 +129,7 @@ public class TestPointsView extends ViewPart {
 
 	@Override
 	public void dispose() {
-		AcmeUI.deleteOpenDirectoryObserver(openDirectoryObserver);
+		AcmeUI.deleteOpenDirectoryObserver(directoryActionObserver);
 		super.dispose();
 	}
 
