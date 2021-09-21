@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
 
+@Deprecated
 public class DirectoryConfig {
 	public IPath absPath;
 	public String type;
