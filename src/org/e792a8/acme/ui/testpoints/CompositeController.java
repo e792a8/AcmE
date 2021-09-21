@@ -9,6 +9,7 @@ import org.e792a8.acme.core.runner.TestResult;
 import org.e792a8.acme.core.runner.pipeline.ARunner;
 import org.e792a8.acme.core.workspace.TestPointConfig;
 import org.e792a8.acme.core.workspace.WorkspaceManager;
+import org.e792a8.acme.ui.AcmeUI;
 import org.e792a8.acme.utils.FileSystem;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Event;
@@ -65,7 +66,7 @@ class CompositeController {
 	class RunTestPointAction extends Action implements Listener {
 		@Override
 		public void run() {
-			// TODO better ways to get solution config
+			AcmeUI.fireBeforeRun(composite.getConfig());
 			composite.setResultText("--");
 			composite.saveTestPoint();
 			composite.clearOutput();
@@ -107,6 +108,7 @@ class CompositeController {
 					if (result.outputFile != null) {
 						composite.setOutput(FileSystem.read(result.outputFile, 4096));
 					}
+					AcmeUI.fireAfterRun(composite.getConfig());
 				}
 			}
 		});

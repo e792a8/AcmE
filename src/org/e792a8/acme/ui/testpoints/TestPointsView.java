@@ -36,6 +36,9 @@ public class TestPointsView extends ViewPart {
 	protected List<TestPointComposite> composites = new LinkedList<>();
 	CLabel lblResult;
 	private IOpenDirectoryObserver openDirectoryObserver = (config) -> {
+		if (directory == config) {
+			return;
+		}
 		directory = config;
 		for (TestPointComposite c : composites) {
 			c.controller.dispose();

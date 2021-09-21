@@ -9,6 +9,7 @@ import org.e792a8.acme.core.runner.TestPointRequest;
 import org.e792a8.acme.core.runner.TestResult;
 import org.e792a8.acme.core.workspace.TestPointConfig;
 import org.e792a8.acme.core.workspace.WorkspaceManager;
+import org.e792a8.acme.ui.AcmeUI;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Event;
@@ -50,6 +51,7 @@ class TestPointsViewController {
 			if (testsView.getDirectory() == null) {
 				return;
 			}
+			AcmeUI.fireBeforeRun(testsView.getDirectory());
 			List<TestPointRequest> requests = new LinkedList<>();
 			for (TestPointComposite c : testsView.composites) {
 				requests.add(c.controller.getTestPointRequest());
@@ -69,6 +71,7 @@ class TestPointsViewController {
 					public void finish(TestResult result) {
 						// TODO Auto-generated method stub
 						testsView.setResultText(result.resultCode);
+						AcmeUI.fireAfterRun(testsView.getDirectory());
 					}
 				}).launch();
 		}
