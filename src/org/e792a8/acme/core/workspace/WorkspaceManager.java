@@ -166,7 +166,7 @@ public class WorkspaceManager {
 		return config;
 	}
 
-	private static IPath getRootPath() {
+	public static IPath getRootPath() {
 		return ResourcesPlugin.getWorkspace().getRoot().getLocation();
 	}
 
