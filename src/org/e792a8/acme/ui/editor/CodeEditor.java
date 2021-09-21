@@ -21,7 +21,7 @@ public class CodeEditor extends TextEditor {
 				return;
 			}
 			if (((CodeEditorInput) getEditorInput()).solutionConfig.directory == dir) {
-				performSave(true, getProgressMonitor());
+				performSave(true, null);
 			}
 		}
 
