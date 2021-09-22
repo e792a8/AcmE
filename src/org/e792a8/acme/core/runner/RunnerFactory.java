@@ -7,8 +7,8 @@ import org.e792a8.acme.core.runner.judge.AJudge;
 import org.e792a8.acme.core.runner.judge.StrictJudge;
 import org.e792a8.acme.core.runner.pipeline.ARunner;
 import org.e792a8.acme.core.runner.pipeline.CppRunner;
-import org.e792a8.acme.core.workspace.JudgeConfig;
-import org.e792a8.acme.core.workspace.SolutionConfig;
+import org.e792a8.acme.core.workspace.IJudgeConfig;
+import org.e792a8.acme.core.workspace.ISolution;
 
 /**
  * 
@@ -18,16 +18,16 @@ import org.e792a8.acme.core.workspace.SolutionConfig;
  *
  */
 public class RunnerFactory {
-	public static final ARunner createRunner(SolutionConfig solConf, TestPointRequest request,
+	public static final ARunner createRunner(ISolution solConf, TestPointRequest request,
 		IRunnerCallback mainCallback) {
 		List<TestPointRequest> req = new ArrayList<>();
 		req.add(request);
 		return createRunner(solConf, req, mainCallback);
 	}
 
-	public static final ARunner createRunner(SolutionConfig solConf, List<TestPointRequest> requests,
+	public static final ARunner createRunner(ISolution solConf, List<TestPointRequest> requests,
 		IRunnerCallback mainCallback) {
-		AJudge judge = createJudge(solConf.directory.judge);
+		AJudge judge = createJudge(solConf.getProblem().getJudgeConfig());
 		return createPipeline(solConf, requests, judge, mainCallback);
 	}
 
@@ -37,8 +37,8 @@ public class RunnerFactory {
 	 * @param config the JudgeConfig
 	 * @return
 	 */
-	private static final AJudge createJudge(JudgeConfig config) {
-		String type = config.type;
+	private static final AJudge createJudge(IJudgeConfig config) {
+		String type = config.getJudgeType();
 		if ("strict".equals(type)) {
 			return new StrictJudge();
 		}
@@ -48,15 +48,15 @@ public class RunnerFactory {
 	/**
 	 * Extend this to support more languages
 	 * 
-	 * @param config the SolutionConfig
-	 * @param judge  the judge to use in the pipeline
+	 * @param solution the SolutionConfig
+	 * @param judge    the judge to use in the pipeline
 	 * @return
 	 */
-	public static final ARunner createPipeline(SolutionConfig config, List<TestPointRequest> requests,
+	public static final ARunner createPipeline(ISolution solution, List<TestPointRequest> requests,
 		AJudge judge, IRunnerCallback mainCallback) {
-		String lang = config.lang;
+		String lang = solution.getLang();
 		if ("cpp".equals(lang)) {
-			return new CppRunner(config, requests, judge, mainCallback);
+			return new CppRunner(solution, requests, judge, mainCallback);
 		}
 		return null;
 	}

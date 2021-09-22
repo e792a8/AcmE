@@ -1,8 +1,7 @@
 package org.e792a8.acme.ui.contests;
 
-import org.e792a8.acme.core.workspace.DirectoryConfig;
-import org.e792a8.acme.core.workspace.WorkspaceManager;
-import org.eclipse.core.runtime.IPath;
+import org.e792a8.acme.core.workspace.AcmeWorkspace;
+import org.e792a8.acme.core.workspace.IDirectory;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -20,15 +19,10 @@ class ItemSelectionListener implements ISelectionChangedListener {
 	public void selectionChanged(SelectionChangedEvent event) {
 		ISelection selection = event.getSelection();
 		if (!selection.isEmpty() && selection instanceof IStructuredSelection) {
-			DirectoryConfig handle = WorkspaceManager
-				.readDirectory((IPath) ((IStructuredSelection) selection).getFirstElement());
-			if (handle != null) {
-				contestsView.lastSelectedDirectory = handle.absPath;
-			} else {
-				contestsView.lastSelectedDirectory = null;
-			}
+			IDirectory dir = (IDirectory) ((IStructuredSelection) selection).getFirstElement();
+			contestsView.lastSelectedDirectory = dir;
 		} else {
-			contestsView.lastSelectedDirectory = WorkspaceManager.readRoot().absPath;
+			contestsView.lastSelectedDirectory = AcmeWorkspace.getRootGroup();
 		}
 	}
 

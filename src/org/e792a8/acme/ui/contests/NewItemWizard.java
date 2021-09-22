@@ -1,8 +1,7 @@
 package org.e792a8.acme.ui.contests;
 
-import org.e792a8.acme.core.workspace.DirectoryConfig;
-import org.e792a8.acme.core.workspace.WorkspaceManager;
-import org.eclipse.core.runtime.IPath;
+import org.e792a8.acme.core.workspace.IDirectoryBuilder;
+import org.e792a8.acme.core.workspace.IGroup;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
@@ -10,43 +9,32 @@ import org.eclipse.ui.IWorkbench;
 
 public class NewItemWizard extends Wizard implements INewWizard {
 	private DirectoryWizardPage page;
-	private IPath parentPath;
+	private IGroup parent;
 
 	public NewItemWizard() {
 		super();
 	}
 
-	public NewItemWizard(IPath parent) {
+	public NewItemWizard(IGroup parent) {
 		super();
-		this.parentPath = parent;
+		this.parent = parent;
 	}
 
 	@Override
 	public void addPages() {
-		page = new DirectoryWizardPage(parentPath);
+		page = new DirectoryWizardPage(parent, true);
 		addPage(page);
 	}
 
 	@Override
 	public boolean performFinish() {
-		DirectoryConfig config = page.getDirectoryConfig();
-		if (config.absPath.toFile().exists()) {
-			// TODO duplicate name resolution
-			return false;
-		}
-		doFinish(config);
+		IDirectoryBuilder builder = page.getDirectoryBuilder();
+		builder.finish();
 		return true;
-	}
-
-	private void doFinish(DirectoryConfig config) {
-		WorkspaceManager.addDirectory(config);
 	}
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		parentPath = (IPath) selection.getFirstElement();
-		if (parentPath == null) {
-			parentPath = WorkspaceManager.readRoot().absPath;
-		}
+
 	}
 }

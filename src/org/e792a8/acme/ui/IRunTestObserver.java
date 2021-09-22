@@ -1,7 +1,9 @@
 package org.e792a8.acme.ui;
 
-public interface IRunTestObserver {
-	void before(Object config);
+import org.e792a8.acme.core.workspace.IWorkspaceElement;
 
-	void after(Object config);
+public interface IRunTestObserver {
+	void before(IWorkspaceElement config);
+
+	void after(IWorkspaceElement config);
 }

@@ -2,7 +2,7 @@ package org.e792a8.acme.ui.editor;
 
 import java.io.File;
 
-import org.e792a8.acme.core.workspace.SolutionConfig;
+import org.e792a8.acme.core.workspace.ISolution;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
@@ -37,16 +37,20 @@ public class CodeEditorInput implements IEditorInput, IPersistableElement {
 
 	}
 
-	SolutionConfig solutionConfig;
+	ISolution solution;
 	private WorkbenchAdapter workbenchAdapter = new WorkbenchAdapter();
 
-	public CodeEditorInput(SolutionConfig config) {
-		this.solutionConfig = config;
+	public CodeEditorInput(ISolution solution) {
+		this.solution = solution;
+	}
+
+	public ISolution getSolution() {
+		return solution;
 	}
 
 	@Override
 	public void saveState(IMemento memento) {
-		CodeEditorInputFactory.saveState(memento, solutionConfig);
+		CodeEditorInputFactory.saveState(memento, solution);
 	}
 
 	@Override
@@ -64,8 +68,7 @@ public class CodeEditorInput implements IEditorInput, IPersistableElement {
 
 	@Override
 	public boolean exists() {
-		return solutionConfig.directory.absPath
-			.append(solutionConfig.path).toFile().exists();
+		return getSolution().getFile().exists();
 	}
 
 	@Override
@@ -76,7 +79,7 @@ public class CodeEditorInput implements IEditorInput, IPersistableElement {
 
 	@Override
 	public String getName() {
-		return solutionConfig.directory.name;
+		return getSolution().getDirectory().getName();
 	}
 
 	@Override
@@ -86,7 +89,7 @@ public class CodeEditorInput implements IEditorInput, IPersistableElement {
 
 	@Override
 	public String getToolTipText() {
-		return solutionConfig.path;
+		return getSolution().getFullPath().toString();
 	}
 
 	@Override
@@ -95,15 +98,14 @@ public class CodeEditorInput implements IEditorInput, IPersistableElement {
 			return true;
 		}
 		if (obj instanceof CodeEditorInput) {
-			return solutionConfig.directory.absPath.append(solutionConfig.path)
-				.equals(((CodeEditorInput) obj).solutionConfig.directory.absPath
-					.append(((CodeEditorInput) obj).solutionConfig.path));
+			return getSolution().getFullPath()
+				.equals(((CodeEditorInput) obj).getSolution().getFullPath());
 		}
 		return false;
 	}
 
 	public File getFile() {
-		return solutionConfig.directory.absPath.append(solutionConfig.path).toFile();
+		return getSolution().getFile();
 	}
 
 }

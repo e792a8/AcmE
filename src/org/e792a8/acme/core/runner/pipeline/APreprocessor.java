@@ -1,15 +1,15 @@
 package org.e792a8.acme.core.runner.pipeline;
 
 import org.e792a8.acme.core.runner.TestResult;
-import org.e792a8.acme.core.workspace.SolutionConfig;
+import org.e792a8.acme.core.workspace.ISolution;
 
 public abstract class APreprocessor implements Runnable {
-	protected SolutionConfig solutionConfig;
+	protected ISolution solution;
 	private TestResult testResult;
 	private boolean finished;
 
-	public APreprocessor(SolutionConfig solConf) {
-		solutionConfig = solConf;
+	public APreprocessor(ISolution solution) {
+		this.solution = solution;
 		finished = false;
 	}
 

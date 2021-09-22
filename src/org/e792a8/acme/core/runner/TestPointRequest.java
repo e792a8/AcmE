@@ -1,17 +1,17 @@
 package org.e792a8.acme.core.runner;
 
-import org.e792a8.acme.core.workspace.TestPointConfig;
+import org.e792a8.acme.core.workspace.ITestPoint;
 
 public class TestPointRequest {
-	protected TestPointConfig testPoint;
+	protected ITestPoint testPoint;
 	protected IRunnerCallback callback;
 
-	public TestPointRequest(TestPointConfig config, IRunnerCallback callback) {
-		testPoint = config;
+	public TestPointRequest(ITestPoint testPoint, IRunnerCallback callback) {
+		this.testPoint = testPoint;
 		this.callback = callback;
 	}
 
-	public TestPointConfig getTestPoint() {
+	public ITestPoint getTestPoint() {
 		return testPoint;
 	}
 

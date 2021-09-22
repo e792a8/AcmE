@@ -7,8 +7,8 @@ import org.e792a8.acme.core.runner.IRunnerCallback;
 import org.e792a8.acme.core.runner.TestPointRequest;
 import org.e792a8.acme.core.runner.TestResult;
 import org.e792a8.acme.core.runner.judge.AJudge;
-import org.e792a8.acme.core.workspace.SolutionConfig;
-import org.e792a8.acme.core.workspace.TestPointConfig;
+import org.e792a8.acme.core.workspace.ISolution;
+import org.e792a8.acme.core.workspace.ITestPoint;
 
 /**
  * 
@@ -19,7 +19,7 @@ import org.e792a8.acme.core.workspace.TestPointConfig;
  *
  */
 public abstract class ARunner {
-	private SolutionConfig solutionConfig;
+	private ISolution solution;
 	private AJudge judge;
 	private APreprocessor preprocessor;
 	private List<TestRunnerThread> runnerThreads;
@@ -134,18 +134,18 @@ public abstract class ARunner {
 		}
 	}
 
-	public ARunner(SolutionConfig solConf, List<TestPointRequest> requests, AJudge judge,
+	public ARunner(ISolution solution, List<TestPointRequest> requests, AJudge judge,
 		IRunnerCallback mainCallback) {
-		solutionConfig = solConf;
+		this.solution = solution;
 		this.mainCallback = mainCallback;
-		this.preprocessor = createPreprocessor(solConf);
+		this.preprocessor = createPreprocessor(solution);
 		this.judge = judge;
 		finished = false;
 		initialize(requests);
 	}
 
 	private final void initialize(List<TestPointRequest> requests) {
-		preprocessor = createPreprocessor(solutionConfig);
+		preprocessor = createPreprocessor(solution);
 		runnerThreads = new LinkedList<>();
 		for (TestPointRequest req : requests) {
 			runnerThreads.add(new TestRunnerThread(createTestRunner(req.getTestPoint()), judge, req.getCallback()));
@@ -216,7 +216,7 @@ public abstract class ARunner {
 		return true;
 	}
 
-	protected abstract APreprocessor createPreprocessor(SolutionConfig solConfig);
+	protected abstract APreprocessor createPreprocessor(ISolution solution);
 
-	protected abstract ATestRunner createTestRunner(TestPointConfig testConfig);
+	protected abstract ATestRunner createTestRunner(ITestPoint testPoint);
 }

@@ -1,6 +1,6 @@
 package org.e792a8.acme.ui.contests;
 
-import org.eclipse.core.runtime.IPath;
+import org.e792a8.acme.core.workspace.IDirectory;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -21,7 +21,7 @@ public class ContestsView extends ViewPart {
 
 	TreeViewer viewer;
 	private DrillDownAdapter drillDownAdapter;
-	IPath lastSelectedDirectory;
+	IDirectory lastSelectedDirectory;
 	private final ContestsViewController controller = new ContestsViewController(this);
 
 	@Override

@@ -2,7 +2,7 @@ package org.e792a8.acme.ui.testpoints;
 
 import java.io.File;
 
-import org.e792a8.acme.core.workspace.TestPointConfig;
+import org.e792a8.acme.core.workspace.ITestPoint;
 import org.e792a8.acme.utils.FileSystem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -24,7 +24,7 @@ public class TestPointComposite extends Composite {
 	private DataBlock inputBlock;
 	private DataBlock outputBlock;
 	private DataBlock answerBlock;
-	TestPointConfig testPointConfig;
+	ITestPoint testPoint;
 	CompositeController controller;
 	CLabel lblResult;
 
@@ -87,8 +87,8 @@ public class TestPointComposite extends Composite {
 		lblTest.setText("Test " + index);
 	}
 
-	public TestPointConfig getConfig() {
-		return testPointConfig;
+	public ITestPoint getTestPoint() {
+		return testPoint;
 	}
 
 	public void clearOutput() {
@@ -96,9 +96,9 @@ public class TestPointComposite extends Composite {
 	}
 
 	public void saveTestPoint() {
-		File f = testPointConfig.directory.absPath.append(testPointConfig.in).toFile();
+		File f = testPoint.getInput().getFile();
 		FileSystem.write(f, getInput());
-		f = testPointConfig.directory.absPath.append(testPointConfig.ans).toFile();
+		f = testPoint.getAnswer().getFile();
 		FileSystem.write(f, getAnswer());
 	}
 
@@ -108,10 +108,10 @@ public class TestPointComposite extends Composite {
 	 * @param parent
 	 * @param style
 	 */
-	public TestPointComposite(Composite parent, int style, TestPointsView view, TestPointConfig tpConf, int index) {
+	public TestPointComposite(Composite parent, int style, TestPointsView view, ITestPoint tpConf, int index) {
 		super(parent, style);
 		parentView = view;
-		testPointConfig = tpConf;
+		testPoint = tpConf;
 		controller = new CompositeController(this);
 
 		setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -186,6 +186,9 @@ public class TestPointComposite extends Composite {
 		setLayoutData(gridData);
 
 		setIndex(index);
+
+		setInput(FileSystem.read(testPoint.getInput().getFile(), 4096));
+		setAnswer(FileSystem.read(testPoint.getAnswer().getFile(), 4096));
 	}
 
 	@Override

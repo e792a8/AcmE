@@ -6,6 +6,16 @@ public interface IDirectory extends IWorkspaceFile {
 
 	String getUrl();
 
-	IDirectory getParentDirectory();
+	IGroup getParentGroup();
+
+	IGroup toGroup();
+
+	IProblem toProblem();
+
+	boolean isProblem();
+
+	boolean isGroup();
+
+	IDirectoryBuilder modify();
 
 }

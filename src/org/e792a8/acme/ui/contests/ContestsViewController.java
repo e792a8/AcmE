@@ -1,12 +1,11 @@
 package org.e792a8.acme.ui.contests;
 
-import org.e792a8.acme.core.workspace.DirectoryConfig;
-import org.e792a8.acme.core.workspace.WorkspaceManager;
+import org.e792a8.acme.core.workspace.AcmeWorkspace;
+import org.e792a8.acme.core.workspace.IDirectory;
 import org.e792a8.acme.ui.AcmeUI;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -32,8 +31,8 @@ class ContestsViewController {
 
 		@Override
 		public void run() {
-			IStructuredSelection selection = contestsView.viewer.getStructuredSelection();
-			new WizardDialog(null, new NewItemWizard(contestsView.lastSelectedDirectory)).open();
+			// FIXME
+//			new WizardDialog(null, new NewItemWizard(contestsView.lastSelectedDirectory)).open();
 			contestsView.refreshView();
 		}
 
@@ -53,7 +52,7 @@ class ContestsViewController {
 
 		@Override
 		public void run() {
-			new WizardDialog(null, new NewItemWizard(WorkspaceManager.readRoot().absPath)).open();
+			new WizardDialog(null, new NewItemWizard(AcmeWorkspace.getRootGroup())).open();
 			contestsView.refreshView();
 		}
 
@@ -67,11 +66,10 @@ class ContestsViewController {
 
 		@Override
 		public void run() {
-			DirectoryConfig config = WorkspaceManager.readDirectory(contestsView.lastSelectedDirectory);
-			if (!"problem".equals(config.type)) {
-				return;
+			IDirectory dir = contestsView.lastSelectedDirectory;
+			if (dir.isProblem()) {
+				AcmeUI.fireOpenDirectory(dir.toProblem());
 			}
-			AcmeUI.fireOpenDirectory(config);
 		}
 
 		@Override
@@ -92,8 +90,8 @@ class ContestsViewController {
 
 		@Override
 		public void run() {
-			AcmeUI.fireOpenDirectory(null);
-			WorkspaceManager.deleteDirectory(contestsView.lastSelectedDirectory);
+			AcmeUI.fireOpenDirectory(null); // TODO change to close
+			contestsView.lastSelectedDirectory.delete();
 			contestsView.refreshView();
 		}
 

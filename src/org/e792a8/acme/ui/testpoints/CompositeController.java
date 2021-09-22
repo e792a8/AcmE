@@ -7,8 +7,7 @@ import org.e792a8.acme.core.runner.RunnerFactory;
 import org.e792a8.acme.core.runner.TestPointRequest;
 import org.e792a8.acme.core.runner.TestResult;
 import org.e792a8.acme.core.runner.pipeline.ARunner;
-import org.e792a8.acme.core.workspace.TestPointConfig;
-import org.e792a8.acme.core.workspace.WorkspaceManager;
+import org.e792a8.acme.core.workspace.ITestPoint;
 import org.e792a8.acme.ui.AcmeUI;
 import org.e792a8.acme.utils.FileSystem;
 import org.eclipse.jface.action.Action;
@@ -28,9 +27,9 @@ class CompositeController {
 		@Override
 		public void run() {
 			// FIXME need better methods
-			TestPointConfig config = composite.getConfig();
-			File inFile = config.directory.absPath.append(config.in).toFile();
-			File ansFile = config.directory.absPath.append(config.ans).toFile();
+			ITestPoint config = composite.getTestPoint();
+			File inFile = config.getInput().getFile();
+			File ansFile = config.getAnswer().getFile();
 			FileSystem.write(inFile, "");
 			FileSystem.write(ansFile, "");
 			composite.setInput("");
@@ -48,11 +47,12 @@ class CompositeController {
 	class DeleteTestPointAction extends Action implements Listener {
 		@Override
 		public void run() {
+			ITestPoint tp = composite.getTestPoint();
 			TestPointsView parentView = composite.parentView;
 			parentView.composites.remove(composite);
 			composite.dispose();
 			dispose();
-			WorkspaceManager.deleteItem(composite.getConfig());
+			tp.delete();
 			parentView.updateIndexes();
 			parentView.refresh();
 		}
@@ -66,11 +66,11 @@ class CompositeController {
 	class RunTestPointAction extends Action implements Listener {
 		@Override
 		public void run() {
-			AcmeUI.fireBeforeRun(composite.getConfig());
+			AcmeUI.fireBeforeRun(composite.getTestPoint());
 			composite.setResultText("--");
 			composite.saveTestPoint();
 			composite.clearOutput();
-			runner = RunnerFactory.createRunner(composite.getConfig().directory.solution,
+			runner = RunnerFactory.createRunner(composite.getTestPoint().getProblem().getSolution(),
 				getTestPointRequest(), new IRunnerCallback() {
 
 					@Override
@@ -93,7 +93,7 @@ class CompositeController {
 
 	public TestPointRequest getTestPointRequest() {
 		composite.setResultText("--");
-		final TestPointRequest req = new TestPointRequest(composite.getConfig(), new IRunnerCallback() {
+		final TestPointRequest req = new TestPointRequest(composite.getTestPoint(), new IRunnerCallback() {
 
 			@Override
 			public void start() {
@@ -102,13 +102,12 @@ class CompositeController {
 
 			@Override
 			public void finish(TestResult result) {
-				// TODO Auto-generated method stub
 				if (result != null) {
 					composite.setResultText(result.resultCode);
 					if (result.outputFile != null) {
 						composite.setOutput(FileSystem.read(result.outputFile, 4096));
 					}
-					AcmeUI.fireAfterRun(composite.getConfig());
+					AcmeUI.fireAfterRun(composite.getTestPoint());
 				}
 			}
 		});
@@ -122,9 +121,6 @@ class CompositeController {
 	}
 
 	protected void deleteTestPoint() {
-		TestPointConfig c = composite.getConfig();
-		WorkspaceManager.deleteItem(c);
-		c.directory.testPoints.remove(c);
-		WorkspaceManager.writeDirectory(c.directory);
+		composite.getTestPoint().delete();
 	}
 }

@@ -3,11 +3,11 @@ package org.e792a8.acme.ui.testpoints;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.e792a8.acme.core.workspace.DirectoryConfig;
-import org.e792a8.acme.core.workspace.TestPointConfig;
+import org.e792a8.acme.core.workspace.IDirectory;
+import org.e792a8.acme.core.workspace.IProblem;
+import org.e792a8.acme.core.workspace.ITestPoint;
 import org.e792a8.acme.ui.AcmeUI;
 import org.e792a8.acme.ui.IDirectoryActionObserver;
-import org.e792a8.acme.utils.FileSystem;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -31,33 +31,33 @@ public class TestPointsView extends ViewPart {
 	Button btnAdd;
 	Button btnRunAll;
 	private final TestPointsViewController controller = new TestPointsViewController(this);
-	private DirectoryConfig directory;
+	private IProblem problem;
 	private static TestPointsView instance;
 	protected List<TestPointComposite> composites = new LinkedList<>();
 	CLabel lblResult;
 	private IDirectoryActionObserver directoryActionObserver = new IDirectoryActionObserver() {
 		@Override
-		public void open(DirectoryConfig config) {
-			if (directory == config) {
+		public void open(IDirectory config) {
+			if (problem == config) {
 				return;
 			}
-			directory = config;
+			problem = config.toProblem();
 			for (TestPointComposite c : composites) {
 				c.controller.dispose();
 				c.dispose();
 			}
 			composites.clear();
-			if (config == null) {
+			if (problem == null) {
 				return;
 			}
 			int i = 0;
-			for (TestPointConfig c : config.testPoints) {
+			for (ITestPoint c : problem.getTestPoints()) {
 				addTestPointToView(c);
 			}
 		}
 
 		@Override
-		public void close(DirectoryConfig config) {
+		public void close(IDirectory config) {
 			// TODO some state persisting workarounds
 		}
 	};
@@ -90,8 +90,8 @@ public class TestPointsView extends ViewPart {
 		});
 	}
 
-	public DirectoryConfig getDirectory() {
-		return directory;
+	public IProblem getProblem() {
+		return problem;
 	}
 
 	public void refresh() {
@@ -107,11 +107,9 @@ public class TestPointsView extends ViewPart {
 		}
 	}
 
-	void addTestPointToView(TestPointConfig config) {
+	void addTestPointToView(ITestPoint config) {
 		TestPointComposite comp = new TestPointComposite(testsArea, SWT.NONE, this, config, composites.size() + 1);
 		composites.add(comp);
-		comp.setInput(FileSystem.read(config.directory.absPath.append(config.in).toFile(), 4096));
-		comp.setAnswer(FileSystem.read(config.directory.absPath.append(config.ans).toFile(), 4096));
 		refresh();
 	}
 

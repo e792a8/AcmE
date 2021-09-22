@@ -1,8 +1,7 @@
 package org.e792a8.acme;
 
-import java.io.File;
-
-import org.e792a8.acme.core.workspace.DirectoryConfig;
+import org.e792a8.acme.core.workspace.IDirectory;
+import org.e792a8.acme.core.workspace.IProblem;
 import org.e792a8.acme.ui.AcmeUI;
 import org.e792a8.acme.ui.IDirectoryActionObserver;
 import org.e792a8.acme.ui.editor.CodeEditor;
@@ -32,14 +31,14 @@ public class AcmePlugin extends AbstractUIPlugin {
 	private static IDirectoryActionObserver[] globalOpenDirectoryObservers = {
 		new IDirectoryActionObserver() {
 			@Override
-			public void open(DirectoryConfig config) {
-				if (config == null) {
+			public void open(IDirectory config) {
+				if (config == null || !(config instanceof IProblem)) {
 					return;
 				}
-				File f = config.absPath.append(config.solution.path).toFile();
+				IProblem p = (IProblem) config;
 				try {
 					PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-						.getActivePage().openEditor(new CodeEditorInput(config.solution), CodeEditor.ID);
+						.getActivePage().openEditor(new CodeEditorInput(p.getSolution()), CodeEditor.ID);
 				} catch (PartInitException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -48,7 +47,7 @@ public class AcmePlugin extends AbstractUIPlugin {
 			}
 
 			@Override
-			public void close(DirectoryConfig config) {
+			public void close(IDirectory config) {
 				// TODO some state persisting workarounds
 			}
 		}

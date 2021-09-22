@@ -3,19 +3,21 @@ package org.e792a8.acme.core.runner.pipeline;
 import java.io.File;
 
 import org.e792a8.acme.core.runner.TestResult;
-import org.e792a8.acme.core.workspace.TestPointConfig;
+import org.e792a8.acme.core.workspace.ITestPoint;
 
 abstract class ATestRunner implements Runnable {
 	private TestResult testResult;
 	private boolean finished;
-	protected TestPointConfig testPointConfig;
-	protected File inputFile, outputFile, answerFile;
+	protected ITestPoint testPoint;
+	protected File outputFile;
 
-	public ATestRunner(TestPointConfig testConf) {
-		testPointConfig = testConf;
+	public ATestRunner(ITestPoint testPoint) {
+		this.testPoint = testPoint;
 		finished = false;
-		inputFile = testConf.directory.absPath.append(testConf.in).toFile();
-		answerFile = testConf.directory.absPath.append(testConf.ans).toFile();
+	}
+
+	public ITestPoint getTestPoint() {
+		return testPoint;
 	}
 
 	/**
@@ -40,7 +42,7 @@ abstract class ATestRunner implements Runnable {
 
 	public final File getInput() {
 		if (isFinished())
-			return inputFile;
+			return getTestPoint().getInput().getFile();
 		return null;
 	}
 
@@ -52,7 +54,7 @@ abstract class ATestRunner implements Runnable {
 
 	public final File getAnswer() {
 		if (isFinished())
-			return answerFile;
+			return getTestPoint().getAnswer().getFile();
 		return null;
 	}
 

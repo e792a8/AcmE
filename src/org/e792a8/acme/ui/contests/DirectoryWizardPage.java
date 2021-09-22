@@ -1,11 +1,7 @@
 package org.e792a8.acme.ui.contests;
 
-import java.util.LinkedList;
-
-import org.e792a8.acme.core.workspace.DirectoryConfig;
-import org.e792a8.acme.core.workspace.JudgeConfig;
-import org.e792a8.acme.core.workspace.SolutionConfig;
-import org.e792a8.acme.core.workspace.TestPointConfig;
+import org.e792a8.acme.core.workspace.IDirectory;
+import org.e792a8.acme.core.workspace.IDirectoryBuilder;
 import org.e792a8.acme.utils.FileSystem;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.wizard.WizardPage;
@@ -29,20 +25,13 @@ public class DirectoryWizardPage extends WizardPage {
 	private Text pathText;
 	private Button btnGroup;
 	private Button btnProblem;
-	private DirectoryConfig directoryConfig;
+	private IDirectory directory;
 	private boolean isNewWizard;
 
-	public DirectoryWizardPage(IPath parent) {
+	public DirectoryWizardPage(IDirectory directory, boolean isNew) {
 		super("wizardPage");
-		this.parentPath = parent;
-		this.directoryConfig = new DirectoryConfig();
-		isNewWizard = true;
-	}
-
-	public DirectoryWizardPage(DirectoryConfig directoryConfig) {
-		super("wizardPage");
-		this.directoryConfig = directoryConfig;
-		isNewWizard = false;
+		this.directory = directory;
+		isNewWizard = isNew;
 	}
 
 	private void selectGroupType() {
@@ -128,17 +117,20 @@ public class DirectoryWizardPage extends WizardPage {
 	private void initialize() {
 		if (isNewWizard) {
 			setTitle("New Directory");
-			setDescription("Add a new problem group / contest / problem");
+			setDescription("Adding under " + directory.getFullPath().toString());
 			selectGroupType();
 		} else {
-			setTitle("Configuring " + directoryConfig.name);
-			if ("group".equals(directoryConfig.type)) {
+			setTitle("Configuring " + directory.getName());
+			setDescription("Editing " + directory.getFullPath().toString());
+			if (directory.isGroup()) {
 				selectGroupType();
-			} else {
+			} else if (directory.isProblem()) {
 				selectProblemType();
+			} else {
+				return;
 			}
-			nameText.setText(directoryConfig.name);
-			urlText.setText(directoryConfig.url);
+			nameText.setText(directory.getName());
+			urlText.setText(directory.getUrl());
 			pathText.setEnabled(false);
 		}
 	}
@@ -147,8 +139,6 @@ public class DirectoryWizardPage extends WizardPage {
 		if (event != null) {
 			if (isNewWizard && event.getSource().equals(nameText)) {
 				pathText.setText(FileSystem.safePathName(nameText.getText()));
-				if (isNewWizard && pathText.getText().length() > 0)
-					directoryConfig.absPath = parentPath.append(pathText.getText());
 			}
 		}
 		updateStatus(null);
@@ -159,29 +149,22 @@ public class DirectoryWizardPage extends WizardPage {
 		setPageComplete(message == null);
 	}
 
-	public DirectoryConfig getDirectoryConfig() {
+	public IDirectoryBuilder getDirectoryBuilder() {
+		IDirectoryBuilder builder = null;
 		if (isNewWizard) {
-			directoryConfig = new DirectoryConfig();
-			directoryConfig.absPath = parentPath.append(pathText.getText());
-		}
-		directoryConfig.name = nameText.getText();
-		directoryConfig.url = urlText.getText();
-		if (groupTypeSelected) {
-			directoryConfig.type = "group";
-			directoryConfig.children = new LinkedList<>();
+			builder = directory.toGroup().createSubDirectory();
 		} else {
-			directoryConfig.type = "problem";
-			directoryConfig.judge = new JudgeConfig();
-			directoryConfig.judge.type = "strict";
-			directoryConfig.solution = new SolutionConfig();
-			directoryConfig.solution.lang = "cpp";
-			directoryConfig.solution.path = "sol.cpp";
-			directoryConfig.testPoints = new LinkedList<>();
-			TestPointConfig tpConf = new TestPointConfig();
-			tpConf.in = "in1.txt";
-			tpConf.ans = "ans1.txt";
-			directoryConfig.testPoints.add(tpConf);
+			builder = directory.modify();
 		}
-		return directoryConfig;
+		builder.setName(nameText.getText());
+		builder.setUrl(urlText.getText());
+		if (groupTypeSelected) {
+			builder.setType("group");
+		} else {
+			builder.setType("problem");
+			// TODO custom judge type
+			// TODO custom language
+		}
+		return builder;
 	}
 }

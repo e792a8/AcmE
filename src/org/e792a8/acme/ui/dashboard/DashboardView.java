@@ -1,7 +1,6 @@
 package org.e792a8.acme.ui.dashboard;
 
-import org.e792a8.acme.core.workspace.DirectoryConfig;
-import org.e792a8.acme.core.workspace.WorkspaceManager;
+import org.e792a8.acme.core.workspace.IDirectory;
 import org.e792a8.acme.ui.AcmeUI;
 import org.e792a8.acme.ui.IDirectoryActionObserver;
 import org.eclipse.swt.SWT;
@@ -24,25 +23,25 @@ public class DashboardView extends ViewPart {
 	CLabel lblContestName;
 	CLabel lblProblemTitle;
 	CLabel lblUrl;
-	private DirectoryConfig directoryConfig;
+	private IDirectory directory;
 	private IDirectoryActionObserver directoryActionObserver = new IDirectoryActionObserver() {
 		@Override
-		public void open(DirectoryConfig config) {
-			directoryConfig = config;
-			if (config == null) {
+		public void open(IDirectory dir) {
+			directory = dir;
+			if (directory == null) {
 				lblContestName.setText("");
 				lblProblemTitle.setText("");
 				lblUrl.setText("");
 				return;
 			}
-			DirectoryConfig pa = WorkspaceManager.readDirectory(WorkspaceManager.getParent(config.absPath));
-			if (pa == null) {
+			IDirectory pa = directory.getParentGroup();
+			if (pa == directory) {
 				lblContestName.setText("");
 			} else {
-				lblContestName.setText(pa.name);
+				lblContestName.setText(pa.getName());
 			}
-			lblProblemTitle.setText(config.name);
-			lblUrl.setText(config.url);
+			lblProblemTitle.setText(directory.getName());
+			lblUrl.setText(directory.getUrl());
 
 			lblContestName.requestLayout();
 			lblProblemTitle.requestLayout();
@@ -50,7 +49,7 @@ public class DashboardView extends ViewPart {
 		}
 
 		@Override
-		public void close(DirectoryConfig config) {
+		public void close(IDirectory dir) {
 			// TODO some state persisting workarounds
 		}
 	};

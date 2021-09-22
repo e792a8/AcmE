@@ -7,10 +7,7 @@ import org.e792a8.acme.core.runner.IRunnerCallback;
 import org.e792a8.acme.core.runner.RunnerFactory;
 import org.e792a8.acme.core.runner.TestPointRequest;
 import org.e792a8.acme.core.runner.TestResult;
-import org.e792a8.acme.core.workspace.TestPointConfig;
-import org.e792a8.acme.core.workspace.WorkspaceManager;
 import org.e792a8.acme.ui.AcmeUI;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -25,18 +22,7 @@ class TestPointsViewController {
 	class AddTestPointAction extends Action implements Listener {
 		@Override
 		public void run() {
-			TestPointConfig config = new TestPointConfig();
-			config.directory = testsView.getDirectory();
-			IPath dirPath = config.directory.absPath;
-			int i = 1;
-			while (dirPath.append("in" + i + ".txt").toFile().exists()
-				|| dirPath.append("ans" + i + ".txt").toFile().exists())
-				++i;
-			config.in = "in" + i + ".txt";
-			config.ans = "ans" + i + ".txt";
-			testsView.getDirectory().testPoints.add(config);
-			WorkspaceManager.writeDirectory(config.directory);
-			testsView.addTestPointToView(config);
+			testsView.addTestPointToView(testsView.getProblem().addTestPoint());
 		}
 
 		@Override
@@ -48,10 +34,10 @@ class TestPointsViewController {
 	class RunAllTestsAction extends Action implements Listener {
 		@Override
 		public void run() {
-			if (testsView.getDirectory() == null) {
+			if (testsView.getProblem() == null) {
 				return;
 			}
-			AcmeUI.fireBeforeRun(testsView.getDirectory());
+			AcmeUI.fireBeforeRun(testsView.getProblem());
 			List<TestPointRequest> requests = new LinkedList<>();
 			for (TestPointComposite c : testsView.composites) {
 				requests.add(c.controller.getTestPointRequest());
@@ -59,7 +45,7 @@ class TestPointsViewController {
 			testsView.setResultText("--");
 			testsView.saveTestPoints();
 			testsView.clearOutputs();
-			RunnerFactory.createRunner(testsView.getDirectory().solution,
+			RunnerFactory.createRunner(testsView.getProblem().getSolution(),
 				requests, new IRunnerCallback() {
 
 					@Override
@@ -69,9 +55,8 @@ class TestPointsViewController {
 
 					@Override
 					public void finish(TestResult result) {
-						// TODO Auto-generated method stub
 						testsView.setResultText(result.resultCode);
-						AcmeUI.fireAfterRun(testsView.getDirectory());
+						AcmeUI.fireAfterRun(testsView.getProblem());
 					}
 				}).launch();
 		}

@@ -4,4 +4,6 @@ import java.util.List;
 
 public interface IGroup extends IDirectory {
 	List<IDirectory> getSubDirectories();
+
+	IDirectoryBuilder createSubDirectory();
 }

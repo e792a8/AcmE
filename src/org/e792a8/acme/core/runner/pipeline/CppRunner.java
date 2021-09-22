@@ -9,30 +9,30 @@ import org.e792a8.acme.core.runner.IRunnerCallback;
 import org.e792a8.acme.core.runner.TestPointRequest;
 import org.e792a8.acme.core.runner.TestResult;
 import org.e792a8.acme.core.runner.judge.AJudge;
-import org.e792a8.acme.core.workspace.SolutionConfig;
-import org.e792a8.acme.core.workspace.TestPointConfig;
+import org.e792a8.acme.core.workspace.ISolution;
+import org.e792a8.acme.core.workspace.ITestPoint;
 import org.e792a8.acme.utils.FileSystem;
 
 public class CppRunner extends ARunner {
 
-	public CppRunner(SolutionConfig solConf, List<TestPointRequest> requests, AJudge judge,
+	public CppRunner(ISolution solution, List<TestPointRequest> requests, AJudge judge,
 		IRunnerCallback mainCallback) {
-		super(solConf, requests, judge, mainCallback);
+		super(solution, requests, judge, mainCallback);
 	}
 
 	private String executable;
 
 	private class CppPreprocessor extends APreprocessor {
 
-		public CppPreprocessor(SolutionConfig solConf) {
-			super(solConf);
+		public CppPreprocessor(ISolution solution) {
+			super(solution);
 		}
 
 		@Override
 		public void run() {
 			TestResult res = new TestResult();
 			Runtime rt = Runtime.getRuntime();
-			String sourcePath = solutionConfig.directory.absPath.append(solutionConfig.path).toOSString();
+			String sourcePath = solution.getLocation().toOSString();
 			String executablePath = FileSystem.createTempDir() + File.separator + "sol.exe";
 			String[] compileCmd = {
 				"g++",
@@ -67,8 +67,8 @@ public class CppRunner extends ARunner {
 
 		private Process runProcess = null;
 
-		public CppTestRunner(TestPointConfig testConf) {
-			super(testConf);
+		public CppTestRunner(ITestPoint testPoint) {
+			super(testPoint);
 		}
 
 		@Override
@@ -77,7 +77,7 @@ public class CppRunner extends ARunner {
 			String outputPath = FileSystem.createTempDir().getAbsolutePath() + File.separator + "out.txt";
 			File outputFile = new File(outputPath);
 			ProcessBuilder processBuilder = new ProcessBuilder().command(executable)
-				.redirectInput(inputFile).redirectOutput(outputFile);
+				.redirectInput(getTestPoint().getInput().getFile()).redirectOutput(outputFile);
 			int retCode;
 			TestResult res = null;
 			try {
@@ -129,13 +129,13 @@ public class CppRunner extends ARunner {
 	}
 
 	@Override
-	protected APreprocessor createPreprocessor(SolutionConfig solConfig) {
-		return new CppPreprocessor(solConfig);
+	protected APreprocessor createPreprocessor(ISolution solution) {
+		return new CppPreprocessor(solution);
 	}
 
 	@Override
-	protected ATestRunner createTestRunner(TestPointConfig testConfig) {
-		return new CppTestRunner(testConfig);
+	protected ATestRunner createTestRunner(ITestPoint testPoint) {
+		return new CppTestRunner(testPoint);
 	}
 
 }

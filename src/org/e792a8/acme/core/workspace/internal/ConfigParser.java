@@ -1,4 +1,4 @@
-package org.e792a8.acme.core.workspace;
+package org.e792a8.acme.core.workspace.internal;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,13 +17,18 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.e792a8.acme.core.workspace.DirectoryConfig;
+import org.e792a8.acme.core.workspace.JudgeConfig;
+import org.e792a8.acme.core.workspace.SolutionConfig;
+import org.e792a8.acme.core.workspace.TestPointConfig;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-class ConfigParser {
+public class ConfigParser {
 
 	private static DocumentBuilder docBuilder;
 	private static Transformer transformer;
@@ -53,7 +58,7 @@ class ConfigParser {
 		return transformer;
 	}
 
-	private static Document readDoc(IPath path) {
+	static Document readDoc(IPath path) {
 		File file = path.append("acme.xml").toFile();
 		if (!file.exists()) {
 			return null;
@@ -67,7 +72,7 @@ class ConfigParser {
 		return null;
 	}
 
-	private static boolean writeDoc(Document doc, IPath path) {
+	static boolean writeDoc(Document doc, IPath path) {
 		File file = path.append("acme.xml").toFile();
 		if (!file.exists()) {
 			path.toFile().mkdirs();
@@ -89,11 +94,16 @@ class ConfigParser {
 		return true;
 	}
 
+	static Document newDocument() {
+		return getDocumentBuilder().newDocument();
+	}
+
 	/**
 	 * Reads DirectoryConfig from XML config file
 	 * 
 	 * @return null if fails to read XML file
 	 */
+	@Deprecated
 	public static DirectoryConfig readDirConfig(IPath absPath) {
 		DirectoryConfig handle = new DirectoryConfig();
 		handle.absPath = absPath;
@@ -145,6 +155,7 @@ class ConfigParser {
 	 * 
 	 * @return false if fails to write XML file
 	 */
+	@Deprecated
 	public static boolean writeDirConfig(DirectoryConfig handle) {
 		Document doc = getDocumentBuilder().newDocument();
 		Element elem = doc.createElement("directory");
@@ -182,4 +193,30 @@ class ConfigParser {
 		}
 		return writeDoc(doc, handle.absPath);
 	}
+
+	static String getAttribute(IPath location, String key) {
+		return ((Element) readDoc(location)
+			.getElementsByTagName("directory").item(0)).getAttribute(key);
+	}
+
+	public static boolean testRoot() {
+		IPath rootLoc = ResourcesPlugin.getWorkspace().getRoot().getLocation();
+		Document doc = readDoc(rootLoc);
+		if (doc != null) {
+			Element elem = doc.getDocumentElement();
+			if ("directory".equals(elem.getTagName())
+				&& "group".equals(elem.getAttribute("type"))) {
+				return true;
+			}
+		}
+		doc = newDocument();
+		Element elem = doc.createElement("directory");
+		elem.setAttribute("type", "group");
+		elem.setAttribute("name", "ROOT");
+		elem.setAttribute("url", "");
+		doc.appendChild(elem);
+		writeDoc(doc, rootLoc);
+		return true;
+	}
+
 }

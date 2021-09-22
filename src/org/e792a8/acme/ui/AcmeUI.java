@@ -3,7 +3,8 @@ package org.e792a8.acme.ui;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.e792a8.acme.core.workspace.DirectoryConfig;
+import org.e792a8.acme.core.workspace.IDirectory;
+import org.e792a8.acme.core.workspace.IWorkspaceElement;
 
 public class AcmeUI {
 	static List<IDirectoryActionObserver> directoryActionObservers = new LinkedList<>();
@@ -17,10 +18,10 @@ public class AcmeUI {
 		directoryActionObservers.remove(observer);
 	}
 
-	public static void fireOpenDirectory(DirectoryConfig config) {
+	public static void fireOpenDirectory(IDirectory directory) {
 		for (IDirectoryActionObserver o : directoryActionObservers) {
 			try {
-				o.open(config);
+				o.open(directory);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -35,7 +36,7 @@ public class AcmeUI {
 		runTestObservers.remove(observer);
 	}
 
-	public static void fireBeforeRun(Object config) {
+	public static void fireBeforeRun(IWorkspaceElement config) {
 		for (IRunTestObserver o : runTestObservers) {
 			try {
 				o.before(config);
@@ -45,7 +46,7 @@ public class AcmeUI {
 		}
 	}
 
-	public static void fireAfterRun(Object config) {
+	public static void fireAfterRun(IWorkspaceElement config) {
 		for (IRunTestObserver o : runTestObservers) {
 			try {
 				o.after(config);

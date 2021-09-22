@@ -1,10 +1,8 @@
 package org.e792a8.acme.ui.contests;
 
-import java.util.List;
-
-import org.e792a8.acme.core.workspace.DirectoryConfig;
-import org.e792a8.acme.core.workspace.WorkspaceManager;
-import org.eclipse.core.runtime.IPath;
+import org.e792a8.acme.core.workspace.AcmeWorkspace;
+import org.e792a8.acme.core.workspace.IDirectory;
+import org.e792a8.acme.core.workspace.IRootGroup;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 
 class ContestsViewContentProvider implements ITreeContentProvider {
@@ -21,11 +19,11 @@ class ContestsViewContentProvider implements ITreeContentProvider {
 		this.contestsView = contestsView;
 	}
 
-	private IPath invisibleRoot;
+	private IRootGroup invisibleRoot;
 
 	@Override
 	public Object[] getElements(Object parent) {
-		if (parent.equals(this.contestsView.getViewSite())) {
+		if (parent.equals(contestsView.getViewSite())) {
 			if (invisibleRoot == null)
 				initialize();
 			return getChildren(invisibleRoot);
@@ -35,24 +33,39 @@ class ContestsViewContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object getParent(Object child) {
-		return WorkspaceManager.getParent((IPath) child);
+		if (child instanceof IDirectory) {
+			IDirectory d = (IDirectory) child;
+			if (d.equals(d.getParentGroup())) {
+				return null;
+			}
+			return d.getParentGroup();
+		}
+		return null;
 	}
 
 	@Override
 	public Object[] getChildren(Object parent) {
-		List<IPath> children = WorkspaceManager.getChildren((IPath) parent);
-		return children.toArray();
+		if (parent instanceof IDirectory) {
+			IDirectory dir = (IDirectory) parent;
+			if (dir.isGroup()) {
+				return dir.toGroup().getSubDirectories().toArray();
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public boolean hasChildren(Object parent) {
-		DirectoryConfig handle = WorkspaceManager.readDirectory((IPath) parent);
-		if ("group".equals(handle.type) && handle.children != null && handle.children.size() > 0)
-			return true;
+		if (parent instanceof IDirectory) {
+			IDirectory dir = (IDirectory) parent;
+			if (dir.isGroup() && dir.toGroup().getSubDirectories().size() > 0) {
+				return true;
+			}
+		}
 		return false;
 	}
 
 	private void initialize() {
-		invisibleRoot = WorkspaceManager.readRoot().absPath;
+		invisibleRoot = AcmeWorkspace.getRootGroup();
 	}
 }

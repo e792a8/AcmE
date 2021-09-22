@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.e792a8.acme.core.workspace.internal.ConfigParser;
 import org.e792a8.acme.utils.FileSystem;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
@@ -16,6 +17,7 @@ import org.eclipse.core.runtime.IPath;
  * Responsible for ensuring configs and files are consistent and legal.
  * 
  */
+@Deprecated
 public class WorkspaceManager {
 	public static boolean checkDirectory(DirectoryConfig handle) {
 		if (handle == null) {
