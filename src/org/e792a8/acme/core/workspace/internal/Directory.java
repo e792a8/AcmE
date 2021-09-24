@@ -7,6 +7,7 @@ import org.e792a8.acme.core.workspace.IDirectory;
 import org.e792a8.acme.core.workspace.IDirectoryBuilder;
 import org.e792a8.acme.core.workspace.IGroup;
 import org.e792a8.acme.core.workspace.IProblem;
+import org.e792a8.acme.utils.FileSystem;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.w3c.dom.Document;
@@ -85,18 +86,18 @@ public class Directory implements IDirectory {
 	@Override
 	public void delete() {
 		if (getFullPath().segmentCount() > 0) {
-			IGroup parent = getParentGroup().toGroup();
+			IGroup parent = getParentGroup();
 			Document doc = ConfigParser.readDoc(parent.getLocation());
-			NodeList nl = doc.getElementsByTagName("child");
+			NodeList nl = doc.getDocumentElement().getElementsByTagName("child");
 			for (int i = 0; i < nl.getLength(); ++i) {
 				Element e = (Element) nl.item(i);
 				if (getFileName().equals(e.getAttribute("path"))) {
-					doc.removeChild(e);
+					doc.getDocumentElement().removeChild(e);
 					break;
 				}
 			}
+			FileSystem.rmDir(getFile());
 			ConfigParser.writeDoc(doc, parent.getLocation());
-			this.parent = null;
 		}
 	}
 

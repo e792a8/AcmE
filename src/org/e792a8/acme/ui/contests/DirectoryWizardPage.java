@@ -152,12 +152,11 @@ public class DirectoryWizardPage extends WizardPage {
 	public IDirectoryBuilder getDirectoryBuilder() {
 		IDirectoryBuilder builder = null;
 		if (isNewWizard) {
-			builder = directory.toGroup().createSubDirectory();
+			builder = directory.toGroup().createSubDirectory().setFileName(pathText.getText());
 		} else {
 			builder = directory.modify();
 		}
-		builder.setName(nameText.getText());
-		builder.setUrl(urlText.getText());
+		builder.setName(nameText.getText()).setUrl(urlText.getText());
 		if (groupTypeSelected) {
 			builder.setType("group");
 		} else {

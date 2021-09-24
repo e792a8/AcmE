@@ -41,8 +41,7 @@ public class Group extends Directory implements IGroup {
 
 	@Override
 	public IDirectoryBuilder createSubDirectory() {
-		// TODO create subdirectory support
-		return null;
+		return new DirectoryBuilder(this, true);
 	}
 
 }

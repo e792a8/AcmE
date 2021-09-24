@@ -31,9 +31,10 @@ class ContestsViewController {
 
 		@Override
 		public void run() {
-			// FIXME
-//			new WizardDialog(null, new NewItemWizard(contestsView.lastSelectedDirectory)).open();
-			contestsView.refreshView();
+			if (contestsView.lastSelectedDirectory.isGroup()) {
+				new WizardDialog(null, new NewItemWizard(contestsView.lastSelectedDirectory.toGroup())).open();
+				contestsView.refreshView();
+			}
 		}
 
 		@Override

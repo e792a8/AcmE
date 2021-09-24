@@ -1,7 +1,10 @@
 package org.e792a8.acme.core.workspace.internal;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.e792a8.acme.core.workspace.IGroup;
 import org.e792a8.acme.core.workspace.IJudgeConfig;
@@ -25,8 +28,7 @@ public class Problem extends Directory implements IProblem {
 
 	@Override
 	public IJudgeConfig getJudgeConfig() {
-		// TODO get judge config
-		return null;
+		return new JudgeConfig(this);
 	}
 
 	@Override
@@ -50,8 +52,41 @@ public class Problem extends Directory implements IProblem {
 
 	@Override
 	public ITestPoint addTestPoint() {
-		// TODO add testpoint
-		return null;
+		Document doc = ConfigParser.readDoc(getLocation());
+		NodeList nl = doc.getElementsByTagName("test");
+		Set<String> names = new TreeSet<>();
+		for (int i = 0; i < nl.getLength(); ++i) {
+			Element e = (Element) nl.item(i);
+			names.add(e.getAttribute("in"));
+			names.add(e.getAttribute("ans"));
+		}
+		int i = 0;
+		String iname, aname;
+		do {
+			++i;
+			iname = "in" + i + ".txt";
+			aname = "ans" + i + ".txt";
+		} while (names.contains(iname) || names.contains(aname));
+		Element ne = doc.createElement("test");
+		ne.setAttribute("in", iname);
+		ne.setAttribute("ans", aname);
+		doc.getDocumentElement().appendChild(ne);
+		getLocation().append(iname).toFile().delete();
+		try {
+			getLocation().append(iname).toFile().createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		getLocation().append(aname).toFile().delete();
+		try {
+			getLocation().append(aname).toFile().createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		ConfigParser.writeDoc(doc, getLocation());
+		return new TestPoint(this, iname, aname);
 	}
 
 }
