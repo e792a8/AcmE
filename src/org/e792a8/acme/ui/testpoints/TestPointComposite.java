@@ -2,8 +2,15 @@ package org.e792a8.acme.ui.testpoints;
 
 import java.io.File;
 
+import org.e792a8.acme.core.runner.IRunnerCallback;
+import org.e792a8.acme.core.runner.RunnerFactory;
+import org.e792a8.acme.core.runner.TestPointRequest;
+import org.e792a8.acme.core.runner.TestResult;
+import org.e792a8.acme.core.runner.pipeline.ARunner;
 import org.e792a8.acme.core.workspace.ITestPoint;
+import org.e792a8.acme.ui.AcmeUI;
 import org.e792a8.acme.utils.FileSystem;
+import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.layout.FillLayout;
@@ -14,19 +21,115 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 public class TestPointComposite extends Composite {
 
-	TestPointsView parentView;
 	int index;
 	CLabel lblTest;
 	private DataBlock inputBlock;
 	private DataBlock outputBlock;
 	private DataBlock answerBlock;
 	ITestPoint testPoint;
-	CompositeController controller;
 	CLabel lblResult;
+	ARunner runner = null;
+	private TestsViewPart viewPart;
+
+	private RunTestPointAction runTestPointAction = new RunTestPointAction();
+	private ClearTestPointAction clearTestPointAction = new ClearTestPointAction();
+	private DeleteTestPointAction deleteTestPointAction = new DeleteTestPointAction();
+
+	private class ClearTestPointAction extends Action implements Listener {
+
+		@Override
+		public void run() {
+			ITestPoint config = getTestPoint();
+			File inFile = config.getInput().getFile();
+			File ansFile = config.getAnswer().getFile();
+			FileSystem.write(inFile, "");
+			FileSystem.write(ansFile, "");
+			setInput("");
+			setOutput("");
+			setAnswer("");
+		}
+
+		@Override
+		public void handleEvent(Event event) {
+			run();
+		}
+
+	}
+
+	private class DeleteTestPointAction extends Action implements Listener {
+		@Override
+		public void run() {
+			if (runner != null) {
+				runner.terminate();
+			}
+			ITestPoint tp = getTestPoint();
+			dispose();
+			tp.delete();
+			viewPart.removeComposite(TestPointComposite.this);
+		}
+
+		@Override
+		public void handleEvent(Event event) {
+			run();
+		}
+	}
+
+	private class RunTestPointAction extends Action implements Listener {
+		@Override
+		public void run() {
+			AcmeUI.fireBeforeRun(getTestPoint());
+			setResultText("--");
+			saveTestPoint();
+			clearOutput();
+			runner = RunnerFactory.createRunner(getTestPoint().getProblem().getSolution(),
+				getTestPointRequest(), new IRunnerCallback() {
+
+					@Override
+					public void start() {
+					}
+
+					@Override
+					public void finish(TestResult result) {
+					}
+				});
+			runner.launch();
+		}
+
+		@Override
+		public void handleEvent(Event event) {
+			run();
+		}
+
+	}
+
+	public TestPointRequest getTestPointRequest() {
+		setResultText("--");
+		final TestPointRequest req = new TestPointRequest(getTestPoint(), new IRunnerCallback() {
+
+			@Override
+			public void start() {
+				setResultText("**");
+			}
+
+			@Override
+			public void finish(TestResult result) {
+				if (result != null) {
+					setResultText(result.resultCode);
+					if (result.outputFile != null) {
+						setOutput(FileSystem.read(result.outputFile, 4096));
+					}
+					AcmeUI.fireAfterRun(getTestPoint());
+				}
+			}
+		});
+		return req;
+	}
 
 	void clear() {
 		inputBlock.setText("");
@@ -103,16 +206,15 @@ public class TestPointComposite extends Composite {
 	}
 
 	/**
-	 * Create the composite.
+	 * Create the
 	 * 
 	 * @param parent
 	 * @param style
 	 */
-	public TestPointComposite(Composite parent, int style, TestPointsView view, ITestPoint tpConf, int index) {
-		super(parent, style);
-		parentView = view;
+	public TestPointComposite(TestsViewPart parent, ITestPoint tpConf, int index) {
+		super(parent, SWT.NONE);
 		testPoint = tpConf;
-		controller = new CompositeController(this);
+		this.viewPart = parent;
 
 		setLayout(new FillLayout(SWT.HORIZONTAL));
 
@@ -154,15 +256,15 @@ public class TestPointComposite extends Composite {
 
 		Button btnRun = new Button(controls, SWT.NONE);
 		btnRun.setText("Run");
-		btnRun.addListener(SWT.MouseDown, controller.new RunTestPointAction());
+		btnRun.addListener(SWT.MouseDown, runTestPointAction);
 
 		Button btnClear = new Button(controls, SWT.NONE);
 		btnClear.setText("Clear");
-		btnClear.addListener(SWT.MouseDown, controller.new ClearTestPointAction());
+		btnClear.addListener(SWT.MouseDown, clearTestPointAction);
 
 		Button btnDelete = new Button(controls, SWT.NONE);
 		btnDelete.setText("Delete");
-		btnDelete.addListener(SWT.MouseDown, controller.new DeleteTestPointAction());
+		btnDelete.addListener(SWT.MouseDown, deleteTestPointAction);
 
 		Composite body = new Composite(testPointFrame, SWT.NONE);
 		body.setLayout(new FillLayout(SWT.HORIZONTAL));
