@@ -39,11 +39,16 @@ public class TestPointsView extends ViewPart {
 
 		@Override
 		public void close(IDirectory config) {
-			setTopControl(emptyViewPart);
 			if (config.isProblem()) {
 				IProblem problem = config.toProblem();
 				for (TestsViewPart p : viewParts) {
 					if (problem.equals(p.getProblem())) {
+						if (currentViewPart instanceof TestsViewPart) {
+							TestsViewPart part = (TestsViewPart) currentViewPart;
+							if (problem.equals(part.getProblem())) {
+								setTopControl(emptyViewPart);
+							}
+						}
 						p.dispose();
 						viewParts.remove(p);
 						break;
