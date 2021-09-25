@@ -8,6 +8,7 @@ import org.e792a8.acme.core.runner.RunnerFactory;
 import org.e792a8.acme.core.runner.TestPointRequest;
 import org.e792a8.acme.core.runner.TestResult;
 import org.e792a8.acme.core.workspace.IProblem;
+import org.e792a8.acme.core.workspace.ITestPoint;
 import org.e792a8.acme.ui.AcmeUI;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
@@ -42,9 +43,7 @@ class TestsViewPart extends Composite {
 	private class AddTestPointAction extends Action implements Listener {
 		@Override
 		public void run() {
-			TestPointComposite comp = new TestPointComposite(TestsViewPart.this,
-				getProblem().addTestPoint(), composites.size() + 1);
-			composites.add(comp);
+			appendTestPoint(getProblem().addTestPoint());
 			refresh();
 		}
 
@@ -161,6 +160,7 @@ class TestsViewPart extends Composite {
 		testsAreaLayout.makeColumnsEqualWidth = true;
 		testsArea.setLayout(testsAreaLayout);
 
+		loadTestPoints();
 	}
 
 	private void setResultText(String txt) {
@@ -182,6 +182,28 @@ class TestsViewPart extends Composite {
 				e.printStackTrace();
 			}
 		});
+	}
+
+	Composite getTestsArea() {
+		return testsArea;
+	}
+
+	private void appendTestPoint(ITestPoint tp) {
+		TestPointComposite comp = new TestPointComposite(TestsViewPart.this,
+			tp, composites.size() + 1);
+		composites.add(comp);
+	}
+
+	private void loadTestPoints() {
+		for (TestPointComposite c : composites) {
+			c.dispose();
+		}
+		composites.clear();
+		List<ITestPoint> tp = getProblem().getTestPoints();
+		for (ITestPoint t : tp) {
+			appendTestPoint(t);
+		}
+		refresh();
 	}
 
 	private void saveTestPoints() {
@@ -211,14 +233,6 @@ class TestsViewPart extends Composite {
 
 	IProblem getProblem() {
 		return problem;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj instanceof TestsViewPart) {
-			return getProblem().equals(((TestsViewPart) obj).getProblem());
-		}
-		return false;
 	}
 
 	void removeComposite(TestPointComposite comp) {

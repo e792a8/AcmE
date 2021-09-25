@@ -1,14 +1,13 @@
 package org.e792a8.acme.ui.testpoints;
 
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.e792a8.acme.core.workspace.IDirectory;
-import org.e792a8.acme.core.workspace.ITestPoint;
+import org.e792a8.acme.core.workspace.IProblem;
 import org.e792a8.acme.ui.AcmeUI;
 import org.e792a8.acme.ui.IDirectoryActionObserver;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
@@ -16,17 +15,41 @@ public class TestPointsView extends ViewPart {
 
 	public static final String ID = "org.e792a8.acme.ui.testpoints.TestPointsView";
 	private Composite currentViewPart;
-	private Set<TestsViewPart> viewParts = new TreeSet<>();
+	private List<TestsViewPart> viewParts = new LinkedList<>();
+	private StackLayout stackLayout = new StackLayout();
+	private Composite parent;
+	private EmptyViewPart emptyViewPart;
 
 	private IDirectoryActionObserver directoryActionObserver = new IDirectoryActionObserver() {
 		@Override
 		public void open(IDirectory config) {
-			// TODO create a view part for this problem
+			if (config.isProblem()) {
+				IProblem problem = config.toProblem();
+				for (TestsViewPart p : viewParts) {
+					if (problem.equals(p.getProblem())) {
+						setTopControl(p);
+						return;
+					}
+				}
+				TestsViewPart p = new TestsViewPart(parent, problem);
+				viewParts.add(p);
+				setTopControl(p);
+			}
 		}
 
 		@Override
 		public void close(IDirectory config) {
-			// TODO delete the view part for this problem
+			setTopControl(emptyViewPart);
+			if (config.isProblem()) {
+				IProblem problem = config.toProblem();
+				for (TestsViewPart p : viewParts) {
+					if (problem.equals(p.getProblem())) {
+						p.dispose();
+						viewParts.remove(p);
+						break;
+					}
+				}
+			}
 		}
 	};
 
@@ -41,10 +64,18 @@ public class TestPointsView extends ViewPart {
 		// TODO Set the focus to control
 	}
 
+	private void setTopControl(Composite comp) {
+		currentViewPart = comp;
+		stackLayout.topControl = comp;
+		parent.layout();
+	}
+
 	@Override
 	public void createPartControl(Composite parent) {
-		parent.setLayout(new FillLayout(SWT.HORIZONTAL));
-		currentViewPart = new EmptyViewPart(parent);
+		this.parent = parent;
+		parent.setLayout(stackLayout);
+		emptyViewPart = new EmptyViewPart(parent);
+		setTopControl(emptyViewPart);
 		AcmeUI.addOpenDirectoryObserver(directoryActionObserver);
 	}
 }

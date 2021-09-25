@@ -28,6 +28,16 @@ public class AcmeUI {
 		}
 	}
 
+	public static void fireCloseDirectory(IDirectory directory) {
+		for (IDirectoryActionObserver o : directoryActionObservers) {
+			try {
+				o.close(directory);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	public static void addRunTestObserver(IRunTestObserver observer) {
 		runTestObservers.add(observer);
 	}

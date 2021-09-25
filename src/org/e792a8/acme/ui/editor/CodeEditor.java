@@ -40,7 +40,10 @@ public class CodeEditor extends TextEditor {
 
 	@Override
 	public void dispose() {
+		// FIXME setFocus will be called before dispose,
+		// so we need to hook an earlier method on close.
 		AcmeUI.deleteRunTestObserver(runTestObserver);
+		AcmeUI.fireCloseDirectory(((CodeEditorInput) getEditorInput()).getSolution().getDirectory());
 		super.dispose();
 	}
 

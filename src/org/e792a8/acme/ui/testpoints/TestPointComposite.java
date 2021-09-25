@@ -211,10 +211,11 @@ public class TestPointComposite extends Composite {
 	 * @param parent
 	 * @param style
 	 */
-	public TestPointComposite(TestsViewPart parent, ITestPoint tpConf, int index) {
-		super(parent, SWT.NONE);
+	public TestPointComposite(TestsViewPart part, ITestPoint tpConf, int index) {
+		super(part.getTestsArea(), SWT.NONE);
+		this.viewPart = part;
+		Composite parent = part.getTestsArea();
 		testPoint = tpConf;
-		this.viewPart = parent;
 
 		setLayout(new FillLayout(SWT.HORIZONTAL));
 

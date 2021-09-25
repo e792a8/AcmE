@@ -1,10 +1,9 @@
 package org.e792a8.acme.ui.testpoints;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.wb.swt.SWTResourceManager;
+import org.eclipse.swt.widgets.Label;
 
 public class EmptyViewPart extends Composite {
 
@@ -12,9 +11,7 @@ public class EmptyViewPart extends Composite {
 		super(parent, SWT.NONE);
 		setLayout(new FillLayout(SWT.HORIZONTAL));
 
-		CLabel lblNoTestPoints = new CLabel(this, SWT.NONE);
-		lblNoTestPoints.setFont(SWTResourceManager.getFont("Microsoft YaHei UI", 9, SWT.ITALIC));
-		lblNoTestPoints.setAlignment(SWT.CENTER);
+		Label lblNoTestPoints = new Label(this, SWT.NONE);
 		lblNoTestPoints.setText("No test points to show.");
 	}
 
