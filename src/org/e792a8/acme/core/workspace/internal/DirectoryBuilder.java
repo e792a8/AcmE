@@ -51,6 +51,7 @@ public class DirectoryBuilder implements IDirectoryBuilder {
 		if (createSub && directory.isGroup()) {
 			IPath dLoc = directory.getLocation();
 			IPath newLoc = dLoc.append(fileName);
+			IPath newFullPath = directory.getFullPath().append(fileName);
 			newLoc.toFile().mkdirs();
 			Document doc = ConfigParser.newDocument();
 			Element elem = doc.createElement("directory");
@@ -80,9 +81,10 @@ public class DirectoryBuilder implements IDirectoryBuilder {
 			elem.setAttribute("path", fileName);
 			doc.getDocumentElement().appendChild(elem);
 			ConfigParser.writeDoc(doc, dLoc);
-			return new Directory(newLoc);
+			return new Directory(newFullPath);
 		} else {
 			IPath loc = directory.getLocation();
+			IPath fullPath = directory.getFullPath();
 			Document doc = null;
 			Element elem = null;
 			if (name == null) {
@@ -133,7 +135,7 @@ public class DirectoryBuilder implements IDirectoryBuilder {
 			elem.setAttribute("name", name);
 			elem.setAttribute("url", url);
 			ConfigParser.writeDoc(doc, loc);
-			return new Directory(loc);
+			return new Directory(fullPath);
 		}
 	}
 

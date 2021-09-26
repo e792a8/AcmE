@@ -1,17 +1,16 @@
-package org.e792a8.acme.ui.browser;
+package org.e792a8.acme.ui.dashboard;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-public class EmptyBrowserPart extends Composite {
+public class EmptyPart extends Composite {
 
-	public EmptyBrowserPart(Composite parent) {
+	public EmptyPart(Composite parent) {
 		super(parent, SWT.NONE);
 		setLayout(new FillLayout());
-		Label lbl = new Label(this, SWT.NONE);
-		lbl.setText("No page to show.");
+		new Label(parent, SWT.NONE).setText("No problem or contest to display.");
 	}
 
 }

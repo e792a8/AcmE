@@ -79,6 +79,6 @@ public class FileSystem {
 	}
 
 	public static String safePathName(String s) {
-		return s.replaceAll("[/\\\\:*?|\"<> ]", "_");
+		return s.replaceAll("[/\\\\:*?.,|\"<> ]", "_");
 	}
 }

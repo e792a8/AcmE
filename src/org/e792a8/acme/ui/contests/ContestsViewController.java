@@ -68,9 +68,7 @@ class ContestsViewController {
 		@Override
 		public void run() {
 			IDirectory dir = contestsView.lastSelectedDirectory;
-			if (dir.isProblem()) {
-				AcmeUI.fireOpenDirectory(dir.toProblem());
-			}
+			AcmeUI.fireOpenDirectory(dir);
 		}
 
 		@Override
@@ -91,7 +89,7 @@ class ContestsViewController {
 
 		@Override
 		public void run() {
-			AcmeUI.fireOpenDirectory(null); // TODO change to close
+			AcmeUI.fireCloseDirectory(contestsView.lastSelectedDirectory); // TODO change to close
 			contestsView.lastSelectedDirectory.delete();
 			contestsView.refreshView();
 		}

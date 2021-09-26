@@ -18,14 +18,14 @@ public class ContestBrowserPart extends Composite {
 	private Text locationBox;
 
 	public ContestBrowserPart(Composite parent, IDirectory directory) {
-		super(parent, SWT.NULL);
+		super(parent, SWT.NONE);
 		this.directory = directory;
 		initializeComposite();
 	}
 
 	private void initializeComposite() {
 		setLayout(new FormLayout());
-		headBar = new Composite(this, SWT.NULL);
+		headBar = new Composite(this, SWT.NONE);
 		headBar.setLayout(new FillLayout(SWT.HORIZONTAL));
 		FormData fd_headBar = new FormData();
 		fd_headBar.top = new FormAttachment(0);
@@ -33,7 +33,7 @@ public class ContestBrowserPart extends Composite {
 		fd_headBar.right = new FormAttachment(100);
 		headBar.setLayoutData(fd_headBar);
 
-		browser = new Browser(this, SWT.NULL);
+		browser = new Browser(this, SWT.NONE);
 		FormData fd_browser = new FormData();
 		fd_browser.top = new FormAttachment(headBar);
 		fd_browser.left = new FormAttachment(0);

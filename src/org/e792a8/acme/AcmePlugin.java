@@ -32,10 +32,10 @@ public class AcmePlugin extends AbstractUIPlugin {
 		new IDirectoryActionObserver() {
 			@Override
 			public void open(IDirectory config) {
-				if (config == null || !(config instanceof IProblem)) {
+				if (config == null || !config.isProblem()) {
 					return;
 				}
-				IProblem p = (IProblem) config;
+				IProblem p = config.toProblem();
 				try {
 					PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 						.getActivePage().openEditor(new CodeEditorInput(p.getSolution()), CodeEditor.ID);

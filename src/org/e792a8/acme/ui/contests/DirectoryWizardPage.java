@@ -48,16 +48,16 @@ public class DirectoryWizardPage extends WizardPage {
 
 	@Override
 	public void createControl(Composite parent) {
-		Composite container = new Composite(parent, SWT.NULL);
+		Composite container = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
 		layout.verticalSpacing = 9;
 		container.setLayout(layout);
 
-		Label lblType = new Label(container, SWT.NULL);
+		Label lblType = new Label(container, SWT.NONE);
 		lblType.setText("Type");
 
-		Composite typeRadios = new Composite(container, SWT.NULL);
+		Composite typeRadios = new Composite(container, SWT.NONE);
 		typeRadios.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		typeRadios.setLayout(new RowLayout(SWT.HORIZONTAL));
 
@@ -89,21 +89,21 @@ public class DirectoryWizardPage extends WizardPage {
 			}
 		});
 
-		Label lblName = new Label(container, SWT.NULL);
+		Label lblName = new Label(container, SWT.NONE);
 		lblName.setText("Name");
 
 		nameText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		nameText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		nameText.addModifyListener(e -> dialogChanged(e));
 
-		Label lblPath = new Label(container, SWT.NULL);
+		Label lblPath = new Label(container, SWT.NONE);
 		lblPath.setText("Path");
 
 		pathText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		pathText.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		pathText.addModifyListener(e -> dialogChanged(e));
 
-		Label lblUrl = new Label(container, SWT.NULL);
+		Label lblUrl = new Label(container, SWT.NONE);
 		lblUrl.setText("URL");
 
 		urlText = new Text(container, SWT.BORDER | SWT.SINGLE);
