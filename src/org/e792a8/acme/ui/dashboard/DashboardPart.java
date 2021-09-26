@@ -3,6 +3,7 @@ package org.e792a8.acme.ui.dashboard;
 import org.e792a8.acme.core.web.ContestParserFactory;
 import org.e792a8.acme.core.web.ProblemParserFactory;
 import org.e792a8.acme.core.workspace.IDirectory;
+import org.e792a8.acme.ui.AcmeUI;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
@@ -38,6 +39,7 @@ public class DashboardPart extends Composite {
 			} else if (directory.isProblem()) {
 				ProblemParserFactory.createProblemParser(directory.getUrl()).parseTo(directory.toProblem());
 			}
+			AcmeUI.fireOpenDirectory(directory);
 		}
 
 		@Override
