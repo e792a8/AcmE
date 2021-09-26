@@ -43,11 +43,9 @@ public class TestPointsView extends ViewPart {
 				IProblem problem = config.toProblem();
 				for (TestsViewPart p : viewParts) {
 					if (problem.equals(p.getProblem())) {
-						if (currentViewPart instanceof TestsViewPart) {
-							TestsViewPart part = (TestsViewPart) currentViewPart;
-							if (problem.equals(part.getProblem())) {
-								setTopControl(emptyViewPart);
-							}
+						if (p.equals(currentViewPart)) {
+							currentViewPart = emptyViewPart;
+							setTopControl(emptyViewPart);
 						}
 						p.dispose();
 						viewParts.remove(p);
@@ -60,7 +58,7 @@ public class TestPointsView extends ViewPart {
 
 	@Override
 	public void dispose() {
-		AcmeUI.deleteOpenDirectoryObserver(directoryActionObserver);
+		AcmeUI.deleteDirectoryActionObserver(directoryActionObserver);
 		super.dispose();
 	}
 
@@ -81,6 +79,6 @@ public class TestPointsView extends ViewPart {
 		parent.setLayout(stackLayout);
 		emptyViewPart = new EmptyViewPart(parent);
 		setTopControl(emptyViewPart);
-		AcmeUI.addOpenDirectoryObserver(directoryActionObserver);
+		AcmeUI.addDirectoryActionObserver(directoryActionObserver);
 	}
 }

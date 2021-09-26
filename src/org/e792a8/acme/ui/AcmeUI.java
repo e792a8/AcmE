@@ -10,11 +10,11 @@ public class AcmeUI {
 	static List<IDirectoryActionObserver> directoryActionObservers = new LinkedList<>();
 	static List<IRunTestObserver> runTestObservers = new LinkedList<>();
 
-	public static void addOpenDirectoryObserver(IDirectoryActionObserver observer) {
+	public static void addDirectoryActionObserver(IDirectoryActionObserver observer) {
 		directoryActionObservers.add(observer);
 	}
 
-	public static void deleteOpenDirectoryObserver(IDirectoryActionObserver observer) {
+	public static void deleteDirectoryActionObserver(IDirectoryActionObserver observer) {
 		directoryActionObservers.remove(observer);
 	}
 

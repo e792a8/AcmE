@@ -44,7 +44,7 @@ class TestsViewPart extends Composite {
 		@Override
 		public void run() {
 			appendTestPoint(getProblem().addTestPoint());
-			refresh();
+			refreshView();
 		}
 
 		@Override
@@ -203,7 +203,7 @@ class TestsViewPart extends Composite {
 		for (ITestPoint t : tp) {
 			appendTestPoint(t);
 		}
-		refresh();
+		refreshView();
 	}
 
 	private void saveTestPoints() {
@@ -218,16 +218,16 @@ class TestsViewPart extends Composite {
 		}
 	}
 
-	private void refresh() {
+	private void refreshView() {
 		testsArea.layout();
 		updateSize();
 	}
 
 	private void updateSize() {
-		final int MAX_CELL_WIDTH = 480;
+		final int MIN_CELL_WIDTH = 360;
 		ScrollBar bar = scrolledComposite.getVerticalBar();
 		int width = scrolledComposite.getSize().x - (bar != null && bar.isVisible() ? bar.getSize().x : 0);
-		testsAreaLayout.numColumns = width / MAX_CELL_WIDTH + (width % MAX_CELL_WIDTH > 0 ? 1 : 0);
+		testsAreaLayout.numColumns = Math.max(1, width / MIN_CELL_WIDTH);
 		testsArea.setSize(testsArea.computeSize(width, SWT.DEFAULT));
 	}
 
@@ -237,7 +237,7 @@ class TestsViewPart extends Composite {
 
 	void removeComposite(TestPointComposite comp) {
 		composites.remove(comp);
-		refresh();
+		refreshView();
 	}
 
 }

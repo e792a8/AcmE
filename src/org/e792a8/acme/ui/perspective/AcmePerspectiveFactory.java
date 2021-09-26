@@ -1,5 +1,6 @@
 package org.e792a8.acme.ui.perspective;
 
+import org.e792a8.acme.ui.browser.ContestBrowserView;
 import org.e792a8.acme.ui.contests.ContestsView;
 import org.e792a8.acme.ui.dashboard.DashboardView;
 import org.e792a8.acme.ui.testpoints.TestPointsView;
@@ -36,6 +37,9 @@ public class AcmePerspectiveFactory implements IPerspectiveFactory {
 		final String[] viewsBottom = {
 			TestPointsView.ID,
 		};
+		final String[] viewsRight = {
+			ContestBrowserView.ID,
+		};
 
 		IFolderLayout topLeft = factory.createFolder("topLeft", // NON-NLS-1
 			IPageLayout.LEFT, 0.25f, factory.getEditorArea());
@@ -51,6 +55,11 @@ public class AcmePerspectiveFactory implements IPerspectiveFactory {
 			IPageLayout.BOTTOM, 0.75f, factory.getEditorArea());
 		for (String s : viewsBottom) {
 			bottom.addView(s);
+		}
+		IFolderLayout right = factory.createFolder("topRight",
+			IPageLayout.RIGHT, 0.4f, "topRight");
+		for (String s : viewsRight) {
+			right.addView(s);
 		}
 	}
 
@@ -74,8 +83,6 @@ public class AcmePerspectiveFactory implements IPerspectiveFactory {
 
 	private void addNewWizardShortcuts() {
 		final String[] newWizardShortctus = {
-			"org.eclipse.ui.wizards.new.folder",
-			"org.eclipse.ui.wizards.new.file",
 		};
 		for (String s : newWizardShortctus) {
 			factory.addNewWizardShortcut(s);
@@ -87,6 +94,7 @@ public class AcmePerspectiveFactory implements IPerspectiveFactory {
 			ContestsView.ID,
 			DashboardView.ID,
 			TestPointsView.ID,
+			ContestBrowserView.ID,
 		};
 		for (String s : viewShortcuts) {
 			factory.addShowViewShortcut(s);

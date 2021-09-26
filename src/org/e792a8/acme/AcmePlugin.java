@@ -55,13 +55,13 @@ public class AcmePlugin extends AbstractUIPlugin {
 
 	private void addGlobalOpenDirectoryObservers() {
 		for (IDirectoryActionObserver o : globalOpenDirectoryObservers) {
-			AcmeUI.addOpenDirectoryObserver(o);
+			AcmeUI.addDirectoryActionObserver(o);
 		}
 	}
 
 	private void deleteGlobalOpenDirectoryObservers() {
 		for (IDirectoryActionObserver o : globalOpenDirectoryObservers) {
-			AcmeUI.deleteOpenDirectoryObserver(o);
+			AcmeUI.deleteDirectoryActionObserver(o);
 		}
 	}
 

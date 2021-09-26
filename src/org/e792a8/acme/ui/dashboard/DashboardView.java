@@ -55,12 +55,12 @@ public class DashboardView extends ViewPart {
 	};
 
 	public DashboardView() {
-		AcmeUI.addOpenDirectoryObserver(directoryActionObserver);
+		AcmeUI.addDirectoryActionObserver(directoryActionObserver);
 	}
 
 	@Override
 	public void dispose() {
-		AcmeUI.deleteOpenDirectoryObserver(directoryActionObserver);
+		AcmeUI.deleteDirectoryActionObserver(directoryActionObserver);
 		super.dispose();
 	}
 
