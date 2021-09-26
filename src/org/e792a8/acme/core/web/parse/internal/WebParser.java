@@ -1,4 +1,4 @@
-package org.e792a8.acme.core.web.internal;
+package org.e792a8.acme.core.web.parse.internal;
 
 import java.io.IOException;
 
@@ -18,7 +18,7 @@ public abstract class WebParser {
 
 	public org.jsoup.nodes.Document readDocument() {
 		try {
-			return Jsoup.connect(url).get();
+			return Jsoup.connect(url).timeout(20000).get();
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
