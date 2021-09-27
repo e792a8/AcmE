@@ -24,8 +24,7 @@ public abstract class TestPointElement implements ITestPointElement {
 
 	@Override
 	public void delete() {
-		// TODO Auto-generated method stub
-
+		getFile().delete();
 	}
 
 	@Override

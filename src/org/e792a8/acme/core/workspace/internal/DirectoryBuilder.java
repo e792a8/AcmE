@@ -2,12 +2,13 @@ package org.e792a8.acme.core.workspace.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.e792a8.acme.core.workspace.IDirectory;
 import org.e792a8.acme.core.workspace.IDirectoryBuilder;
+import org.e792a8.acme.core.workspace.internal.DirectoryJson.JudgeJson;
+import org.e792a8.acme.core.workspace.internal.DirectoryJson.SolutionJson;
 import org.eclipse.core.runtime.IPath;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 public class DirectoryBuilder implements IDirectoryBuilder {
 	private IDirectory directory;
@@ -46,6 +47,28 @@ public class DirectoryBuilder implements IDirectoryBuilder {
 		return this;
 	}
 
+	private void setProblemDefault(IPath loc, DirectoryJson json) {
+		JudgeJson jj = new JudgeJson();
+		jj.type = "strict";
+		jj.args = "";
+		json.judge = jj;
+		SolutionJson sj = new SolutionJson();
+		sj.lang = "cpp";
+		sj.path = "sol.cpp";
+		json.solution = sj;
+		try {
+			loc.append(sj.path).toFile().createNewFile();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		json.tests = new ArrayList<>();
+	}
+
+	private void setGroupDefault(DirectoryJson json) {
+		json.children = new ArrayList<>();
+	}
+
 	@Override
 	public IDirectory finish() {
 		if (createSub && directory.isGroup()) {
@@ -53,45 +76,37 @@ public class DirectoryBuilder implements IDirectoryBuilder {
 			IPath newLoc = dLoc.append(fileName);
 			IPath newFullPath = directory.getFullPath().append(fileName);
 			newLoc.toFile().mkdirs();
-			Document doc = ConfigParser.newDocument();
-			Element elem = doc.createElement("directory");
-			elem.setAttribute("type", type);
-			elem.setAttribute("name", name);
-			elem.setAttribute("url", url);
-			doc.appendChild(elem);
+			DirectoryJson json = new DirectoryJson();
+			json.type = type;
+			json.name = name;
+			json.url = url;
 			if ("problem".equals(type)) {
-				Element e = doc.createElement("judge");
-				e.setAttribute("type", "strict");
-				elem.appendChild(e);
-				e = doc.createElement("solution");
-				e.setAttribute("lang", "cpp");
-				e.setAttribute("path", "sol.cpp");
-				try {
-					newLoc.append("sol.cpp").toFile().createNewFile();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				elem.appendChild(e);
+				setProblemDefault(newLoc, json);
+			} else if ("group".equals(type)) {
+				setGroupDefault(json);
 			}
-			ConfigParser.writeDoc(doc, newLoc);
+			JsonParser.writeJson(newFullPath, json);
 
-			doc = ConfigParser.readDoc(dLoc);
-			elem = doc.createElement("child");
-			elem.setAttribute("path", fileName);
-			doc.getDocumentElement().appendChild(elem);
-			ConfigParser.writeDoc(doc, dLoc);
-			return new Directory(newFullPath);
+			json = JsonParser.readJson(directory.getFullPath());
+			json.children.add(fileName);
+			JsonParser.writeJson(directory.getFullPath(), json);
+			return new Directory(newFullPath, fileName);
 		} else {
 			IPath loc = directory.getLocation();
 			IPath fullPath = directory.getFullPath();
-			Document doc = null;
-			Element elem = null;
+			String fname = directory.getFileName();
+			DirectoryJson json = null;
 			if (name == null) {
 				name = directory.getName();
 			}
+			if (name == null) {
+				name = "Default";
+			}
 			if (url == null) {
 				url = directory.getUrl();
+			}
+			if (url == null) {
+				url = "";
 			}
 			if (type == null) {
 				if (directory.isGroup())
@@ -100,42 +115,37 @@ public class DirectoryBuilder implements IDirectoryBuilder {
 					type = "problem";
 				else
 					return null;
-				doc = ConfigParser.readDoc(directory.getLocation());
-				elem = doc.getDocumentElement();
+				json = JsonParser.readJson(fullPath);
 			} else {
 				if ("group".equals(type)) {
 					if (directory.isGroup()) {
-						doc = ConfigParser.readDoc(directory.getLocation());
-						elem = doc.getDocumentElement();
+						json = JsonParser.readJson(fullPath);
 					} else {
-						doc = ConfigParser.newDocument();
-						elem = doc.createElement("directory");
-						doc.appendChild(elem);
 						for (File f : loc.toFile().listFiles()) {
 							f.delete();
 						}
+						json = new DirectoryJson();
+						setGroupDefault(json);
 					}
 				} else if ("problem".equals(type)) {
 					if (directory.isProblem()) {
-						doc = ConfigParser.readDoc(loc);
-						elem = doc.getDocumentElement();
+						json = JsonParser.readJson(fullPath);
 					} else {
-						doc = ConfigParser.newDocument();
-						elem = doc.createElement("directory");
-						doc.appendChild(elem);
 						for (File f : loc.toFile().listFiles()) {
 							f.delete();
 						}
+						json = new DirectoryJson();
+						setProblemDefault(loc, json);
 					}
 				} else {
 					return null;
 				}
 			}
-			elem.setAttribute("type", type);
-			elem.setAttribute("name", name);
-			elem.setAttribute("url", url);
-			ConfigParser.writeDoc(doc, loc);
-			return new Directory(fullPath);
+			json.type = type;
+			json.name = name;
+			json.url = url;
+			JsonParser.writeJson(fullPath, json);
+			return new Directory(fullPath, fname);
 		}
 	}
 

@@ -7,23 +7,16 @@ import org.e792a8.acme.core.workspace.IDirectory;
 import org.e792a8.acme.core.workspace.IDirectoryBuilder;
 import org.e792a8.acme.core.workspace.IGroup;
 import org.eclipse.core.runtime.IPath;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 public class Group extends Directory implements IGroup {
 
-	public Group(IPath fullPath) {
-		super(fullPath);
-	}
-
-	public Group(IGroup parent, IPath fullPath) {
-		super(parent, fullPath);
+	public Group(IPath fullPath, String fileName) {
+		super(fullPath, fileName);
 	}
 
 	@Override
 	public boolean isValid() {
-		if (super.isValid() && "group".equals(ConfigParser.readDoc(getLocation())
-			.getDocumentElement().getAttribute("type"))) {
+		if (super.isValid() && "group".equals(getJson().type) && getJson().children != null) {
 			return true;
 		}
 		return false;
@@ -32,9 +25,9 @@ public class Group extends Directory implements IGroup {
 	@Override
 	public List<IDirectory> getSubDirectories() {
 		List<IDirectory> ls = new LinkedList<>();
-		NodeList nl = ConfigParser.readDoc(getLocation()).getDocumentElement().getElementsByTagName("child");
-		for (int i = 0; i < nl.getLength(); ++i) {
-			ls.add(new Directory(this, ((Element) nl.item(i)).getAttribute("path")));
+		List<String> sub = getJson().children;
+		for (String fn : sub) {
+			ls.add(new Directory(getFullPath().append(fn), fn));
 		}
 		return ls;
 	}

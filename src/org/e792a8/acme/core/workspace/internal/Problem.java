@@ -6,24 +6,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.e792a8.acme.core.workspace.IGroup;
 import org.e792a8.acme.core.workspace.IJudgeConfig;
 import org.e792a8.acme.core.workspace.IProblem;
 import org.e792a8.acme.core.workspace.ISolution;
 import org.e792a8.acme.core.workspace.ITestPoint;
+import org.e792a8.acme.core.workspace.internal.DirectoryJson.TestJson;
 import org.eclipse.core.runtime.IPath;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 public class Problem extends Directory implements IProblem {
 
-	public Problem(IGroup parent, IPath fullPath) {
-		super(parent, fullPath);
-	}
-
-	public Problem(IPath fullPath) {
-		super(fullPath);
+	public Problem(IPath fullPath, String fileName) {
+		super(fullPath, fileName);
 	}
 
 	@Override
@@ -33,32 +26,27 @@ public class Problem extends Directory implements IProblem {
 
 	@Override
 	public ISolution getSolution() {
-		Document doc = ConfigParser.readDoc(getLocation());
-		Element solElem = (Element) doc.getElementsByTagName("solution").item(0);
-		return new Solution(this, solElem.getAttribute("lang"), solElem.getAttribute("path"));
+		DirectoryJson.SolutionJson json = getJson().solution;
+		return new Solution(this, json.lang, json.path);
 	}
 
 	@Override
 	public List<ITestPoint> getTestPoints() {
-		Document doc = ConfigParser.readDoc(getLocation());
-		NodeList nl = doc.getElementsByTagName("test");
+		List<TestJson> json = getJson().tests;
 		List<ITestPoint> ls = new LinkedList<>();
-		for (int i = 0; i < nl.getLength(); ++i) {
-			Element e = (Element) nl.item(i);
-			ls.add(new TestPoint(this, e.getAttribute("in"), e.getAttribute("ans")));
+		for (TestJson t : json) {
+			ls.add(new TestPoint(this, t.in, t.ans));
 		}
 		return ls;
 	}
 
 	@Override
 	public ITestPoint addTestPoint() {
-		Document doc = ConfigParser.readDoc(getLocation());
-		NodeList nl = doc.getElementsByTagName("test");
+		DirectoryJson json = getJson();
 		Set<String> names = new TreeSet<>();
-		for (int i = 0; i < nl.getLength(); ++i) {
-			Element e = (Element) nl.item(i);
-			names.add(e.getAttribute("in"));
-			names.add(e.getAttribute("ans"));
+		for (TestJson t : json.tests) {
+			names.add(t.in);
+			names.add(t.ans);
 		}
 		int i = 0;
 		String iname, aname;
@@ -67,10 +55,10 @@ public class Problem extends Directory implements IProblem {
 			iname = "in" + i + ".txt";
 			aname = "ans" + i + ".txt";
 		} while (names.contains(iname) || names.contains(aname));
-		Element ne = doc.createElement("test");
-		ne.setAttribute("in", iname);
-		ne.setAttribute("ans", aname);
-		doc.getDocumentElement().appendChild(ne);
+		TestJson tj = new TestJson();
+		tj.in = iname;
+		tj.ans = aname;
+		json.tests.add(tj);
 		getLocation().append(iname).toFile().delete();
 		try {
 			getLocation().append(iname).toFile().createNewFile();
@@ -85,7 +73,7 @@ public class Problem extends Directory implements IProblem {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		ConfigParser.writeDoc(doc, getLocation());
+		JsonParser.writeJson(getFullPath(), json);
 		return new TestPoint(this, iname, aname);
 	}
 

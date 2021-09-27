@@ -5,9 +5,7 @@ import org.e792a8.acme.core.workspace.IProblem;
 import org.e792a8.acme.core.workspace.ITestPoint;
 import org.e792a8.acme.core.workspace.ITestPointAnswer;
 import org.e792a8.acme.core.workspace.ITestPointInput;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.e792a8.acme.core.workspace.internal.DirectoryJson.TestJson;
 
 public class TestPoint implements ITestPoint {
 
@@ -44,16 +42,14 @@ public class TestPoint implements ITestPoint {
 
 	@Override
 	public void delete() {
-		Document doc = ConfigParser.readDoc(getDirectory().getLocation());
-		NodeList nl = doc.getElementsByTagName("test");
-		for (int i = 0; i < nl.getLength(); ++i) {
-			Element e = (Element) nl.item(i);
-			if (getInput().getFileName().equals(e.getAttribute("in"))
-				&& getAnswer().getFileName().equals(e.getAttribute("ans"))) {
-				getInput().getFile().delete();
-				getAnswer().getFile().delete();
-				doc.getDocumentElement().removeChild(e);
-				ConfigParser.writeDoc(doc, getDirectory().getLocation());
+		DirectoryJson json = ((Problem) getProblem()).getJson();
+		for (TestJson e : json.tests) {
+			if (getInput().getFileName().equals(e.in)
+				&& getAnswer().getFileName().equals(e.ans)) {
+				getInput().delete();
+				getAnswer().delete();
+				json.tests.remove(e);
+				JsonParser.writeJson(getProblem().getFullPath(), json);
 				return;
 			}
 		}

@@ -10,31 +10,18 @@ import org.e792a8.acme.core.workspace.IProblem;
 import org.e792a8.acme.utils.FileSystem;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 public class Directory implements IDirectory {
 	private IPath fullPath;
-	private IGroup parent = null;
 	private String fileName = null;
 
-	public Directory(IGroup parent, IPath fullPath) {
-		this.parent = parent;
-		this.fullPath = fullPath;
-		this.fileName = fullPath.lastSegment();
+	protected DirectoryJson getJson() {
+		return JsonParser.readJson(getFullPath());
 	}
 
-	public Directory(IGroup parent, String fileName) {
-		this.parent = parent;
+	public Directory(IPath fullPath, String fileName) {
+		this.fullPath = fullPath;
 		this.fileName = fileName;
-		this.fullPath = parent.getFullPath().append(fileName);
-	}
-
-	public Directory(IPath fullPath) {
-		this.fullPath = fullPath;
-		String fn = fullPath.lastSegment();
-		this.fileName = (fn == null ? "." : fn);
 	}
 
 	@Override
@@ -50,10 +37,8 @@ public class Directory implements IDirectory {
 
 	@Override
 	public boolean isValid() {
-		Document doc = ConfigParser.readDoc(getLocation());
-		if (doc != null && "directory".equals(doc.getDocumentElement().getTagName())
-			&& ("problem".equals(doc.getDocumentElement().getTagName())
-				|| "group".equals(doc.getDocumentElement().getTagName()))) {
+		DirectoryJson json = getJson();
+		if (json != null && ("problem".equals(json.type) || "group".equals(json.type))) {
 			return true;
 		}
 		return false;
@@ -77,27 +62,27 @@ public class Directory implements IDirectory {
 
 	@Override
 	public IGroup getParentGroup() {
-		if (parent != null) {
-			return parent;
+		IPath fpath = getFullPath();
+		if (fpath.segmentCount() > 0) {
+			return AcmeWorkspace.getDirectoryByFullPath(fpath.removeLastSegments(1)).toGroup();
 		}
-		return parent = AcmeWorkspace.getDirectoryByFullPath(getFullPath().removeLastSegments(1)).toGroup();
+		return this.toGroup();
 	}
 
 	@Override
 	public void delete() {
 		if (getFullPath().segmentCount() > 0) {
-			IGroup parent = getParentGroup();
-			Document doc = ConfigParser.readDoc(parent.getLocation());
-			NodeList nl = doc.getDocumentElement().getElementsByTagName("child");
-			for (int i = 0; i < nl.getLength(); ++i) {
-				Element e = (Element) nl.item(i);
-				if (getFileName().equals(e.getAttribute("path"))) {
-					doc.getDocumentElement().removeChild(e);
+			Group parent = (Group) getParentGroup();
+			IPath pp = parent.getFullPath();
+			DirectoryJson json = parent.getJson();
+			for (String fn : json.children) {
+				if (getFileName().equals(fn)) {
+					json.children.remove(fn);
+					JsonParser.writeJson(pp, json);
 					break;
 				}
 			}
 			FileSystem.rmDir(getFile());
-			ConfigParser.writeDoc(doc, parent.getLocation());
 		}
 	}
 
@@ -108,22 +93,22 @@ public class Directory implements IDirectory {
 
 	@Override
 	public String getName() {
-		return ConfigParser.getAttribute(getLocation(), "name");
+		return getJson().name;
 	}
 
 	@Override
 	public String getUrl() {
-		return ConfigParser.getAttribute(getLocation(), "url");
+		return getJson().url;
 	}
 
 	@Override
 	public boolean isGroup() {
-		return "group".equals(ConfigParser.getAttribute(getLocation(), "type"));
+		return "group".equals(getJson().type);
 	}
 
 	@Override
 	public boolean isProblem() {
-		return "problem".equals(ConfigParser.getAttribute(getLocation(), "type"));
+		return "problem".equals(getJson().type);
 	}
 
 	@Override
@@ -132,11 +117,7 @@ public class Directory implements IDirectory {
 			return (IGroup) this;
 		}
 		if (isGroup()) {
-			if (parent != null) {
-				return new Group(parent, getFullPath());
-			} else {
-				return new Group(getFullPath());
-			}
+			return new Group(getFullPath(), getFileName());
 		}
 		return null;
 	}
@@ -147,11 +128,7 @@ public class Directory implements IDirectory {
 			return (IProblem) this;
 		}
 		if (isProblem()) {
-			if (parent != null) {
-				return new Problem(parent, getFullPath());
-			} else {
-				return new Problem(getFullPath());
-			}
+			return new Problem(getFullPath(), getFileName());
 		}
 		return null;
 	}
