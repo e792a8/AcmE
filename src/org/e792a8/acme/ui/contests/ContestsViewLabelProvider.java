@@ -8,18 +8,6 @@ import org.eclipse.ui.PlatformUI;
 
 class ContestsViewLabelProvider extends LabelProvider {
 
-	/**
-	 * the Contests View this provider is attached to
-	 */
-	private final ContestsView contestsView;
-
-	/**
-	 * @param contestsView
-	 */
-	ContestsViewLabelProvider(ContestsView contestsView) {
-		this.contestsView = contestsView;
-	}
-
 	@Override
 	public String getText(Object obj) {
 		if (obj instanceof IDirectory) {

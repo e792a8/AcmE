@@ -14,7 +14,6 @@ public class CodeEditorInputFactory implements IElementFactory {
 	@Override
 	public IAdaptable createElement(IMemento memento) {
 		String dir = memento.getString("DIRPATH");
-		String name = memento.getString("FILENAME");
 		IDirectory directory = AcmeWorkspace.getDirectoryByFullPath(dir);
 		if (directory != null && directory.isProblem()) {
 			return new CodeEditorInput(directory.toProblem().getSolution());
@@ -23,6 +22,9 @@ public class CodeEditorInputFactory implements IElementFactory {
 	}
 
 	static void saveState(IMemento memento, ISolution config) {
+		if (!config.isValid()) {
+			return;
+		}
 		String s = config.getProblem().getFullPath().toPortableString();
 		memento.putString("DIRPATH", s);
 		memento.putString("FILENAME", config.getFileName());

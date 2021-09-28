@@ -161,7 +161,7 @@ public class ContestsView extends ViewPart {
 
 		viewer.setContentProvider(new ContestsViewContentProvider(this));
 		viewer.setInput(getViewSite());
-		viewer.setLabelProvider(new ContestsViewLabelProvider(this));
+		viewer.setLabelProvider(new ContestsViewLabelProvider());
 
 		getSite().setSelectionProvider(viewer);
 		hookContextMenu();

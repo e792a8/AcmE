@@ -18,7 +18,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 public class DashboardPart extends Composite {
-	private Composite parent;
 	private CLabel lbl1;
 	private CLabel lbl2;
 	private CLabel lbl3;
@@ -51,7 +50,6 @@ public class DashboardPart extends Composite {
 
 	public DashboardPart(Composite parent, IDirectory directory) {
 		super(parent, SWT.NONE);
-		this.parent = parent;
 		this.directory = directory;
 
 		initializeComposite();

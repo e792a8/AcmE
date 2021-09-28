@@ -3,7 +3,6 @@ package org.e792a8.acme.ui.contests;
 import org.e792a8.acme.core.workspace.IDirectory;
 import org.e792a8.acme.core.workspace.IDirectoryBuilder;
 import org.e792a8.acme.utils.FileSystem;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -20,7 +19,6 @@ import org.eclipse.swt.widgets.Text;
 public class DirectoryWizardPage extends WizardPage {
 	private Text nameText;
 	private Text urlText;
-	private IPath parentPath;
 	private boolean groupTypeSelected;
 	private Text pathText;
 	private Button btnGroup;
