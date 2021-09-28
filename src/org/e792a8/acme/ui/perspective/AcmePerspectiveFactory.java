@@ -42,22 +42,22 @@ public class AcmePerspectiveFactory implements IPerspectiveFactory {
 		};
 
 		IFolderLayout topLeft = factory.createFolder("topLeft", // NON-NLS-1
-			IPageLayout.LEFT, 0.25f, factory.getEditorArea());
+			IPageLayout.LEFT, 0.2f, factory.getEditorArea());
 		for (String s : viewsTopLeft) {
 			topLeft.addView(s);
 		}
 		IFolderLayout bottomLeft = factory.createFolder("bottomLeft", // NON-NLS-1
-			IPageLayout.BOTTOM, 0.5f, "topLeft");
+			IPageLayout.BOTTOM, 0.6f, "topLeft");
 		for (String s : viewsBottomLeft) {
 			bottomLeft.addView(s);
 		}
 		IFolderLayout bottom = factory.createFolder("bottomRight", // NON-NLS-1
-			IPageLayout.BOTTOM, 0.75f, factory.getEditorArea());
+			IPageLayout.BOTTOM, 0.7f, factory.getEditorArea());
 		for (String s : viewsBottom) {
 			bottom.addView(s);
 		}
 		IFolderLayout right = factory.createFolder("topRight",
-			IPageLayout.RIGHT, 0.4f, "topRight");
+			IPageLayout.RIGHT, 0.6f, factory.getEditorArea());
 		for (String s : viewsRight) {
 			right.addView(s);
 		}
