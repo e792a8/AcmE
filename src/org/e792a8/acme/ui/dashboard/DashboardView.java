@@ -19,9 +19,7 @@ public class DashboardView extends ViewPart {
 		@Override
 		public void open(IDirectory dir) {
 			currentPart.dispose();
-			currentPart = new DashboardPart(parent, dir);
-			stackLayout.topControl = currentPart;
-			parent.layout();
+			refreshView(new DashboardPart(parent, dir));
 		}
 
 		@Override
@@ -29,9 +27,7 @@ public class DashboardView extends ViewPart {
 			if (currentPart instanceof DashboardPart) {
 				if (((DashboardPart) currentPart).getDirectory().equals(dir)) {
 					currentPart.dispose();
-					currentPart = new EmptyPart(parent);
-					stackLayout.topControl = currentPart;
-					parent.layout();
+					refreshView(new EmptyPart(parent));
 				}
 			}
 		}
@@ -42,6 +38,12 @@ public class DashboardView extends ViewPart {
 			e.printStackTrace();
 		}
 	};
+
+	private void refreshView(Composite comp) {
+		currentPart = comp;
+		stackLayout.topControl = currentPart;
+		parent.layout();
+	}
 
 	@Override
 	public void dispose() {
@@ -54,8 +56,7 @@ public class DashboardView extends ViewPart {
 		this.parent = parent;
 		parent.setLayout(stackLayout);
 
-		currentPart = new EmptyPart(parent);
-		stackLayout.topControl = currentPart;
+		refreshView(new EmptyPart(parent));
 		AcmeUI.addDirectoryActionObserver(directoryActionObserver);
 
 	}

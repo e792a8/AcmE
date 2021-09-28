@@ -10,7 +10,7 @@ public class EmptyPart extends Composite {
 	public EmptyPart(Composite parent) {
 		super(parent, SWT.NONE);
 		setLayout(new FillLayout());
-		new Label(parent, SWT.NONE).setText("No problem or contest to display.");
+		new Label(this, SWT.NONE).setText("No problem or contest to display.");
 	}
 
 }
