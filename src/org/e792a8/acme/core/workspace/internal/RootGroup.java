@@ -1,5 +1,6 @@
 package org.e792a8.acme.core.workspace.internal;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.e792a8.acme.core.workspace.IGroup;
@@ -8,12 +9,12 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 
 public class RootGroup extends Group implements IRootGroup {
 
-	public RootGroup(IWorkspaceRoot wsRoot) {
+	public RootGroup(IWorkspaceRoot wsRoot) throws IOException {
 		super(wsRoot.getFullPath(), ".");
 		testRoot();
 	}
 
-	private void testRoot() {
+	private void testRoot() throws IOException {
 		if (!isValid()) {
 			DirectoryJson json = new DirectoryJson();
 			json.type = "group";

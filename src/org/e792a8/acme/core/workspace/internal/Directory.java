@@ -1,6 +1,7 @@
 package org.e792a8.acme.core.workspace.internal;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.e792a8.acme.core.workspace.AcmeWorkspace;
 import org.e792a8.acme.core.workspace.IDirectory;
@@ -15,7 +16,7 @@ public class Directory implements IDirectory {
 	private IPath fullPath;
 	private String fileName = null;
 
-	protected DirectoryJson getJson() {
+	protected DirectoryJson getJson() throws IOException {
 		return JsonParser.readJson(getFullPath());
 	}
 
@@ -37,7 +38,13 @@ public class Directory implements IDirectory {
 
 	@Override
 	public boolean isValid() {
-		DirectoryJson json = getJson();
+		DirectoryJson json;
+		try {
+			json = getJson();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 		if (json != null && ("problem".equals(json.type) || "group".equals(json.type))) {
 			return true;
 		}
@@ -70,7 +77,7 @@ public class Directory implements IDirectory {
 	}
 
 	@Override
-	public void delete() {
+	public void delete() throws IOException {
 		if (getFullPath().segmentCount() > 0) {
 			Group parent = (Group) getParentGroup();
 			IPath pp = parent.getFullPath();
@@ -78,7 +85,12 @@ public class Directory implements IDirectory {
 			for (String fn : json.children) {
 				if (getFileName().equals(fn)) {
 					json.children.remove(fn);
-					JsonParser.writeJson(pp, json);
+					try {
+						JsonParser.writeJson(pp, json);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					break;
 				}
 			}
@@ -93,22 +105,42 @@ public class Directory implements IDirectory {
 
 	@Override
 	public String getName() {
-		return getJson().name;
+		try {
+			return getJson().name;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
 	public String getUrl() {
-		return getJson().url;
+		try {
+			return getJson().url;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
 	public boolean isGroup() {
-		return "group".equals(getJson().type);
+		try {
+			return "group".equals(getJson().type);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	@Override
 	public boolean isProblem() {
-		return "problem".equals(getJson().type);
+		try {
+			return "problem".equals(getJson().type);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	@Override

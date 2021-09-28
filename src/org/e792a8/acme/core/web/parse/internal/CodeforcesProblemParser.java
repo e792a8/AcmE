@@ -1,5 +1,6 @@
 package org.e792a8.acme.core.web.parse.internal;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 import org.e792a8.acme.core.web.parse.IProblemParser;
@@ -17,7 +18,7 @@ public class CodeforcesProblemParser extends WebParser implements IProblemParser
 	}
 
 	@Override
-	public IProblem parseTo(IProblem problem) {
+	public IProblem parseTo(IProblem problem) throws IOException {
 		Document doc = readDocument();
 		if (doc == null) {
 			return null;

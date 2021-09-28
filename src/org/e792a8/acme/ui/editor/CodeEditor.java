@@ -29,6 +29,12 @@ public class CodeEditor extends TextEditor {
 		@Override
 		public void after(IWorkspaceElement element) {
 		}
+
+		@Override
+		public void handleException(Exception e) {
+			// TODO Auto-generated method stub
+			e.printStackTrace();
+		}
 	};
 
 	public CodeEditor() {

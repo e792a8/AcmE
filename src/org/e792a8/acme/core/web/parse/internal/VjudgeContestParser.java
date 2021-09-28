@@ -1,5 +1,7 @@
 package org.e792a8.acme.core.web.parse.internal;
 
+import java.io.IOException;
+
 import org.e792a8.acme.core.web.parse.IContestParser;
 import org.e792a8.acme.core.workspace.IGroup;
 import org.e792a8.acme.core.workspace.IProblem;
@@ -15,7 +17,7 @@ public class VjudgeContestParser extends WebParser implements IContestParser {
 	}
 
 	@Override
-	public IGroup parseTo(IGroup group) {
+	public IGroup parseTo(IGroup group) throws IOException {
 		Document doc = readDocument();
 		if (doc == null) {
 			return null;

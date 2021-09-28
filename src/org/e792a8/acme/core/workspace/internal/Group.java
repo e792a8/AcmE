@@ -1,5 +1,6 @@
 package org.e792a8.acme.core.workspace.internal;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,8 +17,13 @@ public class Group extends Directory implements IGroup {
 
 	@Override
 	public boolean isValid() {
-		if (super.isValid() && "group".equals(getJson().type) && getJson().children != null) {
-			return true;
+		try {
+			if (super.isValid() && "group".equals(getJson().type) && getJson().children != null) {
+				return true;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
 		}
 		return false;
 	}
@@ -25,7 +31,13 @@ public class Group extends Directory implements IGroup {
 	@Override
 	public List<IDirectory> getSubDirectories() {
 		List<IDirectory> ls = new LinkedList<>();
-		List<String> sub = getJson().children;
+		List<String> sub;
+		try {
+			sub = getJson().children;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 		for (String fn : sub) {
 			ls.add(new Directory(getFullPath().append(fn), fn));
 		}

@@ -1,5 +1,7 @@
 package org.e792a8.acme.ui.dashboard;
 
+import java.io.IOException;
+
 import org.e792a8.acme.core.web.parse.ContestParserFactory;
 import org.e792a8.acme.core.web.parse.ProblemParserFactory;
 import org.e792a8.acme.core.workspace.IDirectory;
@@ -33,10 +35,15 @@ public class DashboardPart extends Composite {
 
 		@Override
 		public void run() {
-			if (directory.isGroup()) {
-				ContestParserFactory.createContestParser(directory.getUrl()).parseTo(directory.toGroup());
-			} else if (directory.isProblem()) {
-				ProblemParserFactory.createProblemParser(directory.getUrl()).parseTo(directory.toProblem());
+			try {
+				if (directory.isGroup()) {
+					ContestParserFactory.createContestParser(directory.getUrl()).parseTo(directory.toGroup());
+				} else if (directory.isProblem()) {
+					ProblemParserFactory.createProblemParser(directory.getUrl()).parseTo(directory.toProblem());
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			AcmeUI.fireOpenDirectory(directory);
 		}

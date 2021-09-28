@@ -1,5 +1,7 @@
 package org.e792a8.acme.core.workspace;
 
+import java.io.IOException;
+
 public interface IDirectoryBuilder {
 	IDirectoryBuilder setType(String type);
 
@@ -13,5 +15,5 @@ public interface IDirectoryBuilder {
 
 	IDirectoryBuilder setFileName(String fileName);
 
-	IDirectory finish();
+	IDirectory finish() throws IOException;
 }

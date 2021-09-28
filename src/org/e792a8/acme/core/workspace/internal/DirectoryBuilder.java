@@ -70,7 +70,7 @@ public class DirectoryBuilder implements IDirectoryBuilder {
 	}
 
 	@Override
-	public IDirectory finish() {
+	public IDirectory finish() throws IOException {
 		if (createSub && directory.isGroup()) {
 			IPath dLoc = directory.getLocation();
 			IPath newLoc = dLoc.append(fileName);

@@ -1,5 +1,7 @@
 package org.e792a8.acme.ui.contests;
 
+import java.io.IOException;
+
 import org.e792a8.acme.core.workspace.IDirectoryBuilder;
 import org.e792a8.acme.core.workspace.IGroup;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -29,7 +31,13 @@ public class NewItemWizard extends Wizard implements INewWizard {
 	@Override
 	public boolean performFinish() {
 		IDirectoryBuilder builder = page.getDirectoryBuilder();
-		builder.finish();
+		try {
+			builder.finish();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
 		return true;
 	}
 

@@ -47,7 +47,7 @@ public class VjudgeProblemParser extends WebParser implements IProblemParser {
 	}
 
 	@Override
-	public IProblem parseTo(IProblem problem) {
+	public IProblem parseTo(IProblem problem) throws IOException {
 		Document doc = readDocument();
 		String url = getUrl();
 		if (doc == null) {

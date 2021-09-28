@@ -1,5 +1,6 @@
 package org.e792a8.acme.core.web.parse.internal;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -18,7 +19,7 @@ public class CodeforcesContestParser extends WebParser implements IContestParser
 	}
 
 	@Override
-	public IGroup parseTo(IGroup group) {
+	public IGroup parseTo(IGroup group) throws IOException {
 		Document doc = readDocument();
 		if (doc == null) {
 			return null;

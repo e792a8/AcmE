@@ -79,6 +79,12 @@ public class AcmeUI {
 					}
 				}
 			}
+
+			@Override
+			public void handleException(Exception e) {
+				// TODO Auto-generated method stub
+
+			}
 		}
 	};
 
@@ -113,8 +119,13 @@ public class AcmeUI {
 	public static void fireOpenDirectory(IDirectory directory) {
 		for (IDirectoryActionObserver o : directoryActionObservers) {
 			try {
-				o.open(directory);
+				try {
+					o.open(directory);
+				} catch (Exception e) {
+					o.handleException(e);
+				}
 			} catch (Exception e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -123,8 +134,13 @@ public class AcmeUI {
 	public static void fireCloseDirectory(IDirectory directory) {
 		for (IDirectoryActionObserver o : directoryActionObservers) {
 			try {
-				o.close(directory);
+				try {
+					o.close(directory);
+				} catch (Exception e) {
+					o.handleException(e);
+				}
 			} catch (Exception e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -141,8 +157,13 @@ public class AcmeUI {
 	public static void fireBeforeRun(IWorkspaceElement config) {
 		for (IRunTestObserver o : runTestObservers) {
 			try {
-				o.before(config);
+				try {
+					o.before(config);
+				} catch (Exception e) {
+					o.handleException(e);
+				}
 			} catch (Exception e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -151,8 +172,13 @@ public class AcmeUI {
 	public static void fireAfterRun(IWorkspaceElement config) {
 		for (IRunTestObserver o : runTestObservers) {
 			try {
-				o.after(config);
+				try {
+					o.after(config);
+				} catch (Exception e) {
+					o.handleException(e);
+				}
 			} catch (Exception e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

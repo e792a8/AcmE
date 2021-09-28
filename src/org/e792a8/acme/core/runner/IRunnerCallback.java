@@ -5,4 +5,6 @@ public interface IRunnerCallback {
 
 	public void finish(TestResult result);
 
+	public void handleException(Exception e);
+
 }

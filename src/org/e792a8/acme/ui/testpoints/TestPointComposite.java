@@ -1,6 +1,7 @@
 package org.e792a8.acme.ui.testpoints;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.e792a8.acme.core.runner.IRunnerCallback;
 import org.e792a8.acme.core.runner.RunnerFactory;
@@ -70,7 +71,12 @@ public class TestPointComposite extends Composite {
 			}
 			ITestPoint tp = getTestPoint();
 			dispose();
-			tp.delete();
+			try {
+				tp.delete();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			viewPart.removeComposite(TestPointComposite.this);
 		}
 
@@ -96,6 +102,12 @@ public class TestPointComposite extends Composite {
 
 					@Override
 					public void finish(TestResult result) {
+					}
+
+					@Override
+					public void handleException(Exception e) {
+						// TODO Auto-generated method stub
+
 					}
 				});
 			runner.launch();
@@ -126,6 +138,12 @@ public class TestPointComposite extends Composite {
 					}
 					AcmeUI.fireAfterRun(getTestPoint());
 				}
+			}
+
+			@Override
+			public void handleException(Exception e) {
+				// TODO Auto-generated method stub
+
 			}
 		});
 		return req;

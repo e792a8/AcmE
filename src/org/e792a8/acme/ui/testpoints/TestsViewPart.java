@@ -1,5 +1,6 @@
 package org.e792a8.acme.ui.testpoints;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,7 +44,12 @@ class TestsViewPart extends Composite {
 	private class AddTestPointAction extends Action implements Listener {
 		@Override
 		public void run() {
-			appendTestPoint(getProblem().addTestPoint());
+			try {
+				appendTestPoint(getProblem().addTestPoint());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			refreshView();
 		}
 
@@ -79,6 +85,12 @@ class TestsViewPart extends Composite {
 					public void finish(TestResult result) {
 						setResultText(result.resultCode);
 						AcmeUI.fireAfterRun(getProblem());
+					}
+
+					@Override
+					public void handleException(Exception e) {
+						// TODO Auto-generated method stub
+						e.printStackTrace();
 					}
 				}).launch();
 		}

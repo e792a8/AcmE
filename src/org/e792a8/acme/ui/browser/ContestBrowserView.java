@@ -47,6 +47,12 @@ public class ContestBrowserView extends ViewPart {
 				}
 			}
 		}
+
+		@Override
+		public void handleException(Exception e) {
+			// TODO Auto-generated method stub
+			e.printStackTrace();
+		}
 	};
 
 	private boolean isValidUrl(String url) {

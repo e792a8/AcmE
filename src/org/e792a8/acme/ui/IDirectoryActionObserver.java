@@ -6,4 +6,6 @@ public interface IDirectoryActionObserver {
 	public void open(IDirectory directory);
 
 	public void close(IDirectory directory);
+
+	public void handleException(Exception e);
 }

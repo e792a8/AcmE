@@ -1,5 +1,6 @@
 package org.e792a8.acme.core.workspace.internal;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,13 +27,25 @@ public class Problem extends Directory implements IProblem {
 
 	@Override
 	public ISolution getSolution() {
-		DirectoryJson.SolutionJson json = getJson().solution;
+		DirectoryJson.SolutionJson json = null;
+		try {
+			json = getJson().solution;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 		return new Solution(this, json.lang, json.path);
 	}
 
 	@Override
 	public List<ITestPoint> getTestPoints() {
-		List<TestJson> json = getJson().tests;
+		List<TestJson> json;
+		try {
+			json = getJson().tests;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
 		List<ITestPoint> ls = new LinkedList<>();
 		for (TestJson t : json) {
 			ls.add(new TestPoint(this, t.in, t.ans));
@@ -41,8 +54,24 @@ public class Problem extends Directory implements IProblem {
 	}
 
 	@Override
-	public ITestPoint addTestPoint() {
-		DirectoryJson json = getJson();
+	public boolean isValid() {
+		try {
+			return super.isValid() && "problem".equals(getJson().type);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	@Override
+	public ITestPoint addTestPoint() throws IOException {
+		DirectoryJson json;
+		try {
+			json = getJson();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			return null;
+		}
 		Set<String> names = new TreeSet<>();
 		for (TestJson t : json.tests) {
 			names.add(t.in);
@@ -59,19 +88,22 @@ public class Problem extends Directory implements IProblem {
 		tj.in = iname;
 		tj.ans = aname;
 		json.tests.add(tj);
-		getLocation().append(iname).toFile().delete();
+		File ifile = getLocation().append(iname).toFile();
+		File afile = getLocation().append(aname).toFile();
 		try {
-			getLocation().append(iname).toFile().createNewFile();
+			ifile.delete();
+			ifile.createNewFile();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			ifile.delete();
+			throw e;
 		}
-		getLocation().append(aname).toFile().delete();
 		try {
-			getLocation().append(aname).toFile().createNewFile();
+			afile.delete();
+			afile.createNewFile();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			afile.delete();
+			ifile.delete();
+			throw e;
 		}
 		JsonParser.writeJson(getFullPath(), json);
 		return new TestPoint(this, iname, aname);

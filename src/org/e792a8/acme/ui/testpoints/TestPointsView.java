@@ -54,6 +54,12 @@ public class TestPointsView extends ViewPart {
 				}
 			}
 		}
+
+		@Override
+		public void handleException(Exception e) {
+			// TODO Auto-generated method stub
+			e.printStackTrace();
+		}
 	};
 
 	@Override

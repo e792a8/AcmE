@@ -10,8 +10,6 @@ import org.eclipse.core.runtime.IPath;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
@@ -25,40 +23,27 @@ public class JsonParser {
 		return gson;
 	}
 
-	public static DirectoryJson readJson(IPath fullPath) {
+	public static DirectoryJson readJson(IPath fullPath) throws IOException {
 		IPath rootLoc = ResourcesPlugin.getWorkspace().getRoot().getLocation();
 		File jsonFile = rootLoc.append(fullPath).append("acme.json").toFile();
-		try {
-			JsonReader reader = new JsonReader(new FileReader(jsonFile));
-			DirectoryJson json = getGson().fromJson(reader, DirectoryJson.class);
-			reader.close();
-			return json;
-		} catch (JsonSyntaxException | JsonIOException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		JsonReader reader = new JsonReader(new FileReader(jsonFile));
+		DirectoryJson json = getGson().fromJson(reader, DirectoryJson.class);
+		reader.close();
+		return json;
 	}
 
-	public static void writeJson(IPath fullPath, DirectoryJson jsonObj) {
+	public static void writeJson(IPath fullPath, DirectoryJson jsonObj) throws IOException {
 		IPath rootLoc = ResourcesPlugin.getWorkspace().getRoot().getLocation();
-		File jsonFile = rootLoc.append(fullPath).append("acme.json").toFile();
-		if (!jsonFile.exists()) {
-			try {
-				jsonFile.createNewFile();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		IPath dirLoc = rootLoc.append(fullPath);
+		File jsonFile = dirLoc.append("acme.json").toFile();
+		if (!jsonFile.isFile()) {
+			jsonFile.delete();
+			dirLoc.toFile().mkdirs();
+			jsonFile.createNewFile();
 		}
-		try {
-			JsonWriter writer = new JsonWriter(new FileWriter(jsonFile));
-			writer.setIndent("\t");
-			getGson().toJson(jsonObj, DirectoryJson.class, writer);
-			writer.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		JsonWriter writer = new JsonWriter(new FileWriter(jsonFile));
+		writer.setIndent("\t");
+		getGson().toJson(jsonObj, DirectoryJson.class, writer);
+		writer.close();
 	}
 }

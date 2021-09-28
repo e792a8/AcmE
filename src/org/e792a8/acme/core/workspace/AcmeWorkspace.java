@@ -1,5 +1,7 @@
 package org.e792a8.acme.core.workspace;
 
+import java.io.IOException;
+
 import org.e792a8.acme.core.workspace.internal.Directory;
 import org.e792a8.acme.core.workspace.internal.RootGroup;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -8,7 +10,12 @@ import org.eclipse.core.runtime.Path;
 
 public class AcmeWorkspace {
 	public static IRootGroup getRootGroup() {
-		return new RootGroup(ResourcesPlugin.getWorkspace().getRoot());
+		try {
+			return new RootGroup(ResourcesPlugin.getWorkspace().getRoot());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public static IDirectory getDirectoryByFullPath(IPath fullPath) {

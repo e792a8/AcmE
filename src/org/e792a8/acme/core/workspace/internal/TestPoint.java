@@ -1,5 +1,7 @@
 package org.e792a8.acme.core.workspace.internal;
 
+import java.io.IOException;
+
 import org.e792a8.acme.core.workspace.IDirectory;
 import org.e792a8.acme.core.workspace.IProblem;
 import org.e792a8.acme.core.workspace.ITestPoint;
@@ -41,7 +43,7 @@ public class TestPoint implements ITestPoint {
 	}
 
 	@Override
-	public void delete() {
+	public void delete() throws IOException {
 		DirectoryJson json = ((Problem) getProblem()).getJson();
 		for (TestJson e : json.tests) {
 			if (getInput().getFileName().equals(e.in)

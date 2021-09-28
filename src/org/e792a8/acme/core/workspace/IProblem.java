@@ -1,5 +1,6 @@
 package org.e792a8.acme.core.workspace;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface IProblem extends IDirectory {
@@ -9,5 +10,5 @@ public interface IProblem extends IDirectory {
 
 	List<ITestPoint> getTestPoints();
 
-	ITestPoint addTestPoint();
+	ITestPoint addTestPoint() throws IOException;
 }

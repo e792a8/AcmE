@@ -1,5 +1,7 @@
 package org.e792a8.acme.ui.contests;
 
+import java.io.IOException;
+
 import org.e792a8.acme.core.workspace.AcmeWorkspace;
 import org.e792a8.acme.core.workspace.IDirectory;
 import org.e792a8.acme.ui.AcmeUI;
@@ -54,6 +56,12 @@ public class ContestsView extends ViewPart {
 		@Override
 		public void close(IDirectory directory) {
 			refreshView();
+		}
+
+		@Override
+		public void handleException(Exception e) {
+			// TODO Auto-generated method stub
+			e.printStackTrace();
 		}
 
 	}
@@ -127,8 +135,13 @@ public class ContestsView extends ViewPart {
 
 		@Override
 		public void run() {
-			AcmeUI.fireCloseDirectory(lastSelectedDirectory); // TODO change to close
-			lastSelectedDirectory.delete();
+			AcmeUI.fireCloseDirectory(lastSelectedDirectory);
+			try {
+				lastSelectedDirectory.delete();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			refreshView();
 		}
 
