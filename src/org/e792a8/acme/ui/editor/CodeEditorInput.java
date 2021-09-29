@@ -3,15 +3,16 @@ package org.e792a8.acme.ui.editor;
 import java.io.File;
 
 import org.e792a8.acme.core.workspace.ISolution;
+import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 
-public class CodeEditorInput implements IEditorInput, IPersistableElement {
+public class CodeEditorInput extends FileStoreEditorInput {
 
 	private static class WorkbenchAdapter implements IWorkbenchAdapter {
 
@@ -41,6 +42,7 @@ public class CodeEditorInput implements IEditorInput, IPersistableElement {
 	private WorkbenchAdapter workbenchAdapter = new WorkbenchAdapter();
 
 	public CodeEditorInput(ISolution solution) {
+		super(EFS.getLocalFileSystem().getStore(solution.getLocation()));
 		this.solution = solution;
 	}
 
