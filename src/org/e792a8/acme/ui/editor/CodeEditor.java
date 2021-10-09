@@ -53,6 +53,8 @@ public class CodeEditor extends TextEditor {
 
 	@Override
 	public void setFocus() {
+		// FIXME when detaching setFocus is called and fireOpenDirectory opens a same
+		// editor on the original page
 		AcmeUI.fireOpenDirectory(((CodeEditorInput) getEditorInput()).getSolution().getDirectory());
 		super.setFocus();
 	}

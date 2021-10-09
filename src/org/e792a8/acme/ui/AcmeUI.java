@@ -9,11 +9,6 @@ import org.e792a8.acme.core.workspace.ISolution;
 import org.e792a8.acme.core.workspace.IWorkspaceElement;
 import org.e792a8.acme.ui.editor.CodeEditor;
 import org.e792a8.acme.ui.editor.CodeEditorInput;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IEditorReference;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.osgi.framework.BundleContext;
@@ -25,29 +20,6 @@ public class AcmeUI {
 	private static IDirectoryActionObserver[] globalOpenDirectoryObservers = {
 
 		new IDirectoryActionObserver() {
-			private IEditorPart findEditorBySolution(ISolution solution) {
-				for (IWorkbenchWindow window : PlatformUI.getWorkbench().getWorkbenchWindows()) {
-					for (IWorkbenchPage page : window.getPages()) {
-						for (IEditorReference editor : page.getEditorReferences()) {
-							IEditorInput inp = null;
-							try {
-								inp = editor.getEditorInput();
-							} catch (PartInitException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							if (inp instanceof CodeEditorInput) {
-								CodeEditorInput input = (CodeEditorInput) inp;
-								if (input.getSolution().equals(solution)) {
-									return editor.getEditor(false);
-								}
-							}
-						}
-					}
-				}
-				return null;
-			}
-
 			@Override
 			public void open(IDirectory config) {
 				if (config == null || !config.isProblem()) {
@@ -55,11 +27,7 @@ public class AcmeUI {
 				}
 				IProblem p = config.toProblem();
 				ISolution sol = p.getSolution();
-				IEditorPart existing = findEditorBySolution(sol);
 				// FIXME we should have only 1 editor for a problem
-				if (existing != null) {
-					return;
-				}
 				try {
 					PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 						.getActivePage().openEditor(new CodeEditorInput(sol), CodeEditor.ID);
@@ -73,10 +41,7 @@ public class AcmeUI {
 			@Override
 			public void close(IDirectory config) {
 				if (config.isProblem()) {
-					IEditorPart part = findEditorBySolution(config.toProblem().getSolution());
-					if (part != null) {
-						part.dispose();
-					}
+					// TODO close related editors when closing a problem
 				}
 			}
 
