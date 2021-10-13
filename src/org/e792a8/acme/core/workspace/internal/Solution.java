@@ -5,6 +5,7 @@ import java.io.File;
 import org.e792a8.acme.core.workspace.IDirectory;
 import org.e792a8.acme.core.workspace.IProblem;
 import org.e792a8.acme.core.workspace.ISolution;
+import org.e792a8.acme.core.workspace.IWorkspaceElement;
 import org.eclipse.core.runtime.IPath;
 
 public class Solution implements ISolution {
@@ -62,6 +63,11 @@ public class Solution implements ISolution {
 	@Override
 	public String getLang() {
 		return lang;
+	}
+
+	@Override
+	public int compareTo(IWorkspaceElement arg0) {
+		return getDirectory().compareTo(arg0);
 	}
 
 }

@@ -7,6 +7,7 @@ import org.e792a8.acme.core.workspace.IProblem;
 import org.e792a8.acme.core.workspace.ITestPoint;
 import org.e792a8.acme.core.workspace.ITestPointAnswer;
 import org.e792a8.acme.core.workspace.ITestPointInput;
+import org.e792a8.acme.core.workspace.IWorkspaceElement;
 import org.e792a8.acme.core.workspace.internal.DirectoryJson.TestJson;
 
 public class TestPoint implements ITestPoint {
@@ -75,6 +76,18 @@ public class TestPoint implements ITestPoint {
 	@Override
 	public ITestPointAnswer getAnswer() {
 		return new TestPointAnswer(this, ans);
+	}
+
+	@Override
+	public int compareTo(IWorkspaceElement arg0) {
+		int res = getProblem().compareTo(arg0);
+		if (res == 0) {
+			res = getInput().getFileName().compareTo(((ITestPoint) arg0).getInput().getFileName());
+		}
+		if (res == 0) {
+			res = getAnswer().getFileName().compareTo(((ITestPoint) arg0).getAnswer().getFileName());
+		}
+		return res;
 	}
 
 }

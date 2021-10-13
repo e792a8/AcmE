@@ -8,6 +8,7 @@ import org.e792a8.acme.core.workspace.IDirectory;
 import org.e792a8.acme.core.workspace.IDirectoryBuilder;
 import org.e792a8.acme.core.workspace.IGroup;
 import org.e792a8.acme.core.workspace.IProblem;
+import org.e792a8.acme.core.workspace.IWorkspaceElement;
 import org.e792a8.acme.utils.FileSystem;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
@@ -182,5 +183,10 @@ public class Directory implements IDirectory {
 	public IDirectoryBuilder modify() {
 		// TODO directory modify support
 		return null;
+	}
+
+	@Override
+	public int compareTo(IWorkspaceElement arg0) {
+		return getFullPath().toString().compareTo(((IDirectory) arg0).getFullPath().toString());
 	}
 }

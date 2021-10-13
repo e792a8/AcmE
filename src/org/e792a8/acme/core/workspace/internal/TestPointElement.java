@@ -6,6 +6,7 @@ import org.e792a8.acme.core.workspace.IDirectory;
 import org.e792a8.acme.core.workspace.IProblem;
 import org.e792a8.acme.core.workspace.ITestPoint;
 import org.e792a8.acme.core.workspace.ITestPointElement;
+import org.e792a8.acme.core.workspace.IWorkspaceElement;
 import org.eclipse.core.runtime.IPath;
 
 public abstract class TestPointElement implements ITestPointElement {
@@ -60,6 +61,15 @@ public abstract class TestPointElement implements ITestPointElement {
 	@Override
 	public ITestPoint getTestPoint() {
 		return testPoint;
+	}
+
+	@Override
+	public int compareTo(IWorkspaceElement arg0) {
+		int res = getProblem().compareTo(arg0);
+		if (res == 0) {
+			res = getFileName().compareTo(((ITestPointElement) arg0).getFileName());
+		}
+		return res;
 	}
 
 }
