@@ -36,7 +36,7 @@ public class TestPointComposite extends Composite {
 	ITestPoint testPoint;
 	CLabel lblResult;
 	ARunner runner = null;
-	private TestsViewPart viewPart;
+	private TestPointsPage viewPart;
 
 	private RunTestPointAction runTestPointAction = new RunTestPointAction();
 	private ClearTestPointAction clearTestPointAction = new ClearTestPointAction();
@@ -229,7 +229,7 @@ public class TestPointComposite extends Composite {
 	 * @param parent
 	 * @param style
 	 */
-	public TestPointComposite(TestsViewPart part, ITestPoint tpConf, int index) {
+	public TestPointComposite(TestPointsPage part, ITestPoint tpConf, int index) {
 		super(part.getTestsArea(), SWT.NONE);
 		this.viewPart = part;
 		testPoint = tpConf;

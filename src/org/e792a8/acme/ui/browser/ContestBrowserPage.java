@@ -10,14 +10,14 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
-public class ContestBrowserPart extends Composite {
+public class ContestBrowserPage extends Composite {
 
 	private IDirectory directory;
 	private Composite headBar;
 	private Browser browser;
 	private Text locationBox;
 
-	public ContestBrowserPart(Composite parent, IDirectory directory) {
+	public ContestBrowserPage(Composite parent, IDirectory directory) {
 		super(parent, SWT.NONE);
 		this.directory = directory;
 		initializeComposite();

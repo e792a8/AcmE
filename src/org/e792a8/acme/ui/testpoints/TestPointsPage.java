@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-class TestsViewPart extends Composite {
+class TestPointsPage extends Composite {
 	private IProblem problem;
 	private CLabel lblResult;
 	private ScrolledComposite scrolledComposite;
@@ -101,7 +101,7 @@ class TestsViewPart extends Composite {
 		}
 	}
 
-	public TestsViewPart(Composite parent, IProblem problem) {
+	public TestPointsPage(Composite parent, IProblem problem) {
 		super(parent, SWT.NONE);
 		this.problem = problem;
 		initializeComposite();
@@ -201,7 +201,7 @@ class TestsViewPart extends Composite {
 	}
 
 	private void appendTestPoint(ITestPoint tp) {
-		TestPointComposite comp = new TestPointComposite(TestsViewPart.this,
+		TestPointComposite comp = new TestPointComposite(TestPointsPage.this,
 			tp, composites.size() + 1);
 		composites.add(comp);
 	}
